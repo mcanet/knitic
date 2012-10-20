@@ -10,13 +10,13 @@
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
 class selenoids{
-  private:	
-    byte dataSector1;
-    byte dataSector2;
-    byte dataArray1[8];
-    byte dataArray2[8];
-    byte dataArraypos1[8]; 
-    byte dataArraypos2[8];  
+  private:
+    int dataSector1;
+    int dataSector2;
+    int dataArray1[8];
+    int dataArray2[8];
+    int dataArraypos1[8]; 
+    int dataArraypos2[8]; 
     
     //Pin connected to ST_CP of 74HC595
     int latchPin;
@@ -50,7 +50,7 @@ class selenoids{
       digitalWrite(myDataPin, 0);
       digitalWrite(myClockPin, 0);
 
-      //for each bit in the byte myDataOut�
+      //for each bit in the byte myDataOut
       //NOTICE THAT WE ARE COUNTING DOWN in our for loop
       //This means that %00000001 or "1" will go through such
       //that it will be pin Q0 that lights. 
@@ -135,30 +135,34 @@ class selenoids{
       dataArray2[7] = 0x01; //00000001
 
       for(int i=0;i<16;i++){
-        selenoidState[i] = false;
+        selenoidState[i] = true;
       }
     }
     
     void loop(){
-      for (int j = 0; j < 8; j++) {
+      Serial.write("loop_selenoids\n");
+      dataSector1 = 0x00;
+      dataSector2 = 0x00;
+      
+      for (int j = 0; j < 8; ++j) {
         //load the light sequence you want from array
-        dataSector1 = 0x00;
-        dataSector2 = 0x00;
-        if(selenoidState[j]){
-          dataSector1 = dataSector1 ^ dataArray1[int(dataArraypos1[j])];
+        if(selenoidState[j]==true){
+          dataSector1 = dataSector1 ^ dataArray1[dataArraypos1[j]];
         }
-        if(selenoidState[j+8]){
-          dataSector2 = dataSector2 ^ dataArray2[int(dataArraypos2[j])];
-        }
-        //ground latchPin and hold low for as long as you are transmitting
-        digitalWrite(latchPin, 0);
-        //move 'em out
-        setShiftOut(dataPin, clockPin, dataSector2);   
-        setShiftOut(dataPin, clockPin, dataSector1);
-        //return the latch pin high to signal chip that it 
-        //no longer needs to listen for information
-        digitalWrite(latchPin, 1);
+        if(selenoidState[j+8]==true){
+          dataSector2 = dataSector2 ^ dataArray2[dataArraypos2[j]];
+        }  
       }
+      
+      //ground latchPin and hold low for as long as you are transmitting
+      digitalWrite(latchPin, 0);
+      //move 'em out
+     
+      setShiftOut(dataPin, clockPin, dataSector2);   
+      setShiftOut(dataPin, clockPin, dataSector1);
+      //return the latch pin high to signal chip that it 
+      //no longer needs to listen for information
+      digitalWrite(latchPin, 1);
     }
    
 };
@@ -419,23 +423,24 @@ public:
         pch = strtok (buf," ,.-");
         while (pch != NULL)
         {
-            pch = strtok(NULL, " ,.-");
-            //printf ("out:%s\n",pch);
             if(foundStart)  id +=1;
-            if( pch != NULL && *pch=='s')    foundStart = true;
+            if( pch != NULL && *pch=='s') foundStart = true;
             // get selenoids
             if(id==1){
                 //printf ("int:%s\n",pch);
                 for(int i=0; i<16;i++){
                     if(pch[i]=='0'){
-                        //cout << "zero:" << pch[i] << endl;
                         mySelenoids->selenoidState[i] = false;
                     }else{
-                        //cout << "blank:" << pch[i] << endl;
                         mySelenoids->selenoidState[i] = true;
                     }
                 }
             }
+            // get status
+            if(id=2){
+               _status = *pch;
+            }
+            pch = strtok(NULL, " ,.-");
         }
         
     }
@@ -489,8 +494,8 @@ void setup()
 
 void loop() {
   //mySoundAlerts.loop();
-  myEncoders.loop();
-  myEndlines.loop();
+  //myEncoders.loop();
+  //myEndlines.loop();
   myCommunicator.loop();
   mySelenoids.loop();
   delay(100);
