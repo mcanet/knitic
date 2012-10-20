@@ -144,10 +144,10 @@ class selenoids{
         //load the light sequence you want from array
         dataSector1 = 0x00;
         dataSector2 = 0x00;
-        if(j==selenoidState[j]){
+        if(selenoidState[j]){
           dataSector1 = dataSector1 ^ dataArray1[int(dataArraypos1[j])];
         }
-        if(j==selenoidState[j+8]){
+        if(selenoidState[j+8]){
           dataSector2 = dataSector2 ^ dataArray2[int(dataArraypos2[j])];
         }
         //ground latchPin and hold low for as long as you are transmitting
