@@ -29,14 +29,6 @@ class selenoids{
     boolean selenoidState[16];
     String _16selenoids;
     selenoids(){
-      //Pin connected to SH_CP of 74HC595
-      latchPin = 8;
-      //Pin connected to SH_CP of 74HC595
-      clockPin = 12;
-      //Pin connected to DS of 74HC595
-      dataPin = 11;
-      
-      _16selenoids = "0110101010101011";
     }
     
     ~selenoids(){
@@ -94,6 +86,8 @@ class selenoids{
       clockPin = 12;
       //Pin connected to DS of 74HC595
       dataPin = 11;
+      
+      _16selenoids = "0110101010101011";
 
       //set pins to output because they are addressed in the main loop
       pinMode(latchPin, OUTPUT);
@@ -486,9 +480,9 @@ void setup()
 { 
   //mySoundAlerts.setup();
   mySelenoids.setup();
-  myEncoders.setup();
-  myEndlines.setup();
-  myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
+  //myEncoders.setup();
+  //myEndlines.setup();
+  //myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
   Serial.begin(9600);
 } 
