@@ -97,7 +97,6 @@ class selenoids{
 
       //set pins to output because they are addressed in the main loop
       pinMode(latchPin, OUTPUT);
-      Serial.begin(9600);
       
       // 
       dataArraypos1[0] = 0x06;
@@ -150,6 +149,7 @@ class selenoids{
       for (int j = 0; j < 8; j++) {
         //load the light sequence you want from array
         dataSector1 = 0x00;
+        dataSector2 = 0x00;
         if(j==selenoidState[j]){
           dataSector1 = dataSector1 ^ dataArray1[int(dataArraypos1[j])];
         }
