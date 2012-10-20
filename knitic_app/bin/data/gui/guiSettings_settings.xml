@@ -1,0 +1,40 @@
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/cu.marCanetsolasiPhone4-Wi</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/tty.marCanetsolasiPhone4-Wi</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/cu.Bluetooth-Modem</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/tty.Bluetooth-Modem</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/cu.iPhone-WirelessiAP</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/tty.iPhone-WirelessiAP</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/cu.Bluetooth-PDA-Sync</Name>
+    <Value>0</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>/dev/tty.Bluetooth-PDA-Sync</Name>
+    <Value>0</Value>
+</Widget>
