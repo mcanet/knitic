@@ -26,7 +26,9 @@ class selenoids{
     int clockPin;
     //Pin connected to DS of 74HC595
     int dataPin;
+    
   public:
+    String _16selenoids;
     selenoids(){
       //Pin connected to SH_CP of 74HC595
       latchPin = 8;
@@ -34,6 +36,8 @@ class selenoids{
       clockPin = 12;
       //Pin connected to DS of 74HC595
       dataPin = 11;
+      
+      _16selenoids = "0110101010101011";
     }
     
     ~selenoids(){
@@ -295,12 +299,13 @@ private:
   // analog arduino pin
   int endLineLeftAPin;
   int endLineRightAPin;
-  int * encoderPos;
-  int * segmentPosition;
+  int * encoderPos; 
   int filterValue;
   int lastLeft;
   int lastRight;
 public:
+  int * segmentPosition;
+  int row;
   endLines(){}
   ~endLines(){}
   
@@ -308,6 +313,7 @@ public:
      endLineLeftAPin = 0;
      endLineRightAPin = 1;
      filterValue = 760;
+     row = 0;
   }
   
   void setPosition(int * _encoderPos, int * _segmentPosition){
@@ -358,9 +364,9 @@ selenoids mySelenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
 
-int row;
-int val;
-
+//int val;
+int rowEnd;
+String _status;
 byte myDataOut;
 
 //int selenoidPins[16] = {4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -386,24 +392,19 @@ void loop() {
 } 
 
 void serialToComputer(){
-  /*
-  Serial.print("@");
-  Serial.print(state);
-  Serial.print("|");
-  Serial.print(encoder0Pos);
-  Serial.print("|");
-  Serial.print(row);
-  */
+  Serial.print("-s-");
+  Serial.print(myEncoders.segmentPosition);
+  Serial.print("-");
+  Serial.print(myEndlines.row);
+  Serial.print("-");
+  Serial.print(rowEnd);
+  Serial.print("-");
+  Serial.print(mySelenoids._16selenoids);
+  Serial.print("-");
+  Serial.print(_status);
+  Serial.println("-e-");
 }
-/*
-void endLine(){
-  if(analogRead(endLineLeftAPin)){
-    encoder0Pos = 0;
-  }else if(analogRead(endLineLeftAPin)){
-    encoder0Pos = encoderEndPos;
-  } 
-}
-*/
+
 
 
 
