@@ -415,7 +415,6 @@ void setup()
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  myEncoders.encoder0Pos = 200;
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
   Serial.begin(28800);
 } 
