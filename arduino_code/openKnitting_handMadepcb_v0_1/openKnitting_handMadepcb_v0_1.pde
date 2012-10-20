@@ -296,6 +296,7 @@ public:
 //---------------------------------------------------------------------------------
 class endLines{
 private:
+  soundAlerts* mySoundAlerts;
   // analog arduino pin
   int endLineLeftAPin;
   int endLineRightAPin;
@@ -316,9 +317,10 @@ public:
      row = 0;
   }
   
-  void setPosition(int * _encoderPos, int * _segmentPosition){
+  void setPosition(int * _encoderPos, int * _segmentPosition, soundAlerts* _mySoundAlerts){
     encoderPos = _encoderPos;
     segmentPosition = _segmentPosition;
+    mySoundAlerts = _mySoundAlerts;
   }
   
   void loop(){
@@ -352,9 +354,46 @@ public:
 };
 //---------------------------------------------------------------------------------
 class communication{
+private:
+  encoders* myEncoders;
+  endLines* myEndlines;
+  selenoids* mySelenoids;
+  int* rowEnd;
+  String* _status;
 public:
    communication(){}
    ~communication(){}
+   
+   void setup(encoders* _myEncoders, endLines* _myEndlines, selenoids* _mySelenoids,int* _rowEnd, String* __status){
+     myEncoders = _myEncoders;
+     myEndlines = _myEndlines;
+     mySelenoids = _mySelenoids;
+     _status = __status;
+     rowEnd = _rowEnd;
+   }
+   
+   void loop(){
+     sendSerialToComputer();
+     receiveSerialFromComputer();
+   }
+   // send data to OF
+   void sendSerialToComputer(){
+    Serial.print("-s-");
+    Serial.print(myEncoders->segmentPosition);
+    Serial.print("-");
+    Serial.print(myEndlines->row);
+    Serial.print("-");
+    Serial.print(*rowEnd);
+    Serial.print("-");
+    Serial.print(mySelenoids->_16selenoids);
+    Serial.print("-");
+    Serial.print(*_status);
+    Serial.println("-e-");
+  }
+  // get data from OF
+  void receiveSerialFromComputer(){
+
+  }
 };
 //---------------------------------------------------------------------------------
 // class declaration
@@ -369,17 +408,15 @@ int rowEnd;
 String _status;
 byte myDataOut;
 
-//int selenoidPins[16] = {4,5,6,7,8,9,10,11,12,13,14,15,16};
-//char state = '';
-
 void setup()
 { 
   //mySoundAlerts.setup();
   //mySelenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
-  myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition);
+  myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myEncoders.encoder0Pos = 200;
+  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
   Serial.begin(28800);
 } 
 
@@ -388,22 +425,7 @@ void loop() {
   //mySelenoids.loop();
   myEncoders.loop();
   myEndlines.loop();
-  serialToComputer();
 } 
-
-void serialToComputer(){
-  Serial.print("-s-");
-  Serial.print(myEncoders.segmentPosition);
-  Serial.print("-");
-  Serial.print(myEndlines.row);
-  Serial.print("-");
-  Serial.print(rowEnd);
-  Serial.print("-");
-  Serial.print(mySelenoids._16selenoids);
-  Serial.print("-");
-  Serial.print(_status);
-  Serial.println("-e-");
-}
 
 
 
