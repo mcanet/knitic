@@ -376,6 +376,7 @@ public:
      sendSerialToComputer();
      receiveSerialFromComputer();
    }
+   
    // send data to OF
    void sendSerialToComputer(){
     Serial.print("-s-");
@@ -390,18 +391,41 @@ public:
     Serial.print(*_status);
     Serial.println("-e-");
   }
+  
   // get data from OF
   void receiveSerialFromComputer(){
     //
     GetString(buf, sizeof(buf));
     Serial.flush();
-  
-    // 1. Pass array selenoids
-    for(int i=0;i<16;i++){
-      if(true){
-        mySelenoids->selenoidState[i] = true;
-      }else{
-        mySelenoids->selenoidState[i] = false;
+    
+    int start = -1;
+    int _end  = -1;
+        
+    // look for start inside string received
+    for(int i=0;i<sizeof(buf);i++){
+      if(buf[i]=='s'){
+        start =i;
+        break;
+      }
+     }
+        
+    // look for end inside string received
+    for(int i=0;i<sizeof(buf);i++){
+      if(buf[i]=='e'){
+        _end =i;
+        break;
+      }
+    }
+    
+    if(start!=-1 && _end!=-1)
+    {
+      // 1. Pass array selenoids
+      for(int i=0;i<16;i++){
+        if(true){
+          mySelenoids->selenoidState[i] = true;
+        }else{
+          mySelenoids->selenoidState[i] = false;
+        }
       }
     }
   }
@@ -438,7 +462,7 @@ void setup()
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
-  Serial.begin(28800);
+  Serial.begin(9600);
 } 
 
 void loop() {
@@ -446,6 +470,7 @@ void loop() {
   //mySelenoids.loop();
   myEncoders.loop();
   myEndlines.loop();
+  myCommunicator.loop();
 } 
 
 
