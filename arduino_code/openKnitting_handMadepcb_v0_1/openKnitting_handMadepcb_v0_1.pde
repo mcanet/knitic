@@ -18,8 +18,6 @@ class selenoids{
     byte dataArraypos1[8]; 
     byte dataArraypos2[8];  
     
-    boolean selenoidState[16];
-    
     //Pin connected to ST_CP of 74HC595
     int latchPin;
     //Pin connected to SH_CP of 74HC595
@@ -28,6 +26,7 @@ class selenoids{
     int dataPin;
     
   public:
+    boolean selenoidState[16];
     String _16selenoids;
     selenoids(){
       //Pin connected to SH_CP of 74HC595
@@ -360,6 +359,7 @@ private:
   selenoids* mySelenoids;
   int* rowEnd;
   String* _status;
+  char buf[40];
 public:
    communication(){}
    ~communication(){}
@@ -392,7 +392,29 @@ public:
   }
   // get data from OF
   void receiveSerialFromComputer(){
-
+    //
+    GetString(buf, sizeof(buf));
+    Serial.flush();
+  
+    // 1. Pass array selenoids
+    for(int i=0;i<16;i++){
+      if(true){
+        mySelenoids->selenoidState[i] = true;
+      }else{
+        mySelenoids->selenoidState[i] = false;
+      }
+    }
+  }
+  
+  void GetString(char *buf, int bufsize)
+  {
+    if(Serial.available()>0){
+      int i;
+      for (i=0; i<bufsize - 1; ++i){
+        buf[i] = Serial.read();
+        if(buf[i] == 'e') break;// is it the terminator byte?
+      }
+    }
   }
 };
 //---------------------------------------------------------------------------------
