@@ -242,8 +242,8 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 //--------------------------------------------------------------
 
 void testApp::exit(){
-    gui_actions->saveSettings("GUI/guiSettings_actions.xml");     
+    // gui_actions->saveSettings("GUI/guiSettings_actions.xml");
     gui_settings->saveSettings("GUI/guiSettings_settings.xml");  
-    delete gui_actions; 
+    // delete gui_actions;
     delete gui_settings;
 }
