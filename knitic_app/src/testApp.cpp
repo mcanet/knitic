@@ -38,7 +38,7 @@ void testApp::setup(){
     gui_settings->addWidgetDown(new ofxUISpacer(length-xInit, 2));
     // ofxUILabelButton(string _name, bool _value, float w = 0, float h = 0, float x = 0, float y = 0, int _size = OFX_UI_FONT_MEDIUM)
     
-    gui_settings->addWidgetDown(new ofxUILabelButton("Refresh serial port",false,length-xInit));
+    gui_settings->addWidgetDown(new ofxUILabelButton(length-xInit, false, "Refresh serial port"));
     
     //ofxUIRadio(string _name, vector<string> names, int _orientation, float w, float h, float x = 0, float y = 0)
     
