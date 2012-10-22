@@ -29,12 +29,14 @@ class testApp : public ofBaseApp{
         ofPixels pix; 
         uint8_t* file;
         // GUI
-        ofxUICanvas *gui_actions;
-        ofxUICanvas *gui_settings;
+       
         void guiEvent(ofxUIEventArgs &e);
         bool drawPadding; 
         float red, green, blue; 
         ofTrueTypeFont font;
+        
+        ofxUICanvas *gui_actions;
+        ofxUICanvas *gui_settings;
         ofxUILabel* totalPatternsLabel;
         ofxUILabel* totalUsedMemoryLabel;
         ofxUILabelToggle* uploadLabelToggle;

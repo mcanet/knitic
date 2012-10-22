@@ -12,6 +12,8 @@
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
 
+enum status_id{status_stop=0,status_knitting=1};
+
 class ofxOpenKnitting: public ofThread{
 public:
     ofxOpenKnitting();
@@ -22,12 +24,10 @@ public:
     bool isKnittingPatterns();
     void startKnittingPattern();
     void stopKnittingPattern();
-    
     vector <string> getListSerialDevices();
     int getTotalPatterns();
     //int getTotalMemoryUsed();
     //int getTotalMemory();
-    
     int row;
     int section;
     string _16Selenoids;
@@ -43,6 +43,7 @@ private:
     string lastSerialData;
     void saveXML();
     void loadXML();
+    int status;
 };
 
 #endif

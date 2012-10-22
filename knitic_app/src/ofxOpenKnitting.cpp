@@ -22,16 +22,18 @@ void ofxOpenKnitting::setup(){
     serialDevicePath = deviceList[0].getDevicePath();
     serial.setup(0, 9600);
     lastSerialData ="";
+    status = status_stop;
 }
 
 void ofxOpenKnitting::update(){
     // serial read from arduino
     serialSend();
-    serialReceive();
+    //serialReceive();
 }
 
+
 void ofxOpenKnitting::serialSend(){
-    string variables = "s-1-1-1-1010101010101010-knitting-e";
+    string variables = "-s-1010101010101010-1-e-";
     serial.writeBytes((unsigned char*)&variables,variables.size());
 }
 
