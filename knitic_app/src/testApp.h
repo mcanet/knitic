@@ -29,7 +29,7 @@ class testApp : public ofBaseApp{
         ofPixels pix; 
         uint8_t* file;
         // GUI
-        ofxUICanvas *gui_actions;
+        // ofxUICanvas *gui_actions;
         ofxUICanvas *gui_settings;
         void guiEvent(ofxUIEventArgs &e);
         bool drawPadding; 
