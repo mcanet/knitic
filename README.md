@@ -7,3 +7,5 @@ We are developing in an artist residency at Marginalia+Lab in Belo Horizonte (Br
 And after november 2012, we plan to add more information in the project website: http://knitic.com
 
 Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcane.info)
+
+The project copyright with GNU-GPL: http://es.wikipedia.org/wiki/GNU_General_Public_License
