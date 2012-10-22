@@ -18,10 +18,10 @@ void testApp::setup(){
     
     red = 233; blue = 27; green = 52; 
 	
-	float dim = 32; 
 	float xInit = OFX_UI_GLOBAL_WIDGET_SPACING; 
-    float length = 320-xInit; 
-	
+    float length = 320;
+    float w = length - 2 * xInit;
+    float h = 32;
     drawPadding = false; 
 
     
@@ -30,19 +30,19 @@ void testApp::setup(){
    
     
     gui_settings->addWidgetDown(new ofxUILabel("KNITTING MACHINE ACTIONS:", OFX_UI_FONT_MEDIUM));
-    gui_settings->addWidgetDown(new ofxUISpacer(length-xInit, 2));
-    gui_settings->addWidgetDown(new ofxUILabelButton(length-xInit, false, "Clear patterns", OFX_UI_FONT_MEDIUM));
-    uploadLabelToggle = new ofxUILabelToggle(length-xInit, false, "Start Knitting", OFX_UI_FONT_MEDIUM);
+    gui_settings->addWidgetDown(new ofxUISpacer(w, 2));
+    gui_settings->addWidgetDown(new ofxUILabelButton("Clear patterns", false, w, h, OFX_UI_FONT_MEDIUM));
+    uploadLabelToggle = new ofxUILabelToggle("Start Knitting", false, w, h, OFX_UI_FONT_MEDIUM);
     gui_settings->addWidgetDown(uploadLabelToggle);
     
     gui_settings->addWidgetDown(new ofxUISpacer(length-xInit, 2));
     // ofxUILabelButton(string _name, bool _value, float w = 0, float h = 0, float x = 0, float y = 0, int _size = OFX_UI_FONT_MEDIUM)
     
-    gui_settings->addWidgetDown(new ofxUILabelButton("Refresh serial port",false,length-xInit));
+    gui_settings->addWidgetDown(new ofxUILabelButton("Refresh serial port", false, w, h));
     
     //ofxUIRadio(string _name, vector<string> names, int _orientation, float w, float h, float x = 0, float y = 0)
     
-    serialPortRadio = new ofxUIRadio( "Select serial port:", myKnittingMachine.getListSerialDevices(), OFX_UI_ORIENTATION_VERTICAL,dim/2, dim/2);
+    serialPortRadio = new ofxUIRadio( "Select serial port:", myKnittingMachine.getListSerialDevices(), OFX_UI_ORIENTATION_VERTICAL, h/2, h/2);
     gui_settings->addWidgetDown(serialPortRadio); 
     gui_settings->addWidgetDown(new ofxUISpacer(length-xInit, 2)); 
     
@@ -239,6 +239,6 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 //--------------------------------------------------------------
 
 void testApp::exit(){   
-    gui_settings->saveSettings("GUI/guiSettings_settings.xml");  
+    gui_settings->saveSettings("gui/guiSettings_settings.xml");  
     delete gui_settings;
 }

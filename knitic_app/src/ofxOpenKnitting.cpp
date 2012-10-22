@@ -20,7 +20,7 @@ void ofxOpenKnitting::setup(){
     // default serial is first port
     vector <ofSerialDeviceInfo> deviceList = serial.getDeviceList();
     serialDevicePath = deviceList[0].getDevicePath();
-    serial.setup(0, 9600);
+    serial.setup(0, 28800);
     lastSerialData ="";
     status = status_stop;
 }
@@ -34,7 +34,7 @@ void ofxOpenKnitting::update(){
 
 void ofxOpenKnitting::serialSend(){
     string variables = "-s-1010101010101010-1-e-";
-    serial.writeBytes((unsigned char*)&variables,variables.size());
+    serial.writeBytes((unsigned char*)variables.c_str(),variables.size());
 }
 
 void ofxOpenKnitting::serialReceive(){
