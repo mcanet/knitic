@@ -140,7 +140,7 @@ class selenoids{
     }
     
     void loop(){
-      Serial.write("loop_selenoids\n");
+      //Serial.write("loop_selenoids\n");
       dataSector1 = 0x00;
       dataSector2 = 0x00;
       
@@ -180,8 +180,7 @@ class encoders{
                 String lastDirectionEncoders;
                 String _8segmentEncoder;   
                 String last8segmentEncoder;
-                
-                
+                int headDirectionAverage;
 	public:
                 int segmentPosition;
                 int encoder0Pos;
@@ -196,6 +195,7 @@ class encoders{
                         _8segmentEncoder = "";
                         last8segmentEncoder = "";
                         lastDirectionEncoders = "";
+                        headDirectionAverage = 0;
 		}
 
 		~encoders(){
@@ -218,7 +218,7 @@ class encoders{
                         //directionEncoders +=_8segmentEncoder;
                         // head direction
                         if(lastDirectionEncoders!=directionEncoders){
-                          //Serial.println(directionEncoders);
+                          //Serial.println(directionEncoders+"-"+_8segmentEncoder);
                           if( 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
@@ -226,7 +226,7 @@ class encoders{
                             (lastDirectionEncoders=="ON-ON" && directionEncoders=="OFF-ON") || 
                             (lastDirectionEncoders=="OFF-ON" && directionEncoders=="OFF-OFF") 
                           ){
-                            headDirection =+1;
+                            headDirectionAverage +=1;
                           }else if( 
                             (lastDirectionEncoders=="OFF-ON" && directionEncoders=="ON-ON") || 
                             (lastDirectionEncoders=="ON-ON" && directionEncoders=="ON-ON") || 
@@ -234,11 +234,23 @@ class encoders{
                             (lastDirectionEncoders=="ON-OFF" && directionEncoders=="OFF-OFF") || 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-ON") 
                           ){
-                            headDirection =-1;
+                            headDirectionAverage -=1;
                           }
                         }
+                        
+                        //Serial.print("segment position: ");
+                        //Serial.println(segmentPosition);
                         // know when head changer from one 8 knidles segment 
-                        if(_8segmentEncoder!=last8segmentEncoder && segmentPosition != -1){ 
+                        if(_8segmentEncoder!=last8segmentEncoder ){ //&& segmentPosition != -1 
+                            //
+                            if(headDirectionAverage>0){
+                              headDirection =+1;
+                              Serial.println("d:+1");
+                            }else{
+                              headDirection =-1;
+                              Serial.println("d:-1");
+                            }
+                            headDirectionAverage = 0;
                             segmentPosition +=headDirection;
                             encoder0Pos = segmentPosition*8;
                             Serial.print("Encoder0Pos-");
@@ -311,7 +323,7 @@ public:
   void setup(){
      endLineLeftAPin = 0;
      endLineRightAPin = 1;
-     filterValue = 760;
+     filterValue = 740;
      row = 0;
   }
   
@@ -322,6 +334,7 @@ public:
   }
   
   void loop(){
+     
      if( analogRead(endLineLeftAPin) > filterValue  ){
        if(!lastLeft){
          *encoderPos = 0;
@@ -378,19 +391,19 @@ public:
    
    // send data to OF
    void sendSerialToComputer(){
-    Serial.print("-s-");
+    Serial.print(",s,");
     Serial.print(myEncoders->segmentPosition);
-    Serial.print("-");
+    Serial.print(",");
     Serial.print(myEndlines->row);
-    Serial.print("-");
+    Serial.print(",");
     Serial.print(*rowEnd);
-    Serial.print("-");
+    Serial.print(",");
     Serial.print(mySelenoids->_16selenoids);
-    Serial.print("-");
+    Serial.print(",");
     Serial.print(*_status);
-    Serial.print("-");
+    Serial.print(",");
     Serial.print(myEncoders->headDirection);
-    Serial.println("-e-");
+    Serial.println(",e,");
   }
   
   // get data from OF
@@ -491,17 +504,18 @@ void setup()
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
+  //myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
   Serial.begin(28800);
+  _status = "off";
 } 
 
 void loop() {
   //mySoundAlerts.loop();
   myEncoders.loop();
   myEndlines.loop();
-  myCommunicator.loop();
+  //myCommunicator.loop();
   mySelenoids.loop();
-  delay(10);
+  //delay(10);
 } 
 
 
