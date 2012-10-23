@@ -4,18 +4,23 @@ void setupSerialConnection(){
     myPort = new Serial(this, Serial.list()[0], 28800);
     usbConected = true;
   }catch(Exception e){
-    usbConected = false;
   }
 }
 
 void sendAndReceiveSerial(){
   // Send a capital A out the serial port:
   try{
+    // knowing if is connected
+    if(abs(lastMessageReceivedFromSerial-millis())>2000){
+      setupSerialConnection();
+      usbConected = false;
+    }else{
+      usbConected = true;
+    }
     sendSerial();
     receiveSerial();
   }catch(Exception e){
-    usbConected = false;
-    setupSerialConnection();
+    
   }
 }
 
@@ -25,8 +30,6 @@ void sendSerial(){
     myPort.write(message);
     println("send serial");
   }catch(Exception e){
-    usbConected = false; 
-    setupSerialConnection();
   }
 }
 
@@ -73,13 +76,12 @@ void receiveSerial(){
             action = values[start+5];
             //cout << " section:" << section << " row:" << row << " rowEnd:" << rowEnd  << " _16Selenoids:" << _16Selenoids << endl;
             lastSerialData = "";
+            lastMessageReceivedFromSerial = millis(); 
         }else{
             lastSerialData +=all;
         }
-          
+        
     }
   }catch(Exception e){
-    usbConected = false; 
-    setupSerialConnection();
   }
 }

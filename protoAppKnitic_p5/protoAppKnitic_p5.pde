@@ -33,6 +33,8 @@ boolean usbConected = false;
 
 scrollBar myScrollBar;
 
+int lastMessageReceivedFromSerial;
+
 void setup(){
   size(1060,800);
   // List all the available serial ports:
@@ -48,6 +50,7 @@ void setup(){
   }
   frameRate(25);
   myScrollBar = new scrollBar();
+  lastMessageReceivedFromSerial = millis();
 }
 
 void draw(){
