@@ -38,13 +38,12 @@ void receiveSerial(){
     if(myPort.available()>=40){
         String all = "";
         int j=0;
-        while (j > 40) {
-          all += myPort.read();
+        while (j < 40) {
+          all += myPort.readChar();
           j+=1;
         }
         myPort.clear();
-        
-        println("rebut ::"+all);
+
         // get data from serial
         String[] values = split(lastSerialData+all, '-');
         
@@ -53,7 +52,7 @@ void receiveSerial(){
         
         // look for start inside string received
         for(int i=0;i<values.length;i++){
-            if(values[i]=="s"){
+            if(values[i].equals("s")){
                 start =i;
                 break;
             }
@@ -61,20 +60,18 @@ void receiveSerial(){
         
         // look for end inside string received
         for(int i=0;i<values.length;i++){
-            if(values[i]=="e"){
+            if(values[i].equals("e")){
                 end =i;
                 break;
             }
         }
         // when we find start and end then take out variables
         if(start!=-1 && end!=-1  && end > start+5){
-            println("dins rebut");
             section = Integer.valueOf(values[start+1]);
             current_row = Integer.valueOf(values[start+2]);
             rows = Integer.valueOf(values[start+3]);
             _16Selenoids = values[start+4];
             action = values[start+5];
-            //cout << " section:" << section << " row:" << row << " rowEnd:" << rowEnd  << " _16Selenoids:" << _16Selenoids << endl;
             lastSerialData = "";
             lastMessageReceivedFromSerial = millis(); 
         }else{
