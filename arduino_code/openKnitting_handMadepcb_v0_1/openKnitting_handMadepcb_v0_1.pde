@@ -211,7 +211,7 @@ class encoders{
                         if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += "ON"; }else{ directionEncoders += "OFF"; }
                         directionEncoders += "-";
                         if(digitalRead(encoder0PinB)== HIGH){ directionEncoders += "ON"; }else{ directionEncoders += "OFF"; }
-                        directionEncoders += "-";
+                        //directionEncoders += "-";
                         _8segmentEncoder = "";
                         if(digitalRead(encoder0PinC)== HIGH){ _8segmentEncoder += "ON"; }else{ _8segmentEncoder += "OFF"; }
                         //directionEncoders +=_8segmentEncoder;
