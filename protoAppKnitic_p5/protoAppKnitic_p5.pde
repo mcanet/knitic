@@ -1,7 +1,7 @@
 /*
 Prototipe Knitic
 */
-
+import javax.swing.JOptionPane;
 import controlP5.*;
 import processing.serial.*;
 
@@ -15,8 +15,8 @@ String status = "0";
 int current_row = 200;
 int stich = 200;
 int section = 200;
-int startStick = 0;
-int endStick = 200;
+int leftStick = 0;
+int rightStick = 200;
 String direction = "-";
 String action = "";
 boolean loadPattern = false;
@@ -30,6 +30,8 @@ String lastSerialData;
 
 ControlP5 controlP5;
 boolean usbConected = false;
+
+scrollBar myScrollBar;
 
 void setup(){
   size(1060,800);
@@ -46,12 +48,15 @@ void setup(){
     frame.setResizable(false);
   }
   frameRate(25);
+  myScrollBar = new scrollBar();
+  
 }
 
 void draw(){
   //sendAndReceiveSerial();
   display();
   if(loadPattern) drawPattern();
+  myScrollBar.mouseMoveScroll();
 }
 
 void keyPressed(){
@@ -92,18 +97,30 @@ void drawPattern(){
 void fillArrayWithImage(String imgPath){ 
   img = loadImage(imgPath);
   cols = img.width;
-  rows = img.height;
-  if(cols>0 && rows>0) loadPattern = true;
-  pixelArray = new int[cols][rows];
-  
-  img.loadPixels(); 
-  for (int y = 0; y <rows; y++) {
-    for (int x = 0; x <  cols; x++) {
-      int loc = (cols-1)-x + y*cols;
-      if (brightness(img.pixels[loc]) > threshold) {
-        pixelArray[x][y] = 1;
-      }else{
-        pixelArray[x][y] = 0;
+  if(cols>200){
+    JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels","Alert from Knitic",2);
+    return;
+  }else{
+    rows = img.height;
+    if(cols>0 && rows>0) loadPattern = true;
+    pixelArray = new int[cols][rows];
+    myScrollBar.setupScrollBar();
+    int restPixels = 200-cols;
+    int leftStick = (restPixels/2);
+    int rightStick = (restPixels/2);
+    if(leftStick+cols+rightStick !=200){
+      rightStick +=1;
+    }
+    
+    img.loadPixels(); 
+    for (int y = 0; y <rows; y++) {
+      for (int x = 0; x <  cols; x++) {
+        int loc = (cols-1)-x + y*cols;
+        if (brightness(img.pixels[loc]) > threshold) {
+          pixelArray[x][y] = 1;
+        }else{
+          pixelArray[x][y] = 0;
+        }
       }
     }
   }
