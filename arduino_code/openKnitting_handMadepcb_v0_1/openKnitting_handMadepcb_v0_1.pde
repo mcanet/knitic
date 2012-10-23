@@ -464,11 +464,11 @@ public:
           }
           if(buf[i] == 'e') break;// is it the terminator byte?
       }
-      for (i=0; i<bufsize; ++i){
-        Serial.write(buf[i]);
-      }
+      //for (i=0; i<bufsize; ++i){
+      //  Serial.write(buf[i]);
+      //}
       Serial.flush();
-      Serial.write("received\n");
+      //Serial.write("received\n");
   }
 };
 //---------------------------------------------------------------------------------
