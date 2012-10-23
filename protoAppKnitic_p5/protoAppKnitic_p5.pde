@@ -33,6 +33,7 @@ boolean usbConected = false;
 
 scrollBar myScrollBar;
 
+int lastConnection;
 int lastMessageReceivedFromSerial;
 
 void setup(){
@@ -51,6 +52,7 @@ void setup(){
   frameRate(25);
   myScrollBar = new scrollBar();
   lastMessageReceivedFromSerial = millis();
+  lastConnection = millis();
 }
 
 void draw(){
