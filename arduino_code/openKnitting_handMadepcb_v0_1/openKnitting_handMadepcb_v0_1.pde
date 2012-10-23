@@ -218,7 +218,7 @@ class encoders{
                         //directionEncoders +=_8segmentEncoder;
                         // head direction
                         if(lastDirectionEncoders!=directionEncoders){
-                          Serial.println(directionEncoders);
+                          //Serial.println(directionEncoders);
                           if( 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
@@ -372,7 +372,7 @@ public:
    }
    
    void loop(){
-     //sendSerialToComputer();
+     sendSerialToComputer();
      receiveSerialFromComputer();
    }
    
@@ -451,8 +451,10 @@ public:
   void GetString(char *buf, int bufsize)
   {
       int i;
+      
       for (i=0; i<bufsize; ++i){
-          while(Serial.available() == 0);
+          int time = millis();
+          while(Serial.available() == 0 && (millis()-time)<50);
           buf[i] = Serial.read();
           // stay until we found start message
           if(buf[i] == 's'){
