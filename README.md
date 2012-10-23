@@ -6,6 +6,6 @@ This code is part of a project to make an open hardware knitting machine at the 
 We are developing in an artist residency at Marginalia+Lab in Belo Horizonte (Brazil). We are posting the process information in a blog: http://knitic.marginalialab.com
 And after november 2012, we plan to add more information in the project website: http://knitic.com
 
-Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcane.info)
+Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcanet.info)
 
 The project copyright with GNU-GPL: http://es.wikipedia.org/wiki/GNU_General_Public_License
