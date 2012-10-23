@@ -181,10 +181,11 @@ class encoders{
                 String _8segmentEncoder;   
                 String last8segmentEncoder;
                 
-                int headDirection;
+                
 	public:
                 int segmentPosition;
                 int encoder0Pos;
+                int headDirection;
 		encoders(){
 			encoder0PinA = 2;
 			encoder0PinB = 3;
@@ -387,6 +388,8 @@ public:
     Serial.print(mySelenoids->_16selenoids);
     Serial.print("-");
     Serial.print(*_status);
+    Serial.print("-");
+    Serial.print(myEncoders->headDirection);
     Serial.println("-e-");
   }
   
@@ -416,9 +419,8 @@ public:
     
     if(start!=-1 && _end!=-1 )
     {
-        Serial.write("found\n");
         bool foundStart = false; 
-        int id =0;
+        int id = 0;
         char * pch;
         pch = strtok (buf," ,.-");
         while (pch != NULL)
@@ -427,7 +429,6 @@ public:
             if( pch != NULL && *pch=='s') foundStart = true;
             // get selenoids
             if(id==1){
-                //printf ("int:%s\n",pch);
                 for(int i=0; i<16;i++){
                     if(pch[i]=='0'){
                         mySelenoids->selenoidState[i] = false;
@@ -437,8 +438,8 @@ public:
                 }
             }
             // get status
-            if(id=2){
-               _status = *pch;
+            if(id==2 ){
+              //if(*pch=='1') _status = 1;
             }
             pch = strtok(NULL, " ,.-");
         }
@@ -485,20 +486,20 @@ void setup()
 { 
   //mySoundAlerts.setup();
   mySelenoids.setup();
-  //myEncoders.setup();
-  //myEndlines.setup();
-  //myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
+  myEncoders.setup();
+  myEndlines.setup();
+  myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
-  Serial.begin(9600);
+  Serial.begin(28800);
 } 
 
 void loop() {
   //mySoundAlerts.loop();
-  //myEncoders.loop();
-  //myEndlines.loop();
+  myEncoders.loop();
+  myEndlines.loop();
   myCommunicator.loop();
   mySelenoids.loop();
-  delay(100);
+  delay(10);
 } 
 
 
