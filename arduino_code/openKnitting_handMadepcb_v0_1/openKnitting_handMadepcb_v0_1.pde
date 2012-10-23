@@ -245,21 +245,21 @@ class encoders{
                             //
                             if(headDirectionAverage>2){
                               headDirection =+1;
-                              Serial.println("d:+1");
+                              //Serial.println("d:+1");
                             }else if(headDirectionAverage<-2){
                               headDirection =-1;
-                              Serial.println("d:-1");
+                              //Serial.println("d:-1");
                             }else{
                               headDirection =headDirection*-1;
-                              Serial.println("change direction"+String(headDirection));
+                              //Serial.println("change direction"+String(headDirection));
                             }
                             headDirectionAverage = 0;
                             segmentPosition +=headDirection;
                             encoder0Pos = segmentPosition*8;
-                            Serial.print("Encoder0Pos-");
-                            Serial.print(_8segmentEncoder);
-                            Serial.print(":");
-                            Serial.println(segmentPosition);
+                            //Serial.print("Encoder0Pos-");
+                            //Serial.print(_8segmentEncoder);
+                            //Serial.print(":");
+                            //Serial.println(segmentPosition);
                         }
                         lastDirectionEncoders = directionEncoders;
                         last8segmentEncoder = _8segmentEncoder;
@@ -346,9 +346,9 @@ public:
        if(!lastLeft){
          *encoderPos = 0;
          *segmentPosition = 0;
-         Serial.print("inside left:");
-         Serial.print("change encoder0Pos:");
-         Serial.println(*encoderPos);
+         //Serial.print("inside left:");
+         //Serial.print("change encoder0Pos:");
+         //Serial.println(*encoderPos);
          started = true;
        }
        lastLeft = true;
@@ -361,9 +361,9 @@ public:
        if(!lastRight){
          *encoderPos = 200;
          *segmentPosition = 25;
-         Serial.print("inside right:");
-         Serial.print("change encoder0Pos:");
-         Serial.println(*encoderPos);
+         //Serial.print("inside right:");
+         //Serial.print("change encoder0Pos:");
+         //Serial.println(*encoderPos);
          started = true;
        }
        lastRight = true;
@@ -514,7 +514,7 @@ void setup()
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  //myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
+  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
   Serial.begin(28800);
   _status = "off";
 } 
@@ -523,7 +523,7 @@ void loop() {
   //mySoundAlerts.loop();
   myEncoders.loop();
   myEndlines.loop();
-  //myCommunicator.loop();
+  myCommunicator.loop();
   mySelenoids.loop();
   //delay(10);
 } 
