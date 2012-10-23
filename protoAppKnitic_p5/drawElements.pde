@@ -47,6 +47,20 @@ void display(){
   rect(width-230,myScrollBar.posYscrollBar,15,myScrollBar.heightYScrollBar);  
 }
 
+void drawPatternGrid(){
+  int sizePixel = 3;
+  for(int j=0;j<200;j++){
+     stroke(255,0,0);
+     line(230+j*sizePixel,0,230+j*sizePixel,height);
+  }
+  for(int g=0;g<400;g++){
+       stroke(255,0,0);
+       line(230,g*sizePixel,width-231,g*sizePixel);
+  } 
+  noStroke();
+  stroke(30,30,30);
+}
+
 void draw16selenoids(){
   pushMatrix();
   translate(30,65);

@@ -37,8 +37,7 @@ void setup(){
   size(1060,800);
   // List all the available serial ports:
   println(Serial.list());
-  // Open the port you are using at the rate you want:
-  myPort = new Serial(this, Serial.list()[0], 28800);
+  setupSerialConnection();
   
   kniticLogo = loadImage("logo_knitic.png");
   laurentFont = loadFont("LaurenScript-20.vlw");
@@ -49,14 +48,16 @@ void setup(){
   }
   frameRate(25);
   myScrollBar = new scrollBar();
-  
 }
 
 void draw(){
-  //sendAndReceiveSerial();
+  background(200,200,200);
+  sendAndReceiveSerial();
   display();
+  drawPatternGrid();
   if(loadPattern) drawPattern();
   myScrollBar.mouseMoveScroll();
+  
 }
 
 void keyPressed(){
@@ -73,7 +74,7 @@ void keyPressed(){
 
 void drawPattern(){
   pushMatrix();
-  translate(230,0);
+  translate(230+(leftStick*3),0);
   int cubSize = 3;
   for(int x=0;x<cols;x++){
      for(int y=0;y<rows;y++){
@@ -119,7 +120,6 @@ void fillArrayWithImage(String imgPath){
         rightStick = 200 - leftStick;
       }
     }
-    
     
     img.loadPixels(); 
     for (int y = 0; y <rows; y++) {

@@ -1,19 +1,38 @@
+void setupSerialConnection(){
+  try{
+    // Open the port you are using at the rate you want:
+    myPort = new Serial(this, Serial.list()[0], 28800);
+    usbConected = true;
+  }catch(Exception e){
+    usbConected = false;
+  }
+}
+
 void sendAndReceiveSerial(){
   // Send a capital A out the serial port:
-  //try{
-  sendSerial();
-  receiveSerial();
-  usbConected = true;
-  //}catch(exceptions e){usbConected = false;}
+  try{
+    sendSerial();
+    receiveSerial();
+  }catch(Exception e){
+    usbConected = false;
+    setupSerialConnection();
+  }
 }
 
 void sendSerial(){
-  String message = "-s-"+_16Selenoids+"-"+status+"-e-";
-  myPort.write(message);
+  try{
+    String message = "-s-"+_16Selenoids+"-"+status+"-e-";
+    myPort.write(message);
+    println("send serial");
+  }catch(Exception e){
+    usbConected = false; 
+    setupSerialConnection();
+  }
 }
 
 void receiveSerial(){
-  if(myPort.available()>=40){
+  try{
+    if(myPort.available()>=40){
         String all = "";
         int j=0;
         while (j > 40) {
@@ -58,6 +77,9 @@ void receiveSerial(){
             lastSerialData +=all;
         }
           
+    }
+  }catch(Exception e){
+    usbConected = false; 
+    setupSerialConnection();
   }
-  
 }
