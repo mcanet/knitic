@@ -99,18 +99,27 @@ void fillArrayWithImage(String imgPath){
   cols = img.width;
   if(cols>200){
     JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels","Alert from Knitic",2);
-    return;
   }else{
+    
     rows = img.height;
     if(cols>0 && rows>0) loadPattern = true;
     pixelArray = new int[cols][rows];
     myScrollBar.setupScrollBar();
     int restPixels = 200-cols;
-    int leftStick = (restPixels/2);
-    int rightStick = (restPixels/2);
+    leftStick = (restPixels/2);
+    rightStick = (restPixels/2);
     if(leftStick+cols+rightStick !=200){
       rightStick +=1;
     }
+    String userStartStick="";
+    if(cols!=200) {
+      userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?",Integer.toString(leftStick));
+      if(userStartStick!=Integer.toString(leftStick)){
+        leftStick = Integer.valueOf(userStartStick);
+        rightStick = 200 - leftStick;
+      }
+    }
+    
     
     img.loadPixels(); 
     for (int y = 0; y <rows; y++) {

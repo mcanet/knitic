@@ -1,7 +1,5 @@
 void display(){  
   noStroke();
-  fill(155,155,155);
-  rect(640,2,180,35);
   fill(73,202,250);
   rect(0,0,230,80);
   fill(155,155,155);
@@ -31,8 +29,8 @@ void display(){
   text("Stich: 200",30,220);
   text("Width: "+Integer.toString(cols),30,320);  
   text("Height: "+Integer.toString(rows),30,370); 
-  text("StartStick: "+Integer.toString(startStick),25,420);
-  text("EndStick: "+Integer.toString(endStick),25,470);  
+  text("Left Stick: "+Integer.toString(leftStick),30,420);
+  text("Right Stick: "+Integer.toString(rightStick),30,470);  
   // columne right
   stroke(255);
   noFill();
@@ -40,11 +38,14 @@ void display(){
   rect(855,90,180,35);
   fill(255);
   if(direction=="-"){ text("Direction: none",30,270); }else if(direction=="1"){ text("Direction: right",30,270); }else if(direction=="-1"){ text("Direction: left",650,30); }
-  if(usbConected){    text("USB: conected",870,120);}else{ text("USB: disconected",870,120); }
-  if(status=="0"){    text("Status: stop",870,170); }else if(status=="1"){ text("Status: knitting",870,170); }
+  if(usbConected){    text("USB: conected",865,120);}else{ text("USB: disconected",865,120); }
+  if(status=="0"){    text("Status: stop",865,170); }else if(status=="1"){ text("Status: knitting",870,170); }
   noStroke();
+  // scroll bar
+  fill(16,62,104);
+  rect(width-230,0,15,height);  
+  rect(width-230,myScrollBar.posYscrollBar,15,myScrollBar.heightYScrollBar);  
 }
-
 
 void draw16selenoids(){
   pushMatrix();

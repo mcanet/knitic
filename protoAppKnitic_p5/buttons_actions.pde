@@ -22,7 +22,7 @@ void stopknitting(){
 }
 
 void openknittingPattern(){  
-    selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
+  selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }
 
 void fileSelected(File selection) {
