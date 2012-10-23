@@ -218,7 +218,7 @@ class encoders{
                         //directionEncoders +=_8segmentEncoder;
                         // head direction
                         if(lastDirectionEncoders!=directionEncoders){
-                          //Serial.println(directionEncoders+"-"+_8segmentEncoder);
+                          
                           if( 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
@@ -227,6 +227,7 @@ class encoders{
                             (lastDirectionEncoders=="OFF-ON" && directionEncoders=="OFF-OFF") 
                           ){
                             headDirectionAverage +=1;
+                            //Serial.println(directionEncoders+"-Left");
                           }else if( 
                             (lastDirectionEncoders=="OFF-ON" && directionEncoders=="ON-ON") || 
                             (lastDirectionEncoders=="ON-ON" && directionEncoders=="ON-ON") || 
@@ -235,20 +236,22 @@ class encoders{
                             (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-ON") 
                           ){
                             headDirectionAverage -=1;
+                            //Serial.println(directionEncoders+"-Right");
                           }
                         }
                         
-                        //Serial.print("segment position: ");
-                        //Serial.println(segmentPosition);
                         // know when head changer from one 8 knidles segment 
-                        if(_8segmentEncoder!=last8segmentEncoder ){ //&& segmentPosition != -1 
+                        if(_8segmentEncoder!=last8segmentEncoder ){ 
                             //
-                            if(headDirectionAverage>0){
+                            if(headDirectionAverage>2){
                               headDirection =+1;
                               Serial.println("d:+1");
-                            }else{
+                            }else if(headDirectionAverage<-2){
                               headDirection =-1;
                               Serial.println("d:-1");
+                            }else{
+                              headDirection =headDirection*-1;
+                              Serial.println("change direction"+String(headDirection));
                             }
                             headDirectionAverage = 0;
                             segmentPosition +=headDirection;
@@ -256,7 +259,7 @@ class encoders{
                             Serial.print("Encoder0Pos-");
                             Serial.print(_8segmentEncoder);
                             Serial.print(":");
-                            Serial.println(encoder0Pos);
+                            Serial.println(segmentPosition);
                         }
                         lastDirectionEncoders = directionEncoders;
                         last8segmentEncoder = _8segmentEncoder;
@@ -311,9 +314,11 @@ private:
   int endLineLeftAPin;
   int endLineRightAPin;
   int * encoderPos; 
-  int filterValue;
+  int filterValueLeft;
+  int filterValueRight;
   int lastLeft;
   int lastRight;
+  boolean started;
 public:
   int * segmentPosition;
   int row;
@@ -323,8 +328,10 @@ public:
   void setup(){
      endLineLeftAPin = 0;
      endLineRightAPin = 1;
-     filterValue = 740;
+     filterValueLeft = 730;
+     filterValueRight = 740;
      row = 0;
+     started = false;
   }
   
   void setPosition(int * _encoderPos, int * _segmentPosition, soundAlerts* _mySoundAlerts){
@@ -334,27 +341,30 @@ public:
   }
   
   void loop(){
-     
-     if( analogRead(endLineLeftAPin) > filterValue  ){
+     //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
+     if( analogRead(endLineLeftAPin) > filterValueLeft   ){
        if(!lastLeft){
          *encoderPos = 0;
          *segmentPosition = 0;
          Serial.print("inside left:");
          Serial.print("change encoder0Pos:");
          Serial.println(*encoderPos);
+         started = true;
        }
        lastLeft = true;
      }else{
        lastLeft = false;
      }
      
-     if( analogRead(endLineRightAPin) > filterValue ){
+     //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
+     if( analogRead(endLineRightAPin) > filterValueRight ){
        if(!lastRight){
          *encoderPos = 200;
          *segmentPosition = 25;
          Serial.print("inside right:");
          Serial.print("change encoder0Pos:");
          Serial.println(*encoderPos);
+         started = true;
        }
        lastRight = true;
      }else{
