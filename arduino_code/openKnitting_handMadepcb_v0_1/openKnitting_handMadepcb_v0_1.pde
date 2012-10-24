@@ -162,7 +162,6 @@ class selenoids{
       setShiftOut(dataPin, clockPin, dataSector1);
       //return the latch pin high to signal chip that it 
       //no longer needs to listen for information
-      digitalWrite(latchPin, 1);
     }
    
 };
@@ -178,10 +177,11 @@ class encoders{
                 int encoder0PinCLast;
                 String directionEncoders;
                 String lastDirectionEncoders;
-                String _8segmentEncoder;   
-                String last8segmentEncoder;
+                
                 int headDirectionAverage;
 	public:
+                String _8segmentEncoder;   
+                String last8segmentEncoder;
                 int segmentPosition;
                 int encoder0Pos;
                 int headDirection;
@@ -213,6 +213,7 @@ class encoders{
                         directionEncoders += "-";
                         if(digitalRead(encoder0PinB)== HIGH){ directionEncoders += "ON"; }else{ directionEncoders += "OFF"; }
                         //directionEncoders += "-";
+                        last8segmentEncoder = _8segmentEncoder;
                         _8segmentEncoder = "";
                         if(digitalRead(encoder0PinC)== HIGH){ _8segmentEncoder += "ON"; }else{ _8segmentEncoder += "OFF"; }
                         //directionEncoders +=_8segmentEncoder;
@@ -250,19 +251,21 @@ class encoders{
                               headDirection =-1;
                               //Serial.println("d:-1");
                             }else{
-                              headDirection =headDirection*-1;
-                              //Serial.println("change direction"+String(headDirection));
+                              headDirection = headDirection*-1;
+                              Serial.println("change direction"+String(headDirection));
                             }
                             headDirectionAverage = 0;
                             segmentPosition +=headDirection;
                             encoder0Pos = segmentPosition*8;
-                            //Serial.print("Encoder0Pos-");
-                            //Serial.print(_8segmentEncoder);
-                            //Serial.print(":");
-                            //Serial.println(segmentPosition);
+                            /*
+                            Serial.print(",s,");
+                            Serial.print(headDirection);
+                            Serial.print(",");
+                            Serial.print(segmentPosition);
+                            Serial.println(",e,");
+                            */
                         }
                         lastDirectionEncoders = directionEncoders;
-                        last8segmentEncoder = _8segmentEncoder;
                         
 		}
 
@@ -329,7 +332,7 @@ public:
      endLineLeftAPin = 0;
      endLineRightAPin = 1;
      filterValueLeft = 730;
-     filterValueRight = 740;
+     filterValueRight = 730;
      row = 0;
      started = false;
   }
@@ -382,6 +385,7 @@ private:
   int* rowEnd;
   String* _status;
   char buf[24];
+  unsigned long lastSendTimeStamp;
 public:
    communication(){}
    ~communication(){}
@@ -392,28 +396,33 @@ public:
      mySelenoids = _mySelenoids;
      _status = __status;
      rowEnd = _rowEnd;
+     lastSendTimeStamp = millis();
    }
    
    void loop(){
      sendSerialToComputer();
-     receiveSerialFromComputer();
+     //receiveSerialFromComputer();
    }
    
    // send data to OF
+   
    void sendSerialToComputer(){
-    Serial.print(",s,");
-    Serial.print(myEncoders->segmentPosition);
-    Serial.print(",");
-    Serial.print(myEndlines->row);
-    Serial.print(",");
-    Serial.print(*rowEnd);
-    Serial.print(",");
-    Serial.print(mySelenoids->_16selenoids);
-    Serial.print(",");
-    Serial.print(*_status);
-    Serial.print(",");
-    Serial.print(myEncoders->headDirection);
-    Serial.println(",e,");
+    if(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder){
+      lastSendTimeStamp = millis();
+      Serial.print(",s,");
+      Serial.print(myEncoders->segmentPosition);
+      Serial.print(",");
+      Serial.print(myEndlines->row);
+      //Serial.print(",");
+      //Serial.print(*rowEnd);
+      //Serial.print(",");
+      //Serial.print(mySelenoids->_16selenoids);
+      Serial.print(",");
+      Serial.print(*_status);
+      Serial.print(",");
+      Serial.print(myEncoders->headDirection);
+      Serial.println(",e,");
+    }
   }
   
   // get data from OF
@@ -474,7 +483,7 @@ public:
   void GetString(char *buf, int bufsize)
   {
       int i;
-      
+      //if(Serial.available()> 40){
       for (i=0; i<bufsize; ++i){
           int time = millis();
           while(Serial.available() == 0 && (millis()-time)<50);
@@ -491,6 +500,7 @@ public:
       //  Serial.write(buf[i]);
       //}
       Serial.flush();
+      //}
       //Serial.write("received\n");
   }
 };
@@ -510,6 +520,7 @@ byte myDataOut;
 void setup()
 { 
   //mySoundAlerts.setup();
+  
   mySelenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
@@ -521,9 +532,9 @@ void setup()
 
 void loop() {
   //mySoundAlerts.loop();
+  myCommunicator.loop();
   myEncoders.loop();
   myEndlines.loop();
-  myCommunicator.loop();
   mySelenoids.loop();
   //delay(10);
 } 
