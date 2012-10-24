@@ -321,8 +321,8 @@ private:
   int filterValueRight;
   int lastLeft;
   int lastRight;
-  boolean started;
 public:
+  boolean started;
   int * segmentPosition;
   int row;
   endLines(){}
@@ -407,20 +407,20 @@ public:
    // send data to OF
    
    void sendSerialToComputer(){
-    if(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder){
+    if(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder || (millis()-lastSendTimeStamp)>600 ){
       lastSendTimeStamp = millis();
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
       Serial.print(",");
-      Serial.print(myEndlines->row);
-      //Serial.print(",");
-      //Serial.print(*rowEnd);
-      //Serial.print(",");
-      //Serial.print(mySelenoids->_16selenoids);
-      Serial.print(",");
-      Serial.print(*_status);
+      if(myEndlines->started){ 
+        Serial.print('1');
+      }else{ 
+        Serial.print('0'); 
+      }
       Serial.print(",");
       Serial.print(myEncoders->headDirection);
+      Serial.print(",");
+      Serial.print(*_status);
       Serial.println(",e,");
     }
   }
@@ -536,9 +536,12 @@ void loop() {
   myEncoders.loop();
   myEndlines.loop();
   mySelenoids.loop();
-  //delay(10);
 } 
 
-
+void resetToStartNewPattern(){
+  if(_status == "reseat"){
+    _status = "ready";
+  }
+}
 
 
