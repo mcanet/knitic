@@ -23,8 +23,8 @@ String status = "";
 boolean loadPattern = false;
 
 PImage img;
-int cols = 60;
-int rows = 60;
+int cols = 0;
+int rows = 0;
 int[][] pixelArray; 
 float threshold = 127;
 String lastSerialData;

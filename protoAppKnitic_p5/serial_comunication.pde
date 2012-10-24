@@ -25,7 +25,7 @@ void sendAndReceiveSerial() {
     else {
       usbConected = true;
     }
-    //sendSerial();
+    sendSerial();
     receiveSerial();
   }
   catch(Exception e) {
@@ -44,20 +44,19 @@ void sendSerial() {
 
 void receiveSerial() {
   try {
-    if (myPort!=null && myPort.available()>0) {
-      println("Receive Serial___");
+    if(myPort!=null && myPort.available()>0) {
+      //println("Receive Serial___");
       String all = "";
       while (myPort.available()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
-      println(lastSerialData+all);
+      //println(lastSerialData+all);
       // get data from serial
       String[] values = split(lastSerialData+all, ',');
       
       int _start =-1;
       int _end =-1;
-
       // look for start inside string received
       for (int i=0;i<values.length;i++) {
         if (values[i].equals("s")) {
@@ -65,7 +64,7 @@ void receiveSerial() {
           break;
         }
       }
-      println("start:"+Integer.toString(_start));
+      //println("start:"+Integer.toString(_start));
       // look for end inside string received
       if(_start!=-1){
         for(int i=_start;i<values.length;i++) {
@@ -75,14 +74,14 @@ void receiveSerial() {
           }
         }
       }
-      println("end:"+Integer.toString(_end));
+      //println("end:"+Integer.toString(_end));
       // when we find start and end then take out variables
       if( _start!=-1 && _end!=-1  && _end > _start+4 ){
-        println("parsed");
+        //println("parsed");
         lastMessageReceivedFromSerial = millis();
         section = Integer.valueOf(values[_start+1]);
-        print("section:");
-        println(section);
+        //print("section:");
+        //println(section);
         endLineStarted = Integer.valueOf(values[_start+2]).equals("0");
         headDirection = Integer.valueOf(values[_start+3]);
         status = values[_start+4];
