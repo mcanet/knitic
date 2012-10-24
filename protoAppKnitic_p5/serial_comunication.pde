@@ -5,8 +5,7 @@ void setupSerialConnection() {
     // Open the port you are using at the rate you want:
     myPort = new Serial(this, Serial.list()[0], 28800);
     lastConnection = millis();
-  }
-  catch(Exception e) {
+  }catch(Exception e) {
   }
 }
 
@@ -27,16 +26,19 @@ void sendAndReceiveSerial() {
     }
     sendSerial();
     receiveSerial();
-  }
-  catch(Exception e) {
+  }catch(Exception e) {
   }
 }
 
 void sendSerial() {
   try {
-    String message = ",s,"+_16Selenoids+","+status+",e,";
-    myPort.write(message);
-    println("send serial");
+    if( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ){
+      String message = ",s,"+_16Selenoids+","+status+",e,";
+      myPort.write(message);
+      println("send serial");
+      lastMessageSendFromSerial = millis();
+    }
+    last16Selenoids = _16Selenoids;
   }
   catch(Exception e) {
   }
