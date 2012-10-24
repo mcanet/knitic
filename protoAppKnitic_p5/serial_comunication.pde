@@ -34,7 +34,13 @@ void sendAndReceiveSerial() {
 
 void sendSerial() {
   try {
-    String message = ",s,"+_16Selenoids+","+status+",e,";
+    String random16 = "";
+    for (int i=0; i<16; i++) {
+      random16 += (random(0, 2)<1)?"0":"1";
+    }
+
+    //String message = ",s,"+_16Selenoids+","+status+",e,";
+    String message = ",s,"+random16+","+status+",e,";
     myPort.write(message);
     println("send serial");
   }
@@ -44,17 +50,17 @@ void sendSerial() {
 
 void receiveSerial() {
   try {
-    if(myPort!=null && myPort.available()>0) {
+    if (myPort!=null && myPort.available()>0) {
       //println("Receive Serial___");
       String all = "";
-      while (myPort.available()>0) {
+      while (myPort.available ()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
       //println(lastSerialData+all);
       // get data from serial
       String[] values = split(lastSerialData+all, ',');
-      
+
       int _start =-1;
       int _end =-1;
       // look for start inside string received
@@ -66,9 +72,9 @@ void receiveSerial() {
       }
       //println("start:"+Integer.toString(_start));
       // look for end inside string received
-      if(_start!=-1){
-        for(int i=_start;i<values.length;i++) {
-          if(values[i].equals("e")) {
+      if (_start!=-1) {
+        for (int i=_start;i<values.length;i++) {
+          if (values[i].equals("e")) {
             _end =i;
             break;
           }
@@ -76,7 +82,7 @@ void receiveSerial() {
       }
       //println("end:"+Integer.toString(_end));
       // when we find start and end then take out variables
-      if( _start!=-1 && _end!=-1  && _end > _start+4 ){
+      if ( _start!=-1 && _end!=-1  && _end > _start+4 ) {
         //println("parsed");
         lastMessageReceivedFromSerial = millis();
         section = Integer.valueOf(values[_start+1]);
@@ -85,20 +91,21 @@ void receiveSerial() {
         endLineStarted = Integer.valueOf(values[_start+2]).equals("0");
         headDirection = Integer.valueOf(values[_start+3]);
         status = values[_start+4];
-        
+
         // get part message to other
-        if(_end+1<values.length){
-          for(int i=_end+1;i<values.length;i++){
+        if (_end+1<values.length) {
+          for (int i=_end+1;i<values.length;i++) {
             lastSerialData =","+values[i];
           }
         }
-      }else {
+      }
+      else {
         lastSerialData +=all;
       }
     }
   }
   catch(Exception e) {
-     println("ERROR in receive serial");
+    println("ERROR in receive serial");
   }
 }
 
