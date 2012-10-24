@@ -33,16 +33,21 @@ void sendAndReceiveSerial() {
 }
 
 void sendSerial() {
-  try {
-    String random16 = "";
-    for (int i=0; i<16; i++) {
-      random16 += (random(0, 2)<1)?"0":"1";
-    }
+  String random16 = "";
+  for (int i=0; i<16; i++) {
+    random16 += (random(0, 2)<1)?"0":"1";
+  }
 
-    //String message = ",s,"+_16Selenoids+","+status+",e,";
-    String message = ",s,"+random16+","+status+",e,";
-    myPort.write(message);
-    println("send serial");
+  try {
+    if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
+      //String message = ",s,"+_16Selenoids+","+status+",e,";
+      String message = ",s,"+random16+","+status+",e,";
+      myPort.write(message);
+      println("send serial");
+      lastMessageSendFromSerial = millis();
+    }
+    //last16Selenoids = _16Selenoids;
+    last16Selenoids = random16;
   }
   catch(Exception e) {
   }

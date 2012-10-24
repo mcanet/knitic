@@ -36,6 +36,8 @@ scrollBar myScrollBar;
 
 int lastConnection;
 int lastMessageReceivedFromSerial;
+int lastMessageSendFromSerial;
+String last16Selenoids;
 
 void setup(){
   size(1060,800);
