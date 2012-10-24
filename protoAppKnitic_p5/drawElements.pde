@@ -25,19 +25,19 @@ void display(){
   fill(255); 
   // columne left
   text("Row:"+Integer.toString(current_row),30,120);
-  text("Section: 200",30,170);
-  text("Stich: 200",30,220);
+  text("Section: "+Integer.toString(section),30,170);
+  text("Stich: "+Integer.toString(section*8),30,220);
   text("Width: "+Integer.toString(cols),30,320);  
   text("Height: "+Integer.toString(rows),30,370); 
   text("Left Stick: "+Integer.toString(leftStick),30,420);
-  text("Right Stick: "+Integer.toString(rightStick),30,470);  
+  text("Right Stick: "+Integer.toString(rightStick),30,470); 
   // columne right
   stroke(255);
   noFill();
   rect(855,140,180,35);
   rect(855,90,180,35);
   fill(255);
-  if(direction=="-"){ text("Direction: none",30,270); }else if(direction=="1"){ text("Direction: right",30,270); }else if(direction=="-1"){ text("Direction: left",650,30); }
+  if(headDirection==0){ text("Direction: none",30,270); }else if(headDirection==1){ text("Direction: right",30,270); }else if(headDirection==-1){ text("Direction: left",30,270); }
   if(usbConected){    text("USB: conected",865,120);}else{ text("USB: disconected",865,120); }
   if(status=="0"){    text("Status: stop",865,170); }else if(status=="1"){ text("Status: knitting",870,170); }
   noStroke();

@@ -11,14 +11,15 @@ Serial myPort;
 String selected;
 PImage kniticLogo;
 PFont laurentFont;
-String status = "0";
 int current_row = 200;
 int stich = 200;
 int section = 200;
-int leftStick = 0;
-int rightStick = 200;
+boolean endLineStarted = false;
+int leftStick = 100;
+int rightStick = 100;
+int headDirection = 0;
 String direction = "-";
-String action = "";
+String status = "";
 boolean loadPattern = false;
 
 PImage img;
@@ -49,13 +50,14 @@ void setup(){
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
   }
-  frameRate(25);
+  frameRate(30);
   myScrollBar = new scrollBar();
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
 }
 
 void draw(){
+  frame.setTitle("Knitic pattern manager v.01 F:"+Float.toString(frameRate));
   background(200,200,200);
   sendAndReceiveSerial();
   display();
@@ -79,7 +81,7 @@ void keyPressed(){
 
 void drawPattern(){
   pushMatrix();
-  translate(230+(leftStick*3),0);
+  translate(230+((100-leftStick)*3),0);
   int cubSize = 3;
   for(int x=0;x<cols;x++){
      for(int y=0;y<rows;y++){
@@ -112,18 +114,21 @@ void fillArrayWithImage(String imgPath){
     pixelArray = new int[cols][rows];
     myScrollBar.setupScrollBar();
     int restPixels = 200-cols;
-    leftStick = (restPixels/2);
-    rightStick = (restPixels/2);
-    if(leftStick+cols+rightStick !=200){
+    leftStick = 100-(restPixels/2);
+    rightStick = 100-(restPixels/2);
+    if( (100-leftStick)+cols+(100-rightStick) !=200){
       rightStick +=1;
     }
+    
     String userStartStick="";
     if(cols!=200) {
+      
       userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?",Integer.toString(leftStick));
-      if(userStartStick!=Integer.toString(leftStick)){
+      if(!userStartStick.equals(Integer.toString(leftStick))){
         leftStick = Integer.valueOf(userStartStick);
-        rightStick = 200 - leftStick;
+        rightStick = (cols+(100-leftStick))-100;
       }
+      
     }
     
     img.loadPixels(); 
@@ -141,5 +146,9 @@ void fillArrayWithImage(String imgPath){
 }
 
 
-
+void brain(){
+  if( endLineStarted ){
+    
+  }
+}
 
