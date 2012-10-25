@@ -33,21 +33,17 @@ void sendAndReceiveSerial() {
 }
 
 void sendSerial() {
-  String random16 = "";
-  for (int i=0; i<16; i++) {
-    random16 += (random(0, 2)<1)?"0":"1";
-  }
-
   try {
     if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
-      //String message = ",s,"+_16Selenoids+","+status+",e,";
-      String message = ",s,"+random16+","+status+",e,";
+      String message = ",s,"+_16Selenoids+","+status+",e,";
       myPort.write(message);
+      for (int i = message.length(); i<46; i++) {
+        myPort.write("e");
+      }
       //println("send serial");
       lastMessageSendFromSerial = millis();
     }
-    //last16Selenoids = _16Selenoids;
-    last16Selenoids = random16;
+    last16Selenoids = _16Selenoids;
   }
   catch(Exception e) {
   }
@@ -87,7 +83,7 @@ void receiveSerial() {
       }
       //println("end:"+Integer.toString(_end));
       // when we find start and end then take out variables
-      if( _start!=-1 && _end!=-1  && _end > _start+4 ){
+      if ( _start!=-1 && _end!=-1  && _end > _start+4 ) {
         lastMessageReceivedFromSerial = millis();
         section = Integer.valueOf(values[_start+1]);
         //print("section:");
@@ -95,14 +91,15 @@ void receiveSerial() {
         endLineStarted = !values[_start+2].equals("0");
         headDirection = Integer.valueOf(values[_start+3]);
         //status = values[_start+4];
-        
+
         // get part message to other
         if (_end+1<values.length) {
           for (int i=_end+1;i<values.length;i++) {
             lastSerialData =","+values[i];
           }
         }
-      }else{
+      }
+      else {
         lastSerialData +=all;
       }
     }
