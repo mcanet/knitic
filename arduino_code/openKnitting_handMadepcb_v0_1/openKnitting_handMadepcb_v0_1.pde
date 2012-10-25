@@ -348,7 +348,7 @@ public:
      if( analogRead(endLineLeftAPin) > filterValueLeft   ){
        if(!lastLeft){
          *encoderPos = 0;
-         *segmentPosition = 0;
+         *segmentPosition = 1;
          //Serial.print("inside left:");
          //Serial.print("change encoder0Pos:");
          //Serial.println(*encoderPos);
