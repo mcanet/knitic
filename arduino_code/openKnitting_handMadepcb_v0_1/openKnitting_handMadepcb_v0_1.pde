@@ -271,7 +271,7 @@ public:
       }
       else{
         headDirection = headDirection*-1;
-        Serial.println("change direction"+String(headDirection));
+        //Serial.println("change direction"+String(headDirection));
       }
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
@@ -409,8 +409,9 @@ private:
   selenoids* mySelenoids;
   int* rowEnd;
   String* _status;
-  char buf[24];
+  char buf[48];
   unsigned long lastSendTimeStamp;
+  int readCnt;
 public:
   communication(){
   }
@@ -424,10 +425,12 @@ public:
     _status = __status;
     rowEnd = _rowEnd;
     lastSendTimeStamp = millis();
+
+    readCnt = 0;
   }
 
   void loop(){
-    sendSerialToComputer();
+    //sendSerialToComputer();
     receiveSerialFromComputer();
   }
 
@@ -470,25 +473,41 @@ public:
     }
 
     // look for end inside string received
-    for(int i=sizeof(buf);i>0;i--){
+    for(int i=sizeof(buf)-1;i>0;i--){
       if(buf[i]=='e'){
         _end =i;
         break;
       }
     }
 
+    /*
+    Serial.print(start);
+     Serial.print("###");
+     Serial.print(_end);
+     Serial.print("\n");
+     Serial.flush();
+     */
     if(start!=-1 && _end!=-1 )
     {
+      Serial.write("#HAHASESESESEH#");
+      for (int i=0; i<sizeof(buf); ++i){
+        buf[i] = 'X';
+      }
+
       bool foundStart = false; 
       int id = 0;
       char * pch;
       pch = strtok (buf," ,.-");
       while (pch != NULL)
       {
-        if(foundStart)  id +=1;
-        if( pch != NULL && *pch=='s') foundStart = true;
+        //if(foundStart)  id +=1;
+        //if( pch != NULL && *pch=='s') foundStart = true;
         // get selenoids
-        if(id==1){
+        if(id == 0){
+          if(*pch=='s') 
+            id+=1;        
+        }
+        else if(id==1){
           for(int i=0; i<16;i++){
             if(pch[i]=='0'){
               mySelenoids->selenoidState[i] = false;
@@ -497,9 +516,11 @@ public:
               mySelenoids->selenoidState[i] = true;
             }
           }
+          id +=1;
         }
         // get status
-        if(id==2 ){
+        else if(id==2 ){
+          Serial.write("#HAHAHAHAHH#");
           //if(*pch=='1') _status = 1;
         }
         pch = strtok(NULL, " ,.-");
@@ -511,27 +532,76 @@ public:
 
   void GetString(char *buf, int bufsize)
   {
-    int i;
-    //if(Serial.available()> 40){
-    for (i=0; i<bufsize; ++i){
-      int time = millis();
-      while(Serial.available() == 0 && (millis()-time)<50);
-      buf[i] = Serial.read();
-      // stay until we found start message
-      if(buf[i] == 's'){
-        buf[0] = '-';
+    while(Serial.available()){
+      Serial.print(Serial.available(),DEC);
+      Serial.print("\n");
+      //Serial.print("AAA\n");
+      if(Serial.read() == 's'){
+        Serial.print("SS\n");
+        readCnt = 2;
+        buf[0] = ',';
         buf[1] = 's';
-        i=1; 
       }
-      if(buf[i] == 'e') break;// is it the terminator byte?
+      else if((readCnt>0)&&(readCnt < bufsize)){
+        buf[readCnt] = Serial.read();
+        readCnt++;
+        if(buf[readCnt-1] == 'e'){
+          Serial.print("EEE\n");
+          readCnt = -readCnt;
+        }
+        //Serial.print(readCnt,DEC);
+        //Serial.print("\n");
+      }
     }
 
-    for (i=0; i<bufsize; ++i){
-      Serial.write(buf[i]);
+    // check for end conditions
+    if(readCnt == bufsize){
+      readCnt = 0;
     }
-    Serial.write("received\n");
+    else if(readCnt < 0){
+      Serial.print("\n");
+      Serial.print("##");
+      for (int i=0; i<-readCnt; ++i){
+        Serial.print(buf[i]);
+      }
+      Serial.print("##\n");
+      Serial.flush();
+      readCnt = 0;
+    }
 
-    Serial.flush();
+
+    /*
+    int i;
+     //if(Serial.available()> 40){
+     for (i=0; i<bufsize; ++i){
+     int time = millis();
+     while(Serial.available() == 0 && (millis()-time)<50);
+     if(Serial.available()){
+     buf[i] = Serial.read();
+     // stay until we found start message
+     if(buf[i] == 's'){
+     buf[0] = '-';
+     buf[1] = 's';
+     i=1; 
+     }
+     if(buf[i] == 'e') {
+     // ???
+     while(Serial.available()>0) Serial.read();
+     break;// is it the terminator byte?
+     }
+     }
+     }
+     */
+    /*
+    Serial.write("\n");
+     Serial.write("##");
+     for (i=0; i<bufsize; ++i){
+     Serial.write(buf[i]);
+     }
+     Serial.write("##\n");
+     */
+
+    //Serial.flush();
 
   }
 };
@@ -574,6 +644,25 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
