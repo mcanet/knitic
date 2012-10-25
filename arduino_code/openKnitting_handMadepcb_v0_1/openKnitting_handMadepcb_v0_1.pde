@@ -367,35 +367,37 @@ public:
   }
 
   void loop(){
-     //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
-     if( analogRead(endLineLeftAPin) > filterValueLeft   ){
-       if(!lastLeft){
-         *encoderPos = 0;
-         *segmentPosition = 1;
-         //Serial.print("inside left:");
-         //Serial.print("change encoder0Pos:");
-         //Serial.println(*encoderPos);
-         started = true;
-       }
-       lastLeft = true;
-     }else{
-       lastLeft = false;
-     }
-     
-     //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
-     if( analogRead(endLineRightAPin) > filterValueRight ){
-       if(!lastRight){
-         *encoderPos = 200;
-         *segmentPosition = 25;
-         //Serial.print("inside right:");
-         //Serial.print("change encoder0Pos:");
-         //Serial.println(*encoderPos);
-         started = true;
-       }
-       lastRight = true;
-     }else{
-       lastRight = false;
-     }
+    //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
+    if( analogRead(endLineLeftAPin) > filterValueLeft   ){
+      if(!lastLeft){
+        *encoderPos = 0;
+        *segmentPosition = 1;
+        //Serial.print("inside left:");
+        //Serial.print("change encoder0Pos:");
+        //Serial.println(*encoderPos);
+        started = true;
+      }
+      lastLeft = true;
+    }
+    else{
+      lastLeft = false;
+    }
+
+    //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
+    if( analogRead(endLineRightAPin) > filterValueRight ){
+      if(!lastRight){
+        *encoderPos = 200;
+        *segmentPosition = 25;
+        //Serial.print("inside right:");
+        //Serial.print("change encoder0Pos:");
+        //Serial.println(*encoderPos);
+        started = true;
+      }
+      lastRight = true;
+    }
+    else{
+      lastRight = false;
+    }
   }
 
 };
@@ -423,12 +425,11 @@ public:
     _status = __status;
     rowEnd = _rowEnd;
     lastSendTimeStamp = millis();
-
     readCnt = 0;
   }
 
   void loop(){
-    //sendSerialToComputer();
+    sendSerialToComputer();
     receiveSerialFromComputer();
   }
 
@@ -456,7 +457,6 @@ public:
 
   // get data from OF
   void receiveSerialFromComputer(){
-    //if(myEncoders->encoder0Pos==-1) return;
     GetString(buf, sizeof(buf));
 
     int start = -1;
@@ -478,33 +478,19 @@ public:
       }
     }
 
-    /*
-    Serial.print(start);
-     Serial.print("###");
-     Serial.print(_end);
-     Serial.print("\n");
-     Serial.flush();
-     */
     if(start!=-1 && _end!=-1 )
     {
-      Serial.write("#HAHASESESESEH#");
-      for (int i=0; i<sizeof(buf); ++i){
-        buf[i] = 'X';
-      }
-
-      bool foundStart = false; 
       int id = 0;
       char * pch;
       pch = strtok (buf," ,.-");
       while (pch != NULL)
       {
-        //if(foundStart)  id +=1;
-        //if( pch != NULL && *pch=='s') foundStart = true;
-        // get selenoids
+        // get start
         if(id == 0){
           if(*pch=='s') 
             id+=1;        
         }
+        // get selenoids
         else if(id==1){
           for(int i=0; i<16;i++){
             if(pch[i]=='0'){
@@ -518,11 +504,17 @@ public:
         }
         // get status
         else if(id==2 ){
-          Serial.write("#HAHAHAHAHH#");
-          //if(*pch=='1') _status = 1;
+          *_status = pch;
+          id += 1;
         }
         pch = strtok(NULL, " ,.-");
       }
+
+      // clear buffer
+      for (int i=0; (i<sizeof(buf))&&(id==3); ++i){
+        buf[i] = 'X';
+      }
+
 
     }
 
@@ -530,43 +522,41 @@ public:
 
   void GetString(char *buf, int bufsize)
   {
-    while(Serial.available()){
-      Serial.print(Serial.available(),DEC);
-      Serial.print("\n");
-      //Serial.print("AAA\n");
-      if(Serial.read() == 's'){
-        Serial.print("SS\n");
-        readCnt = 2;
-        buf[0] = ',';
-        buf[1] = 's';
-      }
-      else if((readCnt>0)&&(readCnt < bufsize)){
-        buf[readCnt] = Serial.read();
+    // while there's stuff to read and we haven't seen an end
+    while(Serial.available() && (readCnt >= 0)){
+      char rc = Serial.read();
+      // waiting for start signal
+      if((readCnt == 0) && (rc == 's')){
+        buf[readCnt] = 's';
         readCnt++;
-        if(buf[readCnt-1] == 'e'){
-          Serial.print("EEE\n");
+      }
+      // have seen start signal
+      else if(readCnt>0){
+        buf[readCnt] = rc;
+        readCnt++;
+        if(rc == 'e'){
+          // signal to break while loop
           readCnt = -readCnt;
         }
-        //Serial.print(readCnt,DEC);
-        //Serial.print("\n");
+        else if(readCnt >= (bufsize-1)){
+          readCnt = 0;
+        }
       }
     }
 
     // check for end conditions
-    if(readCnt == bufsize){
-      readCnt = 0;
-    }
-    else if(readCnt < 0){
-      Serial.print("\n");
+    if(readCnt < 0){
+      /*
       Serial.print("##");
-      for (int i=0; i<-readCnt; ++i){
-        Serial.print(buf[i]);
-      }
-      Serial.print("##\n");
-      Serial.flush();
+       for (int i=0; i<abs(readCnt); ++i){
+       Serial.print(buf[i]);
+       Serial.flush();
+       }
+       Serial.println("##");
+       Serial.flush();
+       */
       readCnt = 0;
     }
-
 
     /*
     int i;
@@ -618,14 +608,13 @@ byte myDataOut;
 
 void setup()
 { 
-  //mySoundAlerts.setup();
-
+  Serial.begin(28800);
+  mySoundAlerts.setup();
   mySelenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
-  Serial.begin(28800);
   _status = "off";
 } 
 
@@ -642,20 +631,6 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
