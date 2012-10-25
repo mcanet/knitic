@@ -367,37 +367,35 @@ public:
   }
 
   void loop(){
-    //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
-    if( analogRead(endLineLeftAPin) > filterValueLeft   ){
-      if(!lastLeft){
-        *encoderPos = 0;
-        *segmentPosition = 0;
-        //Serial.print("inside left:");
-        //Serial.print("change encoder0Pos:");
-        //Serial.println(*encoderPos);
-        started = true;
-      }
-      lastLeft = true;
-    }
-    else{
-      lastLeft = false;
-    }
-
-    //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
-    if( analogRead(endLineRightAPin) > filterValueRight ){
-      if(!lastRight){
-        *encoderPos = 200;
-        *segmentPosition = 25;
-        //Serial.print("inside right:");
-        //Serial.print("change encoder0Pos:");
-        //Serial.println(*encoderPos);
-        started = true;
-      }
-      lastRight = true;
-    }
-    else{
-      lastRight = false;
-    }
+     //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
+     if( analogRead(endLineLeftAPin) > filterValueLeft   ){
+       if(!lastLeft){
+         *encoderPos = 0;
+         *segmentPosition = 1;
+         //Serial.print("inside left:");
+         //Serial.print("change encoder0Pos:");
+         //Serial.println(*encoderPos);
+         started = true;
+       }
+       lastLeft = true;
+     }else{
+       lastLeft = false;
+     }
+     
+     //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
+     if( analogRead(endLineRightAPin) > filterValueRight ){
+       if(!lastRight){
+         *encoderPos = 200;
+         *segmentPosition = 25;
+         //Serial.print("inside right:");
+         //Serial.print("change encoder0Pos:");
+         //Serial.println(*encoderPos);
+         started = true;
+       }
+       lastRight = true;
+     }else{
+       lastRight = false;
+     }
   }
 
 };
