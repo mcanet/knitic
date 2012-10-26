@@ -271,7 +271,7 @@ public:
       }
       else{
         headDirection = headDirection*-1;
-        //Serial.println("change direction"+String(headDirection));
+        Serial.println("change direction"+String(headDirection));
       }
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
@@ -514,10 +514,7 @@ public:
       for (int i=0; (i<sizeof(buf))&&(id==3); ++i){
         buf[i] = 'X';
       }
-
-
     }
-
   }
 
   void GetString(char *buf, int bufsize)
@@ -557,40 +554,6 @@ public:
        */
       readCnt = 0;
     }
-
-    /*
-    int i;
-     //if(Serial.available()> 40){
-     for (i=0; i<bufsize; ++i){
-     int time = millis();
-     while(Serial.available() == 0 && (millis()-time)<50);
-     if(Serial.available()){
-     buf[i] = Serial.read();
-     // stay until we found start message
-     if(buf[i] == 's'){
-     buf[0] = '-';
-     buf[1] = 's';
-     i=1; 
-     }
-     if(buf[i] == 'e') {
-     // ???
-     while(Serial.available()>0) Serial.read();
-     break;// is it the terminator byte?
-     }
-     }
-     }
-     */
-    /*
-    Serial.write("\n");
-     Serial.write("##");
-     for (i=0; i<bufsize; ++i){
-     Serial.write(buf[i]);
-     }
-     Serial.write("##\n");
-     */
-
-    //Serial.flush();
-
   }
 };
 //---------------------------------------------------------------------------------
@@ -621,8 +584,8 @@ void setup()
 void loop() {
   //mySoundAlerts.loop();
   myCommunicator.loop();
-  myEncoders.loop();
-  myEndlines.loop();
+  //myEncoders.loop();
+  //myEndlines.loop();
   mySelenoids.loop();
 } 
 

@@ -3,7 +3,7 @@ void addButtonsInSetup(){
   controlP5.addButton("Start",10,855,45,40,30).setId(1);
   controlP5.addButton("Stop",4,905,45,40,30).setId(2);
   controlP5.addButton("Open",4,955,45,40,30).setId(3);
-  //controlP5.
+  controlP5.addToggle("Repeating pattern mode",true,855,205,20,20).setId(4);
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -11,6 +11,7 @@ void controlEvent(ControlEvent theEvent) {
   if(theEvent.controller().id()==1) startknitting();
   if(theEvent.controller().id()==2) stopknitting();
   if(theEvent.controller().id()==3) openknittingPattern();
+  if(theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
 }
 
 void startknitting(){
