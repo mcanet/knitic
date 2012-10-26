@@ -22,7 +22,7 @@ int rightStick = -1;
 int headDirection = 0;
 int headDirectionForNewPixels;
 String direction = "-";
-String status = "";
+String status = "off";
 boolean loadPattern = false;
 boolean repedPatternMode = true;
 

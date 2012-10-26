@@ -409,8 +409,9 @@ private:
   selenoids* mySelenoids;
   int* rowEnd;
   String* _status;
-  char buf[24];
+  char buf[48];
   unsigned long lastSendTimeStamp;
+  int readCnt;
 public:
   communication(){
   }
@@ -424,10 +425,11 @@ public:
     _status = __status;
     rowEnd = _rowEnd;
     lastSendTimeStamp = millis();
+    readCnt = 0;
   }
 
   void loop(){
-    //sendSerialToComputer();
+    sendSerialToComputer();
     receiveSerialFromComputer();
   }
 
@@ -455,7 +457,6 @@ public:
 
   // get data from OF
   void receiveSerialFromComputer(){
-    //if(myEncoders->encoder0Pos==-1) return;
     GetString(buf, sizeof(buf));
 
     int start = -1;
@@ -470,7 +471,7 @@ public:
     }
 
     // look for end inside string received
-    for(int i=sizeof(buf);i>0;i--){
+    for(int i=sizeof(buf)-1;i>0;i--){
       if(buf[i]=='e'){
         _end =i;
         break;
@@ -479,16 +480,18 @@ public:
 
     if(start!=-1 && _end!=-1 )
     {
-      bool foundStart = false; 
       int id = 0;
       char * pch;
       pch = strtok (buf," ,.-");
       while (pch != NULL)
       {
-        if(foundStart)  id +=1;
-        if( pch != NULL && *pch=='s') foundStart = true;
+        // get start
+        if(id == 0){
+          if(*pch=='s') 
+            id+=1;        
+        }
         // get selenoids
-        if(id==1){
+        else if(id==1){
           for(int i=0; i<16;i++){
             if(pch[i]=='0'){
               mySelenoids->selenoidState[i] = false;
@@ -497,38 +500,60 @@ public:
               mySelenoids->selenoidState[i] = true;
             }
           }
+          id +=1;
         }
         // get status
-        if(id==2 ){
-          //if(*pch=='1') _status = 1;
+        else if(id==2 ){
+          *_status = pch;
+          id += 1;
         }
         pch = strtok(NULL, " ,.-");
-      }   
+      }
+
+      // clear buffer
+      for (int i=0; (i<sizeof(buf))&&(id==3); ++i){
+        buf[i] = 'X';
+      }
     }
   }
 
   void GetString(char *buf, int bufsize)
   {
-    int i;
-    //if(Serial.available()> 40){
-    for (i=0; i<bufsize; ++i){
-      int time = millis();
-      while(Serial.available() == 0 && (millis()-time)<50);
-      buf[i] = Serial.read();
-      // stay until we found start message
-      if(buf[i] == 's'){
-        buf[0] = '-';
-        buf[1] = 's';
-        i=1;
+    // while there's stuff to read and we haven't seen an end
+    while(Serial.available() && (readCnt >= 0)){
+      char rc = Serial.read();
+      // waiting for start signal
+      if((readCnt == 0) && (rc == 's')){
+        buf[readCnt] = 's';
+        readCnt++;
       }
-      if(buf[i] == 'e') break;// is it the terminator byte?
+      // have seen start signal
+      else if(readCnt>0){
+        buf[readCnt] = rc;
+        readCnt++;
+        if(rc == 'e'){
+          // signal to break while loop
+          readCnt = -readCnt;
+        }
+        else if(readCnt >= (bufsize-1)){
+          readCnt = 0;
+        }
+      }
     }
-    //for (i=0; i<bufsize; ++i){
-    //  Serial.write(buf[i]);
-    //}
-    Serial.flush();
-    //}
-    //Serial.write("received\n");
+
+    // check for end conditions
+    if(readCnt < 0){
+      /*
+      Serial.print("##");
+       for (int i=0; i<abs(readCnt); ++i){
+       Serial.print(buf[i]);
+       Serial.flush();
+       }
+       Serial.println("##");
+       Serial.flush();
+       */
+      readCnt = 0;
+    }
   }
 };
 //---------------------------------------------------------------------------------
@@ -546,14 +571,13 @@ byte myDataOut;
 
 void setup()
 { 
-  //mySoundAlerts.setup();
-
+  Serial.begin(28800);
+  mySoundAlerts.setup();
   mySelenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
   myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
-  Serial.begin(28800);
   _status = "off";
 } 
 

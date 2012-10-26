@@ -35,6 +35,9 @@ void sendSerial() {
     if( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ){
       String message = ",s,"+_16Selenoids+","+status+",e,";
       myPort.write(message);
+      for (int i = message.length(); i<46; i++) {
+        myPort.write("e");
+      }
       //println("send serial");
       lastMessageSendFromSerial = millis();
     }
@@ -49,14 +52,14 @@ void receiveSerial() {
     if(myPort!=null && myPort.available()>0) {
       //println("Receive Serial___");
       String all = "";
-      while (myPort.available()>0) {
+      while (myPort.available ()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
       //println(lastSerialData+all);
       // get data from serial
       String[] values = split(lastSerialData+all, ',');
-      
+
       int _start =-1;
       int _end =-1;
       // look for start inside string received
@@ -86,7 +89,7 @@ void receiveSerial() {
         endLineStarted = !values[_start+2].equals("0");
         headDirection = Integer.valueOf(values[_start+3]);
         //status = values[_start+4];
-        
+
         // get part message to other
         if(_end+1<values.length){
           for(int i=_end+1;i<values.length;i++){
@@ -99,7 +102,7 @@ void receiveSerial() {
     }
   }
   catch(Exception e) {
-     println("ERROR in receive serial");
+    println("ERROR in receive serial");
   }
 }
 
