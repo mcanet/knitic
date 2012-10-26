@@ -634,8 +634,3 @@ void resetToStartNewPattern(){
 
 
 
-
-
-
-
-
