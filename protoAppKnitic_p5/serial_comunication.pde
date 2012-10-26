@@ -52,7 +52,7 @@ void receiveSerial() {
     if(myPort!=null && myPort.available()>0) {
       //println("Receive Serial___");
       String all = "";
-      while (myPort.available ()>0) {
+      while (myPort.available()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
