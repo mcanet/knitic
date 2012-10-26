@@ -76,9 +76,9 @@ void draw16selenoids(){
   try{
   for(int i=0;i<16;i++){
     if( _16Selenoids.substring(i,i+1).equals("0") ){
-      fill(73,202,250);
+       fill(73,202,250);
     }else{
-      fill(0,0,0);
+       fill(0,0,0);
     }
     rect(2+i*10,3,5,5);
   }

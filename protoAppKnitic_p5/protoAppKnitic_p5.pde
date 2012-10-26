@@ -104,7 +104,7 @@ void drawPattern(){
   int cubSize = 3;
   for(int x=0;x<cols;x++){
      for(int y=0;y<rows;y++){
-       if(pixelArray[x][y]==1){
+       if(pixelArray[x][y]==0){
          fill(255);
        }else{
          fill(0);
@@ -155,9 +155,9 @@ void fillArrayWithImage(String imgPath){
       for (int x = 0; x <  cols; x++) {
         int loc = (cols-1)-x + y*cols;
         if (brightness(img.pixels[loc]) > threshold) {
-          pixelArray[x][y] = 1;
-        }else{
           pixelArray[x][y] = 0;
+        }else{
+          pixelArray[x][y] = 1;
         }
       }
     }
@@ -198,7 +198,6 @@ void brain(){
       
       if(current_row<rows && section>= floor(float(100-leftStick)/8) && section <= ceil(float(100+rightStick)/8) ){
         _16Selenoids = "";
-        
         if(headDirection==-1)leftDirection();
         if(headDirection==1)RightDirection();
         println(_16Selenoids);
@@ -213,50 +212,103 @@ void leftDirection(){
   if((section%2)!=1){
           for(int _x=0;_x<16;_x++){
            int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-           println(posXPixel);
+           //println(posXPixel);
            try{
            if(pixelArray[posXPixel][current_row]==1){
-             _16Selenoids +='1';
+             _16Selenoids =_16Selenoids+'1';
            }else{
-             _16Selenoids +='0';
+             _16Selenoids =_16Selenoids+'0';
            }
            }catch(Exception e) {
-             println("ERROR in pixels to selenoids");
-             _16Selenoids +='0';
+             //println("ERROR in pixels to selenoids");
+             _16Selenoids =_16Selenoids+'0';
            }
           }
         }else{
           for(int _x=0;_x<8;_x++){
            int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-           println(posXPixel);
+           //print("pixelX:");
+           //println(posXPixel);
            try{
            if(pixelArray[posXPixel][current_row]==1){
-             _16Selenoids +='1';
+             _16Selenoids =_16Selenoids+'1';
            }else{
-             _16Selenoids +='0';
+             _16Selenoids =_16Selenoids+'0';
            }
            }catch(Exception e) {
              println("ERROR in pixels to selenoids");
-             _16Selenoids +='0';
+             _16Selenoids =_16Selenoids+'0';
            }
           }
           for(int _x=-8;_x<0;_x++){
            int posXPixel = ((section-2)*8)+_x-(100-leftStick);
+           //print("pixelX:");
            println(posXPixel);
            try{
            if(pixelArray[posXPixel][current_row]==1){
-             _16Selenoids +='1';
+             _16Selenoids =_16Selenoids+'1';
            }else{
-             _16Selenoids +='0';
+             _16Selenoids =_16Selenoids+'0';
            }
            }catch(Exception e) {
              println("ERROR in pixels to selenoids");
-             _16Selenoids +='0';
+             _16Selenoids =_16Selenoids+'0';
            }
           }
         }
 }
 
 void RightDirection(){
-
+  if((section%2)!=1){
+    //print("section0-16");
+    println("section0");
+    for(int _x=8;_x<16;_x++){
+           int posXPixel = ((section-1)*8)+_x-(100-leftStick);
+           //print("pixelX:");
+           //println(posXPixel);
+           try{
+           if(pixelArray[posXPixel][current_row]==1){
+             _16Selenoids = _16Selenoids+'1';
+           }else{
+             _16Selenoids =_16Selenoids+'0';
+           }
+           }catch(Exception e) {
+             //println("ERROR in pixels to selenoids");
+             _16Selenoids =_16Selenoids+'0';
+           }
+    }
+    
+    for(int _x=0;_x<8;_x++){
+           int posXPixel = ((section-1)*8)+_x-(100-leftStick);
+           //println(posXPixel);
+           try{
+           if(pixelArray[posXPixel][current_row]==1){
+             _16Selenoids = _16Selenoids+'1';
+           }else{
+             _16Selenoids =_16Selenoids+'0';
+           }
+           }catch(Exception e) {
+             //println("ERROR in pixels to selenoids");
+             _16Selenoids =_16Selenoids+'0';
+           }
+    }
+  }else{
+    println("section1");
+    //print("section1-8firstNext-8second later");
+    for(int _x=0;_x<16;_x++){
+           int posXPixel = ((section-1)*8)+_x-(100-leftStick);
+           //print("pixelX:");
+           //println(posXPixel);
+           try{
+           if(pixelArray[posXPixel][current_row]==1){
+             _16Selenoids = _16Selenoids+'1';
+           }else{
+             _16Selenoids =_16Selenoids+'0';
+           }
+           }catch(Exception e) {
+             //println("ERROR in pixels to selenoids");
+             _16Selenoids =_16Selenoids+'0';
+           }
+    }
+  }
 }
