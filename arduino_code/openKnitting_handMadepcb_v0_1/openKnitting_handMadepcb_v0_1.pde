@@ -161,8 +161,10 @@ public:
 
     setShiftOut(dataPin, clockPin, dataSector2);   
     setShiftOut(dataPin, clockPin, dataSector1);
+
     //return the latch pin high to signal chip that it 
     //no longer needs to listen for information
+    digitalWrite(latchPin, 1);
   }
 
 };
