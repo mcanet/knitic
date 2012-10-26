@@ -24,6 +24,7 @@ int headDirectionForNewPixels;
 String direction = "-";
 String status = "";
 boolean loadPattern = false;
+boolean repedPatternMode = true;
 
 PImage img;
 int cols = -1;
@@ -184,6 +185,7 @@ void brain() {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "left";
+      if(current_row>rows && repedPatternMode==true) rows=0;
     }
 
     if (lastSection != section && headDirectionForNewPixels==headDirection) {
@@ -227,8 +229,7 @@ void leftDirection() {
         _16Selenoids =_16Selenoids+'0';
       }
     }
-  }
-  else {
+  }else {
     for (int _x=0;_x<8;_x++) {
       int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       //print("pixelX:");
