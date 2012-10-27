@@ -15,6 +15,7 @@ private:
   int dataSector2;
   int dataArray[8];
   int dataArraypos[8];
+  long lastArrayWrite;
 
   //Pin connected to ST_CP of 74HC595
   int latchPin;
@@ -68,6 +69,11 @@ public:
 
       //Sets the pin to HIGH or LOW depending on pinState
       digitalWrite(myDataPin, pinState);
+      // hold data before clocking it in
+      for(int k=0, j=0; k<400; k++){
+        j += k;
+      }
+
       //register shifts bits on upstroke of clock pin  
       digitalWrite(myClockPin, 1);
       //zero the data pin after shift to prevent bleed through
@@ -90,6 +96,8 @@ public:
 
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
+    pinMode(clockPin, OUTPUT);
+    pinMode(dataPin, OUTPUT);
 
     // Holds the actual order in which the bits have to be shifted in
     dataArraypos[0] = 0x06;
@@ -115,35 +123,54 @@ public:
       for(int i=0;i<16;i++){
       selenoidState[i] = (_16selenoids.charAt(i) != '0');
     }
+
+    lastArrayWrite = millis();
+
   }
 
   void loop(){
-    //Serial.write("loop_selenoids\n");
-    dataSector1 = 0x00;
-    dataSector2 = 0x00;
+    if(millis()-lastArrayWrite > 200){
+      //Serial.write("loop_selenoids\n");
+      dataSector1 = 0x00;
+      dataSector2 = 0x00;
 
-    for (int j = 0; j < 8; ++j) {
-      //load the light sequence you want from array
-      if(selenoidState[j]==true){
-        dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
+      //ground latchPin and hold low for as long as you are transmitting
+      digitalWrite(latchPin, 0);
+      //move 'em out
+
+      setShiftOut(dataPin, clockPin, dataSector2);   
+      setShiftOut(dataPin, clockPin, dataSector1);
+
+      //return the latch pin high to signal chip that it 
+      //no longer needs to listen for information
+      digitalWrite(latchPin, 1);
+
+
+
+      for (int j = 0; j < 8; ++j) {
+        //load the light sequence you want from array
+        if(selenoidState[j]==true){
+          dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
+        }
+        if(selenoidState[j+8]==true){
+          dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
+        }  
       }
-      if(selenoidState[j+8]==true){
-        dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
-      }  
+
+      //ground latchPin and hold low for as long as you are transmitting
+      digitalWrite(latchPin, 0);
+      //move 'em out
+
+      setShiftOut(dataPin, clockPin, dataSector2);   
+      setShiftOut(dataPin, clockPin, dataSector1);
+
+      //return the latch pin high to signal chip that it 
+      //no longer needs to listen for information
+      digitalWrite(latchPin, 1);
+      
+      lastArrayWrite = millis();
     }
-
-    //ground latchPin and hold low for as long as you are transmitting
-    digitalWrite(latchPin, 0);
-    //move 'em out
-
-    setShiftOut(dataPin, clockPin, dataSector2);   
-    setShiftOut(dataPin, clockPin, dataSector1);
-
-    //return the latch pin high to signal chip that it 
-    //no longer needs to listen for information
-    digitalWrite(latchPin, 1);
   }
-
 };
 //---------------------------------------------------------------------------------
 class encoders{
@@ -572,6 +599,9 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
+
+
 
 
 
