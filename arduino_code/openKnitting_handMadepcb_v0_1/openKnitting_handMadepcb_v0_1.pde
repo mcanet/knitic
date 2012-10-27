@@ -13,10 +13,8 @@ class selenoids{
 private:
   int dataSector1;
   int dataSector2;
-  int dataArray1[8];
-  int dataArray2[8];
-  int dataArraypos1[8]; 
-  int dataArraypos2[8]; 
+  int dataArray[8];
+  int dataArraypos[8];
 
   //Pin connected to ST_CP of 74HC595
   int latchPin;
@@ -88,55 +86,34 @@ public:
     //Pin connected to DS of 74HC595
     dataPin = 11;
 
-    _16selenoids = "0110101010101011";
+    _16selenoids = "1111111111111111";
 
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
 
-    // 
-    dataArraypos1[0] = 0x06;
-    dataArraypos1[1] = 0x05;
-    dataArraypos1[2] = 0x04;
-    dataArraypos1[3] = 0x03;
-    dataArraypos1[4] = 0x02;
-    dataArraypos1[5] = 0x01;
-    dataArraypos1[6] = 0x00;
-    dataArraypos1[7] = 0x07;
-
-    dataArraypos2[0] = 0x06;
-    dataArraypos2[1] = 0x05;
-    dataArraypos2[2] = 0x04;
-    dataArraypos2[3] = 0x03;
-    dataArraypos2[4] = 0x02;
-    dataArraypos2[5] = 0x01;
-    dataArraypos2[6] = 0x00;
-    dataArraypos2[7] = 0x07;
+    // Holds the actual order in which the bits have to be shifted in
+    dataArraypos[0] = 0x06;
+    dataArraypos[1] = 0x05;
+    dataArraypos[2] = 0x04;
+    dataArraypos[3] = 0x03;
+    dataArraypos[4] = 0x02;
+    dataArraypos[5] = 0x01;
+    dataArraypos[6] = 0x00;
+    dataArraypos[7] = 0x07;
 
     //Arduino doesn't seem to have a way to write binary straight into the code 
     //so these values are in HEX.  Decimal would have been fine, too. 
-    dataArray1[0] = 0x80; //10000000
-    dataArray1[1] = 0x40; //01000000
-    dataArray1[2] = 0x20; //00100000
-    dataArray1[3] = 0x10; //00010000
-    dataArray1[4] = 0x08; //00001000
-    dataArray1[5] = 0x04; //00000100
-    dataArray1[6] = 0x02; //00000010
-    dataArray1[7] = 0x01; //00000001
-
-
-      //Arduino doesn't seem to have a way to write binary straight into the code 
-    //so these values are in HEX.  Decimal would have been fine, too. 
-    dataArray2[0] = 0x80; //10000000
-    dataArray2[1] = 0x40; //01000000
-    dataArray2[2] = 0x20; //00100000
-    dataArray2[3] = 0x10; //00010000
-    dataArray2[4] = 0x08; //00001000
-    dataArray2[5] = 0x04; //00000100
-    dataArray2[6] = 0x02; //00000010
-    dataArray2[7] = 0x01; //00000001
+    dataArray[0] = 0x80; //10000000
+    dataArray[1] = 0x40; //01000000
+    dataArray[2] = 0x20; //00100000
+    dataArray[3] = 0x10; //00010000
+    dataArray[4] = 0x08; //00001000
+    dataArray[5] = 0x04; //00000100
+    dataArray[6] = 0x02; //00000010
+    dataArray[7] = 0x01; //00000001
 
       for(int i=0;i<16;i++){
-      selenoidState[i] = true;
+      selenoidState[i] = (_16selenoids.charAt(i) != '0');
     }
   }
 
@@ -148,10 +125,10 @@ public:
     for (int j = 0; j < 8; ++j) {
       //load the light sequence you want from array
       if(selenoidState[j]==true){
-        dataSector1 = dataSector1 ^ dataArray1[dataArraypos1[j]];
+        dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
       }
       if(selenoidState[j+8]==true){
-        dataSector2 = dataSector2 ^ dataArray2[dataArraypos2[j]];
+        dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
       }  
     }
 
@@ -596,6 +573,7 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
 
 
 
