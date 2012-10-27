@@ -563,8 +563,8 @@ void setup()
 void loop() {
   //mySoundAlerts.loop();
   myCommunicator.loop();
-  //myEncoders.loop();
-  //myEndlines.loop();
+  myEncoders.loop();
+  myEndlines.loop();
   mySelenoids.loop();
 } 
 
