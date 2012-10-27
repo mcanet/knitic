@@ -40,8 +40,8 @@ public:
     //internal function setup
     int i=0;
     int pinState;
-    pinMode(myClockPin, OUTPUT);
-    pinMode(myDataPin, OUTPUT);
+    //pinMode(myClockPin, OUTPUT);
+    //pinMode(myDataPin, OUTPUT);
 
     //clear everything out just in case to
     //prepare shift register for bit shifting
@@ -68,6 +68,8 @@ public:
 
       //Sets the pin to HIGH or LOW depending on pinState
       digitalWrite(myDataPin, pinState);
+      // hold data for 1ms before clocking it in
+      delay(1);
       //register shifts bits on upstroke of clock pin  
       digitalWrite(myClockPin, 1);
       //zero the data pin after shift to prevent bleed through
@@ -90,6 +92,8 @@ public:
 
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
+    pinMode(clockPin, OUTPUT);
+    pinMode(dataPin, OUTPUT);
 
     // Holds the actual order in which the bits have to be shifted in
     dataArraypos[0] = 0x06;
