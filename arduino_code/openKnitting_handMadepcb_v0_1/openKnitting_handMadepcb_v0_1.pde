@@ -202,7 +202,6 @@ public:
     else{ 
       directionEncoders += "OFF"; 
     }
-    //directionEncoders += "-";
     last8segmentEncoder = _8segmentEncoder;
     _8segmentEncoder = "";
     if(digitalRead(encoder0PinC)== HIGH){ 
@@ -250,13 +249,13 @@ public:
       }
       else{
         headDirection = headDirection*-1;
-        Serial.println("change direction"+String(headDirection));
+        //Serial.println("change direction"+String(headDirection));
       }
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
       encoder0Pos = segmentPosition*8;
       /*
-                            Serial.print(",s,");
+       Serial.print(",s,");
        Serial.print(headDirection);
        Serial.print(",");
        Serial.print(segmentPosition);
