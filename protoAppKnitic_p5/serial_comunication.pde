@@ -3,7 +3,7 @@ void setupSerialConnection() {
     println("try to connect");
     println(Serial.list()[0]);
     // Open the port you are using at the rate you want:
-    myPort = new Serial(this, Serial.list()[0], 28800);
+    myPort = new Serial(this, Serial.list()[0], 115200);
     lastConnection = millis();
   }catch(Exception e) {
   }
