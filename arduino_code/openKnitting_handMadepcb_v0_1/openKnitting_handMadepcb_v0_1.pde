@@ -576,7 +576,7 @@ byte myDataOut;
 
 void setup()
 { 
-  Serial.begin(28800);
+  Serial.begin(115200);
   mySoundAlerts.setup();
   mySelenoids.setup();
   myEncoders.setup();
