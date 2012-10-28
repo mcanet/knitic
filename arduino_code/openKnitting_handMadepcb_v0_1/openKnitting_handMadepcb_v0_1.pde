@@ -41,8 +41,8 @@ public:
     //internal function setup
     int i=0;
     int pinState;
-    pinMode(myClockPin, OUTPUT);
-    pinMode(myDataPin, OUTPUT);
+    //pinMode(myClockPin, OUTPUT);
+    //pinMode(myDataPin, OUTPUT);
 
     //clear everything out just in case to
     //prepare shift register for bit shifting
@@ -69,15 +69,9 @@ public:
 
       //Sets the pin to HIGH or LOW depending on pinState
       digitalWrite(myDataPin, pinState);
-      // hold data before clocking it in
-      for(int k=0, j=0; k<400; k++){
-        j += k;
-      }
 
       //register shifts bits on upstroke of clock pin  
       digitalWrite(myClockPin, 1);
-      //zero the data pin after shift to prevent bleed through
-      digitalWrite(myDataPin, 0);
     }
 
     //stop shifting
@@ -134,17 +128,11 @@ public:
       dataSector1 = 0x00;
       dataSector2 = 0x00;
 
-      //ground latchPin and hold low for as long as you are transmitting
+      // clear registers
       digitalWrite(latchPin, 0);
-      //move 'em out
-
       setShiftOut(dataPin, clockPin, dataSector2);   
       setShiftOut(dataPin, clockPin, dataSector1);
-
-      //return the latch pin high to signal chip that it 
-      //no longer needs to listen for information
       digitalWrite(latchPin, 1);
-
 
 
       for (int j = 0; j < 8; ++j) {
@@ -160,14 +148,12 @@ public:
       //ground latchPin and hold low for as long as you are transmitting
       digitalWrite(latchPin, 0);
       //move 'em out
-
       setShiftOut(dataPin, clockPin, dataSector2);   
       setShiftOut(dataPin, clockPin, dataSector1);
-
       //return the latch pin high to signal chip that it 
       //no longer needs to listen for information
       digitalWrite(latchPin, 1);
-      
+
       lastArrayWrite = millis();
     }
   }
@@ -599,6 +585,7 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
 
 
 
