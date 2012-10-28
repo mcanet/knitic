@@ -219,7 +219,7 @@ void leftDirection(){
       int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       //println(posXPixel);
       try {
-        if (pixelArray[posXPixel][current_row]==0) {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
           _16Selenoids =_16Selenoids+'1';
         }
         else {
@@ -237,7 +237,7 @@ void leftDirection(){
       //print("pixelX:");
       //println(posXPixel);
       try {
-        if (pixelArray[posXPixel][current_row]==0) {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
           _16Selenoids =_16Selenoids+'1';
         }
         else {
@@ -254,7 +254,7 @@ void leftDirection(){
       //print("pixelX:");
       println(posXPixel);
       try {
-        if (pixelArray[posXPixel][current_row]==0) {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
           _16Selenoids =_16Selenoids+'1';
         }
         else {
@@ -278,7 +278,7 @@ void RightDirection() {
       //print("pixelX:");
       //println(posXPixel);
       try {
-        if (pixelArray[posXPixel][current_row]==0) {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
           _16Selenoids = _16Selenoids+'1';
         }
         else {
@@ -315,7 +315,7 @@ void RightDirection() {
       //print("pixelX:");
       //println(posXPixel);
       try {
-        if (pixelArray[posXPixel][current_row]==0) {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
           _16Selenoids = _16Selenoids+'1';
         }
         else {
