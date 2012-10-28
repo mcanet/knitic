@@ -70,7 +70,10 @@ void draw() {
   sendAndReceiveSerial();
   display();
   drawPatternGrid();
-  if (loadPattern) drawPattern();
+  if (loadPattern){ 
+    drawPattern();
+    drawSelectedGrid();
+  }
   myScrollBar.mouseMoveScroll();
   brain();
 }
@@ -99,7 +102,7 @@ void keyPressed() {
   }
 }
 
-void drawPattern() {
+void drawPattern(){
   pushMatrix();
   translate(230+((100-leftStick)*3), 0);
   int cubSize = 3;
@@ -107,8 +110,7 @@ void drawPattern() {
     for (int y=0;y<rows;y++) {
       if (pixelArray[x][y]==0) {
         fill(255);
-      }
-      else {
+      }else {
         fill(0);
       }
       /*
@@ -211,7 +213,7 @@ void brain() {
   lastSection = section;
 }
 
-void leftDirection() {
+void leftDirection(){
   if ((section%2)!=1) {
     for (int _x=0;_x<16;_x++) {
       int posXPixel = ((section-1)*8)+_x-(100-leftStick);
