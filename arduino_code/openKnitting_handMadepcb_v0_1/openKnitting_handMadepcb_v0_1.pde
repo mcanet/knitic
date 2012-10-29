@@ -170,7 +170,6 @@ private:
   int encoder0PinCLast;
   String directionEncoders;
   String lastDirectionEncoders;
-  int counter;
   int headDirectionAverage;
 public:
   String _8segmentEncoder;   
@@ -191,7 +190,6 @@ public:
     last8segmentEncoder = "";
     lastDirectionEncoders = "";
     headDirectionAverage = 0;
-    counter = 0;
   }
 
   ~encoders(){
@@ -229,7 +227,6 @@ public:
     //directionEncoders +=_8segmentEncoder;
     // head direction
     if(lastDirectionEncoders!=directionEncoders){
-      counter += 1;
       if( 
       (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
         (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
@@ -273,9 +270,6 @@ public:
         headDirection = headDirection*-1;
         //Serial.println("change direction"+String(headDirection));
       }
-      Serial.print("c");
-      Serial.println(counter);
-      counter = 0;
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
       //encoder0Pos = segmentPosition*8;
