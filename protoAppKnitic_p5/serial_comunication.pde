@@ -37,9 +37,13 @@ void sendSerial() {
     if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
       String message = ",s,"+_16Selenoids+","+status+",e,";
       myPort.write(message);
+
+      String filler = "";
       for (int i = message.length(); i<46; i++) {
-        myPort.write("e");
+        filler += "e";
       }
+      myPort.write(filler);
+
       //println("send serial");
       lastMessageSendFromSerial = millis();
     }
