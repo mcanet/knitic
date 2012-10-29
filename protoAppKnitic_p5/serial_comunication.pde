@@ -5,7 +5,8 @@ void setupSerialConnection() {
     // Open the port you are using at the rate you want:
     myPort = new Serial(this, Serial.list()[0], 115200);
     lastConnection = millis();
-  }catch(Exception e) {
+  }
+  catch(Exception e) {
   }
 }
 
@@ -26,18 +27,23 @@ void sendAndReceiveSerial() {
     }
     sendSerial();
     receiveSerial();
-  }catch(Exception e) {
+  }
+  catch(Exception e) {
   }
 }
 
 void sendSerial() {
   try {
-    if( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ){
+    if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
       String message = ",s,"+_16Selenoids+","+status+",e,";
       myPort.write(message);
+
+      String filler = "";
       for (int i = message.length(); i<46; i++) {
-        myPort.write("e");
+        filler += "e";
       }
+      myPort.write(filler);
+
       //println("send serial");
       lastMessageSendFromSerial = millis();
     }
@@ -49,10 +55,10 @@ void sendSerial() {
 
 void receiveSerial() {
   try {
-    if(myPort!=null && myPort.available()>0) {
+    if (myPort!=null && myPort.available()>0) {
       //println("Receive Serial___");
       String all = "";
-      while (myPort.available()>0) {
+      while (myPort.available ()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
@@ -71,9 +77,9 @@ void receiveSerial() {
       }
       //println("start:"+Integer.toString(_start));
       // look for end inside string received
-      if(_start!=-1){
-        for(int i=_start;i<values.length;i++) {
-          if(values[i].equals("e")) {
+      if (_start!=-1) {
+        for (int i=_start;i<values.length;i++) {
+          if (values[i].equals("e")) {
             _end =i;
             break;
           }
@@ -81,7 +87,7 @@ void receiveSerial() {
       }
       //println("end:"+Integer.toString(_end));
       // when we find start and end then take out variables
-      if( _start!=-1 && _end!=-1  && _end > _start+4 ){
+      if ( _start!=-1 && _end!=-1  && _end > _start+4 ) {
         lastMessageReceivedFromSerial = millis();
         section = Integer.valueOf(values[_start+1]);
         //print("section:");
@@ -91,12 +97,13 @@ void receiveSerial() {
         //status = values[_start+4];
 
         // get part message to other
-        if(_end+1<values.length){
-          for(int i=_end+1;i<values.length;i++){
+        if (_end+1<values.length) {
+          for (int i=_end+1;i<values.length;i++) {
             lastSerialData =","+values[i];
           }
         }
-      }else{
+      }
+      else {
         lastSerialData +=all;
       }
     }
