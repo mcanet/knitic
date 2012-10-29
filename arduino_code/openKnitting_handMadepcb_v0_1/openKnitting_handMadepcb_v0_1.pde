@@ -435,7 +435,7 @@ public:
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
       Serial.print(",");
-      Serial.print(myEncoders->encoder0Pos);
+      Serial.print(myEncoders->encoder0Pos/4);
       Serial.print(",");
       if(myEndlines->started){ 
         Serial.print('1');
