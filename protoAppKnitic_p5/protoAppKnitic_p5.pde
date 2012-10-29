@@ -70,7 +70,7 @@ void draw() {
   sendAndReceiveSerial();
   display();
   drawPatternGrid();
-  if (loadPattern){ 
+  if (loadPattern) { 
     drawPattern();
     drawSelectedGrid();
   }
@@ -102,7 +102,7 @@ void keyPressed() {
   }
 }
 
-void drawPattern(){
+void drawPattern() {
   pushMatrix();
   translate(230+((100-leftStick)*3), 0);
   int cubSize = 3;
@@ -110,7 +110,8 @@ void drawPattern(){
     for (int y=0;y<rows;y++) {
       if (pixelArray[x][y]==0) {
         fill(255);
-      }else {
+      }
+      else {
         fill(0);
       }
       /*
@@ -187,7 +188,7 @@ void brain() {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "left";
-      if(current_row>rows && repedPatternMode==true) rows=0;
+      if (current_row>rows && repedPatternMode==true) rows=0;
     }
 
     if (lastSection != section && headDirectionForNewPixels==headDirection) {
@@ -213,7 +214,7 @@ void brain() {
   lastSection = section;
 }
 
-void leftDirection(){
+void leftDirection() {
   if ((section%2)!=1) {
     for (int _x=0;_x<16;_x++) {
       int posXPixel = ((section-1)*8)+_x-(100-leftStick);
@@ -231,7 +232,8 @@ void leftDirection(){
         _16Selenoids =_16Selenoids+'0';
       }
     }
-  }else {
+  }
+  else {
     for (int _x=0;_x<8;_x++) {
       int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       //print("pixelX:");
@@ -307,7 +309,8 @@ void RightDirection() {
         _16Selenoids =_16Selenoids+'0';
       }
     }
-  }else{
+  }
+  else {
     println("section1");
     //print("section1-8firstNext-8second later");
     for (int _x=0;_x<16;_x++) {

@@ -139,7 +139,7 @@ void drawSelectedGrid() {
         print("<=");
         println(x);
       }
-      if( x>=((section-1)*8) && x<=((section+1)*8)) {
+      if ( x>=((section-1)*8) && x<=((section+1)*8)) {
         fill(243, 243, 1, 100);
         rect(x*cubSize, y*cubSize, cubSize, cubSize);
       }
