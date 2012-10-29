@@ -238,7 +238,7 @@ public:
         ){
         headDirectionAverage +=1;
         //Serial.println(directionEncoders+"-Left");
-        if(encoder0Pos != -1){
+        if((encoder0Pos != -1) && (encoder0Pos < 200)){
           encoder0Pos++;
         }
       }
@@ -251,7 +251,7 @@ public:
         ){
         headDirectionAverage -=1;
         //Serial.println(directionEncoders+"-Right");
-        if(encoder0Pos != -1){
+        if((encoder0Pos != -1) && (encoder0Pos > 0)){
           encoder0Pos--;
         }
       }
