@@ -177,6 +177,7 @@ public:
   String last8segmentEncoder;
   int segmentPosition;
   int encoder0Pos;
+  int lastEncoder0Pos;
   int headDirection;
   encoders(){
     encoder0PinA = 2;
@@ -184,6 +185,7 @@ public:
     encoder0PinC = 4;
     headDirection = 0;
     encoder0Pos = -1;
+    lastEncoder0Pos = -1;
     segmentPosition = -1;
     _8segmentEncoder = "";
     last8segmentEncoder = "";
@@ -236,6 +238,9 @@ public:
         ){
         headDirectionAverage +=1;
         //Serial.println(directionEncoders+"-Left");
+        if(encoder0Pos != -1){
+          encoder0Pos++;
+        }
       }
       else if( 
       (lastDirectionEncoders=="OFF-ON" && directionEncoders=="ON-ON") || 
@@ -246,6 +251,9 @@ public:
         ){
         headDirectionAverage -=1;
         //Serial.println(directionEncoders+"-Right");
+        if(encoder0Pos != -1){
+          encoder0Pos--;
+        }
       }
     }
 
@@ -266,7 +274,7 @@ public:
       }
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
-      encoder0Pos = segmentPosition*8;
+      //encoder0Pos = segmentPosition*8;
       /*
        Serial.print(",s,");
        Serial.print(headDirection);
@@ -278,11 +286,6 @@ public:
     lastDirectionEncoders = directionEncoders;
 
   }
-
-  int getPosition(){
-    return encoder0Pos;
-  }
-
 };
 //---------------------------------------------------------------------------------
 class soundAlerts{
@@ -427,10 +430,12 @@ public:
   // send data to OF
 
   void sendSerialToComputer(){
-    if(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder || (millis()-lastSendTimeStamp)>600 ){
+    if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>600 ){
       lastSendTimeStamp = millis();
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
+      Serial.print(",");
+      Serial.print(myEncoders->encoder0Pos);
       Serial.print(",");
       if(myEndlines->started){ 
         Serial.print('1');
@@ -443,6 +448,9 @@ public:
       Serial.print(",");
       Serial.print(*_status);
       Serial.println(",e,");
+
+      //
+      myEncoders->lastEncoder0Pos = myEncoders->encoder0Pos;
     }
   }
 
@@ -585,6 +593,9 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
+
+
 
 
 
