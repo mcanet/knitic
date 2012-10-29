@@ -37,7 +37,7 @@ void display() {
   else {
     text("Section: "+Integer.toString(section), 30, 170);
   }
-  if (section<0) {
+  if (stitch<0) {
     text("Stitch: -", 30, 220);
   }
   else {
