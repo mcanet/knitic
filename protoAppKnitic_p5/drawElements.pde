@@ -41,7 +41,6 @@ void display() {
     text("Stitch: -", 30, 220);
   }
   else {
-    //text("Stitch: "+Integer.toString((section-1)*8)+"-"+Integer.toString(section*8), 30, 220);
     text("Stitch: "+Integer.toString(stitch), 30, 220);
   }
   if (cols<0) {
