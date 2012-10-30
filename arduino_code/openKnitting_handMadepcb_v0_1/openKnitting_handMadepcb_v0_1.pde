@@ -236,7 +236,7 @@ public:
         ){
         headDirectionAverage +=1;
         //Serial.println(directionEncoders+"-Left");
-        if((encoder0Pos != -1) && (encoder0Pos < 200)){
+        if((encoder0Pos != -1) && (encoder0Pos/4 < 200)){
           encoder0Pos++;
         }
       }
@@ -378,7 +378,7 @@ public:
     //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
     if( analogRead(endLineRightAPin) > filterValueRight ){
       if(!lastRight){
-        *encoderPos = 200;
+        *encoderPos = 200*4;
         *segmentPosition = 25;
         //Serial.print("inside right:");
         //Serial.print("change encoder0Pos:");
