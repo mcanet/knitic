@@ -12,7 +12,7 @@ String selected;
 PImage kniticLogo;
 PFont laurentFont;
 int current_row = -1;
-int stich = -1;
+int stitch = -1;
 int section = -1;
 int lastSection = -1;
 boolean endLineStarted = false;

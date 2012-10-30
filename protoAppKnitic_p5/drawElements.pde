@@ -37,11 +37,11 @@ void display() {
   else {
     text("Section: "+Integer.toString(section), 30, 170);
   }
-  if (section<0) {
-    text("Stich: -", 30, 220);
+  if (stitch<0) {
+    text("Stitch: -", 30, 220);
   }
   else {
-    text("Stich: "+Integer.toString((section-1)*8)+"-"+Integer.toString(section*8), 30, 220);
+    text("Stitch: "+Integer.toString(stitch), 30, 220);
   }
   if (cols<0) {
     text("Width: -", 30, 320);
