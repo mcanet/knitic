@@ -170,13 +170,13 @@ private:
   int encoder0PinCLast;
   String directionEncoders;
   String lastDirectionEncoders;
-  int counter;
   int headDirectionAverage;
 public:
   String _8segmentEncoder;   
   String last8segmentEncoder;
   int segmentPosition;
   int encoder0Pos;
+  int lastEncoder0Pos;
   int headDirection;
   encoders(){
     encoder0PinA = 2;
@@ -184,12 +184,12 @@ public:
     encoder0PinC = 4;
     headDirection = 0;
     encoder0Pos = -1;
+    lastEncoder0Pos = -1;
     segmentPosition = -1;
     _8segmentEncoder = "";
     last8segmentEncoder = "";
     lastDirectionEncoders = "";
     headDirectionAverage = 0;
-    counter = 0;
   }
 
   ~encoders(){
@@ -227,7 +227,6 @@ public:
     //directionEncoders +=_8segmentEncoder;
     // head direction
     if(lastDirectionEncoders!=directionEncoders){
-      counter += 1;
       if( 
       (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
         (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
@@ -237,6 +236,9 @@ public:
         ){
         headDirectionAverage +=1;
         //Serial.println(directionEncoders+"-Left");
+        if((encoder0Pos != -1) && (encoder0Pos/4 < 200)){
+          encoder0Pos++;
+        }
       }
       else if( 
       (lastDirectionEncoders=="OFF-ON" && directionEncoders=="ON-ON") || 
@@ -247,6 +249,9 @@ public:
         ){
         headDirectionAverage -=1;
         //Serial.println(directionEncoders+"-Right");
+        if((encoder0Pos != -1) && (encoder0Pos > 0)){
+          encoder0Pos--;
+        }
       }
     }
 
@@ -265,12 +270,9 @@ public:
         headDirection = headDirection*-1;
         //Serial.println("change direction"+String(headDirection));
       }
-      Serial.print("c");
-      Serial.println(counter);
-      counter = 0;
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
-      encoder0Pos = segmentPosition*8;
+      //encoder0Pos = segmentPosition*8;
       /*
        Serial.print(",s,");
        Serial.print(headDirection);
@@ -282,11 +284,6 @@ public:
     lastDirectionEncoders = directionEncoders;
 
   }
-
-  int getPosition(){
-    return encoder0Pos;
-  }
-
 };
 //---------------------------------------------------------------------------------
 class soundAlerts{
@@ -381,7 +378,7 @@ public:
     //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
     if( analogRead(endLineRightAPin) > filterValueRight ){
       if(!lastRight){
-        *encoderPos = 200;
+        *encoderPos = 200*4;
         *segmentPosition = 25;
         //Serial.print("inside right:");
         //Serial.print("change encoder0Pos:");
@@ -431,10 +428,12 @@ public:
   // send data to OF
 
   void sendSerialToComputer(){
-    if(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder || (millis()-lastSendTimeStamp)>600 ){
+    if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>600 ){
       lastSendTimeStamp = millis();
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
+      Serial.print(",");
+      Serial.print(myEncoders->encoder0Pos/4);
       Serial.print(",");
       if(myEndlines->started){ 
         Serial.print('1');
@@ -447,6 +446,9 @@ public:
       Serial.print(",");
       Serial.print(*_status);
       Serial.println(",e,");
+
+      //
+      myEncoders->lastEncoder0Pos = myEncoders->encoder0Pos;
     }
   }
 
@@ -589,6 +591,9 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
+
+
 
 
 
