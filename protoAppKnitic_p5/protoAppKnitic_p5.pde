@@ -81,21 +81,27 @@ void draw() {
 void keyPressed() {
   if (key=='q') {
     section=0;
+    stitch=0;
+    current_row = 0;
     endLineStarted = true;
   }
   if (key=='w') {
+    current_row = 0;
     section=25;
+    stitch=200;
     endLineStarted = true;
   }
   if (key=='a') {
-    section-=1;
+    stitch-=1;
+    section = ceil(stitch/8);
     headDirection =-1; 
-    if (section<1) section=1;
+    if (stitch<1) stitch=1;
   }
   if (key=='s') {
-    section+=1;
+    stitch+=1;
+    section = ceil(stitch/8);
     headDirection =1; 
-    if (section>25) section=25;
+    if (stitch>200) stitch=200;
   }
   if (key=='o') {
     openknittingPattern();
