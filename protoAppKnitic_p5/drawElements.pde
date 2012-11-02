@@ -166,6 +166,12 @@ void draw16selenoids() {
         fill(0, 0, 0);
       }
       rect(2+i*10, 3, 5, 5);
+      if(stitch%16==i){
+        noFill();
+        stroke(255,0,0);
+        rect(2+i*10-1, 2, 6, 6);  
+        noStroke();
+      }
     }
   }
   catch(Exception e) {
