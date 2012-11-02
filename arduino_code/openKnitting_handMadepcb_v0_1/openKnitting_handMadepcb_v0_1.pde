@@ -94,14 +94,14 @@ public:
     pinMode(dataPin, OUTPUT);
 
     // Holds the actual order in which the bits have to be shifted in
-    dataArraypos[0] = 0x06;
-    dataArraypos[1] = 0x05;
-    dataArraypos[2] = 0x04;
-    dataArraypos[3] = 0x03;
-    dataArraypos[4] = 0x02;
-    dataArraypos[5] = 0x01;
-    dataArraypos[6] = 0x00;
-    dataArraypos[7] = 0x07;
+    dataArraypos[0] = 0x07;
+    dataArraypos[1] = 0x06;
+    dataArraypos[2] = 0x05;
+    dataArraypos[3] = 0x04;
+    dataArraypos[4] = 0x03;
+    dataArraypos[5] = 0x02;
+    dataArraypos[6] = 0x01;
+    dataArraypos[7] = 0x00;
 
     //Arduino doesn't seem to have a way to write binary straight into the code 
     //so these values are in HEX.  Decimal would have been fine, too. 
@@ -114,7 +114,7 @@ public:
     dataArray[6] = 0x02; //00000010
     dataArray[7] = 0x01; //00000001
 
-    for(int i=0;i<16;i++){
+      for(int i=0;i<16;i++){
       selenoidState[i] = (_16selenoids[i] != '0');
     }
 
@@ -596,6 +596,7 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
 
 
 
