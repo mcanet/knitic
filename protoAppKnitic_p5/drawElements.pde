@@ -188,14 +188,6 @@ void draw16selenoids() {
       }
       rect(2+(15-i)*10, 3, 5, 5);
       noStroke();
-      /*
-      if (stitch%16==i) {
-       noFill();
-       stroke(255, 0, 0);
-       rect(2+(15-i)*10-1, 2, 6, 6);  
-       noStroke();
-       }
-       */
     }
   }
   catch(Exception e) {

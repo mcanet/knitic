@@ -88,16 +88,18 @@ void keyPressed() {
   if (key=='w') {
     section=1;
     stitch=1;
-    current_row = 0;
+    current_row = -1;
     headDirection=1;
     endLineStarted = true;
+    lastEndLineStarted = false;
   }
   if (key=='q') {
-    current_row = 0;
+    current_row = -1;
     section=25;
     stitch=200;
     headDirection=-1;
     endLineStarted = true;
+    lastEndLineStarted = false;
   }
   if (key=='s' && endLineStarted) {
     stitch-=1;
@@ -174,9 +176,14 @@ void keyPressed() {
 }
 
 void drawPattern() {
+  
   pushMatrix();
   translate(230+((100-leftStick)*3), 0);
   int cubSize = 3;
+  noSmooth();
+  image(img,0,0,img.width*cubSize,img.height*cubSize);
+  smooth();
+  /*
   for (int x=0;x<cols;x++) {
     for (int y=0;y<rows;y++) {
       if (pixelArray[x][y]==0) {
@@ -185,15 +192,19 @@ void drawPattern() {
       else {
         fill(0);
       }
-      /*
-       if(insertingPixelsPattern && rowtPixelPointer==y && columntPixelPointer==x ){
-       fill(255,0,0);
-       }
-       */
       rect(x*cubSize, y*cubSize, cubSize, cubSize);
     }
+  }*/
+  for (int x=0;x<cols;x++) {
+    stroke(0);
+    line(x*cubSize,0,x*cubSize,rows*cubSize);
+  }
+  for (int y=0;y<rows;y++) {
+    stroke(0);
+    line(0,y*cubSize,cols*cubSize,y*cubSize);
   }
   popMatrix();
+  
 }
 
 void fillArrayWithImage(String imgPath) { 
@@ -206,6 +217,8 @@ void fillArrayWithImage(String imgPath) {
     lastsection = -1;
     section = -1;
     rows = img.height;
+    endLineStarted = false;
+    lastEndLineStarted = false;
     if (cols>0 && rows>0) loadPattern = true;
     pixelArray = new int[cols][rows];
     myScrollBar.setupScrollBar();
@@ -229,7 +242,7 @@ void fillArrayWithImage(String imgPath) {
     img.loadPixels(); 
     for (int y = 0; y <rows; y++) {
       for (int x = 0; x <  cols; x++) {
-        int loc = /*(cols-1)-*/x + y*cols;
+        int loc = (cols-1)-x + y*cols;
         if (brightness(img.pixels[loc]) > threshold) {
           pixelArray[x][y] = 0;
         }
@@ -277,7 +290,7 @@ void brain() {
        */
 
       //if (current_row<rows && section>= floor(float(100-leftStick)/8) && section <= ceil(float(100+rightStick)/8) ) {
-      if(section!=lastsection){
+      if (section!=lastsection) {
         _16Selenoids = "";
         if (headDirection==-1)RightDirection();
         if (headDirection==1)leftDirection();
@@ -286,10 +299,7 @@ void brain() {
         println(_16Selenoids);
         lastsection = section;
       }
-      //}
-      //else {
-      //  _16Selenoids = "9999999999999999";
-      //}//end rows if
+      //end rows if
     }
   }
   lastEndLineStarted = endLineStarted;
@@ -375,27 +385,10 @@ void RightDirection() {
 
 void leftDirection() {
   println("leftDirection");
-  if ((section%2)!=0) {
-    
+  if ((section%2)!=1) {
+
     println("section0");
-    for (int _x=0;_x<8;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      println(posXPixel);
-      try {
-        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids = _16Selenoids+'1';
-        }
-        else {
-          _16Selenoids =_16Selenoids+'0';
-        }
-      }
-      catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
-      }
-    }
-    for (int _x=-8;_x<0;_x++) {
+    for (int _x=8;_x<16;_x++) {
       //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print("pixelX:");
@@ -413,13 +406,28 @@ void leftDirection() {
         _16Selenoids =_16Selenoids+'9';
       }
     }
-
-    
+    for (int _x=0;_x<8;_x++) {
+      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
+      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      println(posXPixel);
+      try {
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
+          _16Selenoids = _16Selenoids+'1';
+        }
+        else {
+          _16Selenoids =_16Selenoids+'0';
+        }
+      }
+      catch(Exception e) {
+        println("ERROR in pixels to selenoids");
+        _16Selenoids =_16Selenoids+'9';
+      }
+    }
   }
   else {
     println("section1");
     //print("section1-8firstNext-8second later");
-    for (int _x=-7;_x<9;_x++) {
+    for (int _x=0;_x<16;_x++) {
       //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print("pixelX:");
