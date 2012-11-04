@@ -309,12 +309,13 @@ void getCurrent200pixels() {
 }
 
 
-void leftDirection() {
-  println("leftDirection");
+void RightDirection() {
+  println("rightDirection");
   if ((section%2)!=1) {
-    for (int _x=0;_x<16;_x++) {
+    println("section 1");
+    for (int _x=-8;_x<8;_x++) {
       //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-      int posXPixel =  -((section-1)*8)+(cols-_x)+(100-rightStick);
+      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       // -(8-1)*8-x
       println(posXPixel);
       try {
@@ -332,9 +333,10 @@ void leftDirection() {
     }
   }
   else {
+    println("section 0");
     for (int _x=0;_x<8;_x++) {
       //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-      int posXPixel =  -((section-1)*8)+(cols-_x)+(100-rightStick);
+      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print("pixelX:");
       println(posXPixel);
       try {
@@ -352,7 +354,7 @@ void leftDirection() {
     }
     for (int _x=-8;_x<0;_x++) {
       //int posXPixel = ((section-2)*8)+_x-(100-leftStick);
-      int posXPixel =  -((section-1)*8)+(cols-_x)+(100-rightStick);
+      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print("pixelX:");
       println(posXPixel);
       try {
@@ -371,8 +373,8 @@ void leftDirection() {
   }
 }
 
-void RightDirection() {
-  println("rightDirection");
+void leftDirection() {
+  println("leftDirection");
   if ((section%2)!=0) {
     
     println("section0");
@@ -419,7 +421,7 @@ void RightDirection() {
     //print("section1-8firstNext-8second later");
     for (int _x=-7;_x<9;_x++) {
       //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
-      int posXPixel =  -((section-1)*8)+(cols-_x)+(100-rightStick);
+      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print("pixelX:");
       println(posXPixel);
       try {

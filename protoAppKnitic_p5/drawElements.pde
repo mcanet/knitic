@@ -105,13 +105,12 @@ void display() {
   fill(16, 62, 104);
   rect(width-230, 0, 15, height);  
   rect(width-230, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
-  
 }
 
 void drawPatternGrid() {
   try {
     int sizePixel = 3;
-    stroke(7,146,253);
+    stroke(7, 146, 253);
     for (int j=0;j<200;j++) {
       line(230+j*sizePixel, 0, 230+j*sizePixel, height);
     }
@@ -160,21 +159,43 @@ void draw16selenoids() {
   try {
     for (int i=0;i<16;i++) {
       if ( _16Selenoids.substring(i, i+1).equals("1") ) {
+        if (stitch%16==i+1 || stitch%16==0 && i==15) {
+          stroke(255, 0, 0);
+        }
+        else {
+          stroke(0);
+        }
         fill(255, 255, 255);
       }
       else if ( _16Selenoids.substring(i, i+1).equals("0") ) {
+        if (stitch%16==i+1 || stitch%16==0 && i==15) {
+          stroke(255, 0, 0);
+        }
+        else {
+          stroke(0);
+        }
         fill(0, 0, 0);
       }
       else if ( _16Selenoids.substring(i, i+1).equals("9") ) {
+        noStroke();
+        if (stitch%16==i+1 || stitch%16==0 && i==15) {
+          stroke(255, 0, 0);
+        }
+        else {
+          stroke(73, 202, 250);
+        }
         fill(73, 202, 250);
       }
       rect(2+(15-i)*10, 3, 5, 5);
+      noStroke();
+      /*
       if (stitch%16==i) {
-        noFill();
-        stroke(255, 0, 0);
-        rect(2+(15-i)*10-1, 2, 6, 6);  
-        noStroke();
-      }
+       noFill();
+       stroke(255, 0, 0);
+       rect(2+(15-i)*10-1, 2, 6, 6);  
+       noStroke();
+       }
+       */
     }
   }
   catch(Exception e) {
