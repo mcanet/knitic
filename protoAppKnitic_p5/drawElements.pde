@@ -75,6 +75,8 @@ void display() {
   }
   text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 570);
   text("Right pixel: "+Integer.toString(((100+rightStick)/8)), 30, 630);
+  text(Integer.toString( -((section-1)*8)+(cols)+(100-rightStick)-16 ), 30, 700);
+  text("lastChangeHead:"+lastChangeHead, 30, 740);
   // columne right
   stroke(255);
   noFill();
@@ -85,10 +87,10 @@ void display() {
     text("Direction: none", 30, 270);
   }
   else if (headDirection==1) { 
-    text("Direction: right", 30, 270);
+    text("Direction: left", 30, 270);
   }
   else if (headDirection==-1) { 
-    text("Direction: left", 30, 270);
+    text("Direction: right", 30, 270);
   }
   if (usbConected) {    
     text("USB: conected", 865, 120);
@@ -97,22 +99,23 @@ void display() {
     text("USB: disconected", 865, 120);
   }
   text("Status: "+status, 865, 170);
+  text(_16Selenoids, 855, 310);
   noStroke();
   // scroll bar
   fill(16, 62, 104);
   rect(width-230, 0, 15, height);  
   rect(width-230, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
+  
 }
 
 void drawPatternGrid() {
   try {
     int sizePixel = 3;
+    stroke(7,146,253);
     for (int j=0;j<200;j++) {
-      stroke(255, 0, 0);
       line(230+j*sizePixel, 0, 230+j*sizePixel, height);
     }
     for (int g=0;g<400;g++) {
-      stroke(255, 0, 0);
       line(230, g*sizePixel, width-231, g*sizePixel);
     } 
     noStroke();
@@ -124,23 +127,20 @@ void drawPatternGrid() {
 
 void drawSelectedGrid() {
   pushMatrix();
-  translate(230, 0);
   int cubSize = 3;
+  translate(230 +cubSize*199, 0);
+
   try {
     int y = (rows-1)-current_row;
     for (int x=0;x<200;x++) {
-      if (x<16) {
-        println("comparation");
-        print((section-1)*8);
-        print(">=");
-        println(x);
-        print(section*8);
-        print("<=");
-        println(x);
-      }
-      if ( x>=((section-1)*8) && x<=((section+1)*8)) {
-        fill(243, 243, 1, 100);
-        rect(x*cubSize, y*cubSize, cubSize, cubSize);
+      if ( (headDirection==-1 && x>=((section-2)*8) && x<((section)*8)) 
+        || (headDirection==1 && x>=((section-1)*8) && x<((section+1)*8)) 
+        || (section==25 && x>=((section-2)*8) && x<((section)*8)) 
+        || (section==1 && x>=((section)*8) && x<((section+1)*8)) 
+        ) {
+        //fill(243, 243, 1, 100);
+        fill(255, 0, 0, 150);
+        rect(-(x*cubSize), y*cubSize, cubSize, cubSize);
       }
     }
   }
@@ -159,17 +159,20 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
-      if ( _16Selenoids.substring(i, i+1).equals("0") ) {
-        fill(73, 202, 250);
+      if ( _16Selenoids.substring(i, i+1).equals("1") ) {
+        fill(255, 255, 255);
       }
-      else {
+      else if ( _16Selenoids.substring(i, i+1).equals("0") ) {
         fill(0, 0, 0);
       }
-      rect(2+i*10, 3, 5, 5);
-      if(stitch%16==i){
+      else if ( _16Selenoids.substring(i, i+1).equals("9") ) {
+        fill(73, 202, 250);
+      }
+      rect(2+(15-i)*10, 3, 5, 5);
+      if (stitch%16==i) {
         noFill();
-        stroke(255,0,0);
-        rect(2+i*10-1, 2, 6, 6);  
+        stroke(255, 0, 0);
+        rect(2+(15-i)*10-1, 2, 6, 6);  
         noStroke();
       }
     }

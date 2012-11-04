@@ -35,7 +35,10 @@ void sendAndReceiveSerial() {
 void sendSerial() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
-      String message = ",s,"+_16Selenoids+","+status+",e,";
+      
+      String _16SelenoidsNew = _16Selenoids.replace('9','0');
+      String message = ",s,"+_16SelenoidsNew+","+status+",e,";
+      println(_16SelenoidsNew);
       myPort.write(message);
 
       String filler = "";
