@@ -97,7 +97,7 @@ void receiveSerial() {
         //println(section);
         
         stitch = Integer.valueOf(values[_start+2]);
-        section = int(stitch/4);
+        section = int(stitch/8);
         endLineStarted = !values[_start+3].equals("0");
         headDirection = Integer.valueOf(values[_start+4]);
         //status = values[_start+4];
