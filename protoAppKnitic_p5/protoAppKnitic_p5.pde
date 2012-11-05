@@ -180,6 +180,7 @@ void keyPressed() {
 }
 
 void fillArrayWithImage(String imgPath) { 
+  try{
   img = loadImage(imgPath);
   cols = img.width;
   if (cols>200) {
@@ -229,6 +230,9 @@ void fillArrayWithImage(String imgPath) {
         }
       }
     }
+  }
+  }catch(Exception e) {
+  
   }
 }
 
