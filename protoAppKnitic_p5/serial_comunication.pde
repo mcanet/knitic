@@ -92,11 +92,12 @@ void receiveSerial() {
       // when we find start and end then take out variables
       if ( _start!=-1 && _end!=-1  && _end > _start+5 ) {
         lastMessageReceivedFromSerial = millis();
-        section = Integer.valueOf(values[_start+1]);
+        //section = Integer.valueOf(values[_start+1]);
         //print("section:");
         //println(section);
+        
         stitch = Integer.valueOf(values[_start+2]);
-
+        section = int(stitch/4);
         endLineStarted = !values[_start+3].equals("0");
         headDirection = Integer.valueOf(values[_start+4]);
         //status = values[_start+4];
