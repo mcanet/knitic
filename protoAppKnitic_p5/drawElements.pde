@@ -107,14 +107,44 @@ void display() {
   rect(width-230, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
 }
 
+void drawPattern() {
+  pushMatrix();
+  translate(230+((100-leftStick)*sizePixel), 0);
+  if (img.height>800) { 
+    translate(0, (current_row*sizePixel)-posYOffSetPattern);
+  }
+  noSmooth();
+  image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
+  smooth();
+  for (int x=0;x<cols;x++) {
+    stroke(0);
+    line(x*sizePixel, 0, x*sizePixel, rows*sizePixel);
+  }
+  for (int y=0;y<rows;y++) {
+    stroke(0);
+    line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
+  }
+
+  popMatrix();
+}
+
+void drawPatternThumbnail() {
+  text("Thumbnail:", 855, 370);
+  if (loadPattern) {
+    noSmooth();
+    int h = img.height/4;
+    image(img, width-205, 400, img.width/4, h);
+    smooth();
+  }
+}
+
 void drawPatternGrid() {
   try {
-    int sizePixel = 3;
     stroke(7, 146, 253);
     for (int j=0;j<200;j++) {
       line(230+j*sizePixel, 0, 230+j*sizePixel, height);
     }
-    for (int g=0;g<400;g++) {
+    for (int g=0;g<267;g++) {
       line(230, g*sizePixel, width-231, g*sizePixel);
     } 
     noStroke();
@@ -128,7 +158,9 @@ void drawSelectedGrid() {
   pushMatrix();
   int cubSize = 3;
   translate(230 +cubSize*199, 0);
-
+  if (img.height>800) { 
+    translate(0, (current_row*sizePixel)-posYOffSetPattern);
+  }
   try {
     int y = (rows-1)-current_row;
     for (int x=0;x<200;x++) {

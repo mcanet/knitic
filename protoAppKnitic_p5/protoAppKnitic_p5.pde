@@ -25,6 +25,7 @@ String direction = "-";
 String status = "off";
 boolean loadPattern = false;
 boolean repedPatternMode = true;
+int sizePixel = 3;
 
 PImage img;
 int cols = -1;
@@ -48,6 +49,7 @@ String last16Selenoids;
 int [] currentPixels;
 
 int lastsection = -1;
+int posYOffSetPattern = 0;
 
 void setup() {
   size(1060, 800);
@@ -80,6 +82,7 @@ void draw() {
     drawPattern();
     drawSelectedGrid();
   }
+  //drawPatternThumbnail();
   myScrollBar.mouseMoveScroll();
   brain();
 }
@@ -124,87 +127,56 @@ void keyPressed() {
   if (key=='o') {
     openknittingPattern();
   }
-
-  if (key=='1') {
-    _16Selenoids = "1000000000000000";
-  }
-  if (key=='2') {
-    _16Selenoids = "0100000000000000";
-  }
-  if (key=='3') {
-    _16Selenoids = "0000000000000000";
-  }
-  if (key=='4') {
-    _16Selenoids = "0001000000000000";
-  }
-  if (key=='5') {
-    _16Selenoids = "0000100000000000";
-  }
-  if (key=='6') {
-    _16Selenoids = "0000010000000000";
-  }
-  if (key=='7') {
-    _16Selenoids = "0000001000000000";
-  }
-  if (key=='8') {
-    _16Selenoids = "0000000100000000";
-  }
-  if (key=='9') {
-    _16Selenoids = "0000000010000000";
-  }
-  if (key=='0') {
-    _16Selenoids = "0000000001000000";
-  }
-  if (key=='r') {
-    _16Selenoids = "0000000000100000";
-  }
-  if (key=='t') {
-    _16Selenoids = "0000000000010000";
-  }
-  if (key=='y') {
-    _16Selenoids = "0000000000001000";
-  }
-  if (key=='u') {
-    _16Selenoids = "0000000000000100";
-  }
-  if (key=='i') {
-    _16Selenoids = "0000000000000010";
-  }
-  if (key=='o') {
-    _16Selenoids = "0000000000000001";
-  }
-}
-
-void drawPattern() {
-  
-  pushMatrix();
-  translate(230+((100-leftStick)*3), 0);
-  int cubSize = 3;
-  noSmooth();
-  image(img,0,0,img.width*cubSize,img.height*cubSize);
-  smooth();
   /*
-  for (int x=0;x<cols;x++) {
-    for (int y=0;y<rows;y++) {
-      if (pixelArray[x][y]==0) {
-        fill(255);
-      }
-      else {
-        fill(0);
-      }
-      rect(x*cubSize, y*cubSize, cubSize, cubSize);
-    }
-  }*/
-  for (int x=0;x<cols;x++) {
-    stroke(0);
-    line(x*cubSize,0,x*cubSize,rows*cubSize);
-  }
-  for (int y=0;y<rows;y++) {
-    stroke(0);
-    line(0,y*cubSize,cols*cubSize,y*cubSize);
-  }
-  popMatrix();
-  
+  if (key=='1') {
+   _16Selenoids = "1000000000000000";
+   }
+   if (key=='2') {
+   _16Selenoids = "0100000000000000";
+   }
+   if (key=='3') {
+   _16Selenoids = "0000000000000000";
+   }
+   if (key=='4') {
+   _16Selenoids = "0001000000000000";
+   }
+   if (key=='5') {
+   _16Selenoids = "0000100000000000";
+   }
+   if (key=='6') {
+   _16Selenoids = "0000010000000000";
+   }
+   if (key=='7') {
+   _16Selenoids = "0000001000000000";
+   }
+   if (key=='8') {
+   _16Selenoids = "0000000100000000";
+   }
+   if (key=='9') {
+   _16Selenoids = "0000000010000000";
+   }
+   if (key=='0') {
+   _16Selenoids = "0000000001000000";
+   }
+   if (key=='r') {
+   _16Selenoids = "0000000000100000";
+   }
+   if (key=='t') {
+   _16Selenoids = "0000000000010000";
+   }
+   if (key=='y') {
+   _16Selenoids = "0000000000001000";
+   }
+   if (key=='u') {
+   _16Selenoids = "0000000000000100";
+   }
+   if (key=='i') {
+   _16Selenoids = "0000000000000010";
+   }
+   if (key=='o') {
+   _16Selenoids = "0000000000000001";
+   }
+   */
 }
 
 void fillArrayWithImage(String imgPath) { 
@@ -217,6 +189,12 @@ void fillArrayWithImage(String imgPath) {
     lastsection = -1;
     section = -1;
     rows = img.height;
+    if (img.height>750) { 
+      posYOffSetPattern = (img.height*sizePixel)-750;
+    }
+    else { 
+      posYOffSetPattern = 0;
+    }
     endLineStarted = false;
     lastEndLineStarted = false;
     if (cols>0 && rows>0) loadPattern = true;

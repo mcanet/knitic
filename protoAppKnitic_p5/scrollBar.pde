@@ -17,12 +17,10 @@ class scrollBar {
   }
 
   void mouseMoveScroll() {
-
     if (mouseX > (width-230) && mouseX < ((width-230)+15) && mouseY> posYscrollBar && mouseY<(posYscrollBar+heightYScrollBar) && mousePressed && notDragScroll ) {
       notDragScroll = false;
       posYDragScroll = posYscrollBar-mouseY;
     }
-
     if (notDragScroll && mousePressed) {
       posYscrollBar = mouseY + posYDragScroll;
     }
