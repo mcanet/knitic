@@ -220,7 +220,7 @@ void fillArrayWithImage(String imgPath) {
     img.loadPixels(); 
     for (int y = 0; y <rows; y++) {
       for (int x = 0; x <  cols; x++) {
-        int loc = (cols-1)-x + y*cols;
+        int loc = /*(cols-1)-*/x + y*cols;
         if (brightness(img.pixels[loc]) > threshold) {
           pixelArray[x][y] = 0;
         }
