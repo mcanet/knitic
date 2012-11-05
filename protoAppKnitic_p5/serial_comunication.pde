@@ -38,7 +38,7 @@ void sendSerial() {
       
       String _16SelenoidsNew = _16Selenoids.replace('9','0');
       String message = ",s,"+_16SelenoidsNew+","+status+",e,";
-      println(_16SelenoidsNew);
+      //println(_16SelenoidsNew);
       myPort.write(message);
 
       String filler = "";
@@ -53,6 +53,7 @@ void sendSerial() {
     last16Selenoids = _16Selenoids;
   }
   catch(Exception e) {
+    println("Error in send serial");
   }
 }
 
