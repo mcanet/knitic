@@ -278,7 +278,7 @@ void brain() {
         if (headDirection==1)leftDirection();
         //pixelFillToSelenoids();
         //getCurrent200pixels();
-        println(_16Selenoids);
+        //println(_16Selenoids);
         lastsection = section;
       }
       //end rows if
