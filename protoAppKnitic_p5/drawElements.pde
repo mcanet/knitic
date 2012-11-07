@@ -99,7 +99,7 @@ void display() {
     text("USB: disconected", 865, 120);
   }
   text("Status: "+status, 865, 170);
-  text(_16Selenoids, 855, 310);
+  text(_16Solenoids, 855, 310);
   noStroke();
   // scroll bar
   fill(16, 62, 104);
@@ -190,7 +190,7 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
-      if ( _16Selenoids.substring(i, i+1).equals("1") ) {
+      if ( _16Solenoids.substring(i, i+1).equals("1") ) {
         if (stitch%16==i+1 || stitch%16==0 && i==15) {
           stroke(255, 0, 0);
         }
@@ -199,7 +199,7 @@ void draw16selenoids() {
         }
         fill(255, 255, 255);
       }
-      else if ( _16Selenoids.substring(i, i+1).equals("0") ) {
+      else if ( _16Solenoids.substring(i, i+1).equals("0") ) {
         if (stitch%16==i+1 || stitch%16==0 && i==15) {
           stroke(255, 0, 0);
         }
@@ -208,7 +208,7 @@ void draw16selenoids() {
         }
         fill(0, 0, 0);
       }
-      else if ( _16Selenoids.substring(i, i+1).equals("9") ) {
+      else if ( _16Solenoids.substring(i, i+1).equals("9") ) {
         noStroke();
         if (stitch%16==i+1 || stitch%16==0 && i==15) {
           stroke(255, 0, 0);
@@ -223,7 +223,7 @@ void draw16selenoids() {
     }
   }
   catch(Exception e) {
-    _16Selenoids.length();
+    _16Solenoids.length();
   }
   popMatrix();
 }

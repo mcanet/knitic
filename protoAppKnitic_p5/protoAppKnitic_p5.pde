@@ -5,7 +5,7 @@ import javax.swing.JOptionPane;
 import controlP5.*;
 import processing.serial.*;
 
-String _16Selenoids = "9999999999999999";
+String _16Solenoids = "9999999999999999";
 // The serial port:
 Serial myPort;  
 String selected;
@@ -43,7 +43,7 @@ scrollBar myScrollBar;
 int lastConnection;
 int lastMessageReceivedFromSerial;
 int lastMessageSendFromSerial;
-String last16Selenoids;
+String last16Solenoids;
 
 
 int [] currentPixels;
@@ -129,52 +129,52 @@ void keyPressed() {
   }
   /*
   if (key=='1') {
-   _16Selenoids = "1000000000000000";
+   _16Solenoids = "1000000000000000";
    }
    if (key=='2') {
-   _16Selenoids = "0100000000000000";
+   _16Solenoids = "0100000000000000";
    }
    if (key=='3') {
-   _16Selenoids = "0000000000000000";
+   _16Solenoids = "0000000000000000";
    }
    if (key=='4') {
-   _16Selenoids = "0001000000000000";
+   _16Solenoids = "0001000000000000";
    }
    if (key=='5') {
-   _16Selenoids = "0000100000000000";
+   _16Solenoids = "0000100000000000";
    }
    if (key=='6') {
-   _16Selenoids = "0000010000000000";
+   _16Solenoids = "0000010000000000";
    }
    if (key=='7') {
-   _16Selenoids = "0000001000000000";
+   _16Solenoids = "0000001000000000";
    }
    if (key=='8') {
-   _16Selenoids = "0000000100000000";
+   _16Solenoids = "0000000100000000";
    }
    if (key=='9') {
-   _16Selenoids = "0000000010000000";
+   _16Solenoids = "0000000010000000";
    }
    if (key=='0') {
-   _16Selenoids = "0000000001000000";
+   _16Solenoids = "0000000001000000";
    }
    if (key=='r') {
-   _16Selenoids = "0000000000100000";
+   _16Solenoids = "0000000000100000";
    }
    if (key=='t') {
-   _16Selenoids = "0000000000010000";
+   _16Solenoids = "0000000000010000";
    }
    if (key=='y') {
-   _16Selenoids = "0000000000001000";
+   _16Solenoids = "0000000000001000";
    }
    if (key=='u') {
-   _16Selenoids = "0000000000000100";
+   _16Solenoids = "0000000000000100";
    }
    if (key=='i') {
-   _16Selenoids = "0000000000000010";
+   _16Solenoids = "0000000000000010";
    }
    if (key=='o') {
-   _16Selenoids = "0000000000000001";
+   _16Solenoids = "0000000000000001";
    }
    */
 }
@@ -262,7 +262,7 @@ void brain() {
 
       if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
         println("ADVANCING");
-        _16Selenoids = "";
+        _16Solenoids = "";
         if (headDirection==-1)rightDirection();
         if (headDirection==1)leftDirection();
         laststitch = stitch;
@@ -299,16 +299,16 @@ void rightDirection() {
       }
       println(posXPixel);
       try {
-        if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids =_16Selenoids+'1';
+        if (pixelArray[posXPixel][(rows-1)-current_row]==0 ) {
+          _16Solenoids =_16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
   }
@@ -328,15 +328,15 @@ void rightDirection() {
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids =_16Selenoids+'1';
+          _16Solenoids =_16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
     for (int _x=-8;_x<0;_x++) {
@@ -350,15 +350,15 @@ void rightDirection() {
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids =_16Selenoids+'1';
+          _16Solenoids =_16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
   }
@@ -379,15 +379,15 @@ void leftDirection() {
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids = _16Selenoids+'1';
+          _16Solenoids = _16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
     for (int _x=0;_x<8;_x++) {
@@ -400,15 +400,15 @@ void leftDirection() {
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids = _16Selenoids+'1';
+          _16Solenoids = _16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
   }
@@ -428,15 +428,15 @@ void leftDirection() {
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
-          _16Selenoids = _16Selenoids+'1';
+          _16Solenoids = _16Solenoids+'1';
         }
         else {
-          _16Selenoids =_16Selenoids+'0';
+          _16Solenoids =_16Solenoids+'0';
         }
       }
       catch(Exception e) {
-        println("ERROR in pixels to selenoids");
-        _16Selenoids =_16Selenoids+'9';
+        println("ERROR in pixels to solenoids");
+        _16Solenoids =_16Solenoids+'9';
       }
     }
   }
