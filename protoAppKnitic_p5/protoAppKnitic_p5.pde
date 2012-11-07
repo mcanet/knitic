@@ -48,7 +48,7 @@ String last16Selenoids;
 
 int [] currentPixels;
 
-int lastsection = -1;
+int laststitch = -1;
 int posYOffSetPattern = 0;
 
 void setup() {
@@ -180,59 +180,59 @@ void keyPressed() {
 }
 
 void fillArrayWithImage(String imgPath) { 
-  try{
-  img = loadImage(imgPath);
-  cols = img.width;
-  if (cols>200) {
-    JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels", "Alert from Knitic", 2);
-  }
-  else {
-    lastsection = -1;
-    section = -1;
-    rows = img.height;
-    if (img.height>750) { 
-      posYOffSetPattern = (img.height*sizePixel)-750;
+  try {
+    img = loadImage(imgPath);
+    cols = img.width;
+    if (cols>200) {
+      JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels", "Alert from Knitic", 2);
     }
-    else { 
-      posYOffSetPattern = 0;
-    }
-    endLineStarted = false;
-    lastEndLineStarted = false;
-    if (cols>0 && rows>0) loadPattern = true;
-    pixelArray = new int[cols][rows];
-    myScrollBar.setupScrollBar();
-    int restPixels = 200-cols;
-    leftStick = 100-(restPixels/2);
-    rightStick = 100-(restPixels/2);
-    if ( (100-leftStick)+cols+(100-rightStick) !=200) {
-      rightStick +=1;
-    }
-
-    String userStartStick="";
-    if (cols!=200) {
-
-      userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
-      if (!userStartStick.equals(Integer.toString(leftStick))) {
-        leftStick = Integer.valueOf(userStartStick);
-        rightStick = (cols+(100-leftStick))-100;
+    else {
+      laststitch = -1;
+      section = -1;
+      rows = img.height;
+      if (img.height>750) { 
+        posYOffSetPattern = (img.height*sizePixel)-750;
       }
-    }
+      else { 
+        posYOffSetPattern = 0;
+      }
+      endLineStarted = false;
+      lastEndLineStarted = false;
+      if (cols>0 && rows>0) loadPattern = true;
+      pixelArray = new int[cols][rows];
+      myScrollBar.setupScrollBar();
+      int restPixels = 200-cols;
+      leftStick = 100-(restPixels/2);
+      rightStick = 100-(restPixels/2);
+      if ( (100-leftStick)+cols+(100-rightStick) !=200) {
+        rightStick +=1;
+      }
 
-    img.loadPixels(); 
-    for (int y = 0; y <rows; y++) {
-      for (int x = 0; x <  cols; x++) {
-        int loc = /*(cols-1)-*/x + y*cols;
-        if (brightness(img.pixels[loc]) > threshold) {
-          pixelArray[x][y] = 0;
-        }
-        else {
-          pixelArray[x][y] = 1;
+      String userStartStick="";
+      if (cols!=200) {
+
+        userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
+        if (!userStartStick.equals(Integer.toString(leftStick))) {
+          leftStick = Integer.valueOf(userStartStick);
+          rightStick = (cols+(100-leftStick))-100;
         }
       }
+
+      img.loadPixels(); 
+      for (int y = 0; y <rows; y++) {
+        for (int x = 0; x <  cols; x++) {
+          int loc = /*(cols-1)-*/x + y*cols;
+          if (brightness(img.pixels[loc]) > threshold) {
+            pixelArray[x][y] = 0;
+          }
+          else {
+            pixelArray[x][y] = 1;
+          }
+        }
+      }
     }
   }
-  }catch(Exception e) {
-  
+  catch(Exception e) {
   }
 }
 
@@ -258,31 +258,17 @@ void brain() {
       if (current_row>rows && repedPatternMode==true) rows=0;
     }
 
-    if (lastSection != section && headDirectionForNewPixels==headDirection) {
-      println("ADVANCING");
-      //
-      /*
-      print(section);
-       print(">=");
-       print(floor((100-leftStick)/8));
-       print(" && ");
-       print(section);
-       print("=<");
-       println(ceil(float(100+rightStick)/8));
-       */
+    //if (lastSection != section ) {
 
-      //if (current_row<rows && section>= floor(float(100-leftStick)/8) && section <= ceil(float(100+rightStick)/8) ) {
-      if (section!=lastsection) {
+      if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
+        println("ADVANCING");
         _16Selenoids = "";
-        if (headDirection==-1)RightDirection();
+        if (headDirection==-1)rightDirection();
         if (headDirection==1)leftDirection();
-        //pixelFillToSelenoids();
-        //getCurrent200pixels();
-        //println(_16Selenoids);
-        lastsection = section;
+        laststitch = stitch;
       }
       //end rows if
-    }
+    //}
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
@@ -300,15 +286,17 @@ void getCurrent200pixels() {
   }
 }
 
-
-void RightDirection() {
+void rightDirection() {
   println("rightDirection");
   if ((section%2)!=1) {
     println("section 1");
     for (int _x=-8;_x<8;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      // -(8-1)*8-x
+      if (posXPixel<(200-stitch)) {
+        posXPixel = posXPixel+16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
@@ -327,8 +315,15 @@ void RightDirection() {
   else {
     println("section 0");
     for (int _x=0;_x<8;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      print(posXPixel);
+      print("<");
+      print((200-stitch));
+      if (posXPixel<(200-stitch)) {
+        posXPixel = posXPixel+16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       print("pixelX:");
       println(posXPixel);
       try {
@@ -345,8 +340,12 @@ void RightDirection() {
       }
     }
     for (int _x=-8;_x<0;_x++) {
-      //int posXPixel = ((section-2)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      if (posXPixel<(200-stitch)) {
+        posXPixel = posXPixel+16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       print("pixelX:");
       println(posXPixel);
       try {
@@ -368,11 +367,14 @@ void RightDirection() {
 void leftDirection() {
   println("leftDirection");
   if ((section%2)!=1) {
-
     println("section0");
     for (int _x=8;_x<16;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      if (posXPixel>(200-stitch)) {
+        posXPixel = posXPixel-16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       print("pixelX:");
       println(posXPixel);
       try {
@@ -389,8 +391,12 @@ void leftDirection() {
       }
     }
     for (int _x=0;_x<8;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      if (posXPixel>(200-stitch)) {
+        posXPixel = posXPixel-16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       println(posXPixel);
       try {
         if (pixelArray[posXPixel][(rows-1)-current_row]==0) {
@@ -408,10 +414,16 @@ void leftDirection() {
   }
   else {
     println("section1");
-    //print("section1-8firstNext-8second later");
     for (int _x=0;_x<16;_x++) {
-      //int posXPixel = ((section-1)*8)+_x-(100-leftStick);
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      print(posXPixel);
+      print(">");
+      println(200-stitch);
+      if ( int(posXPixel)>int(200-stitch) ) {
+        posXPixel = posXPixel-16;
+        print("pixel modify:");
+        println(posXPixel);
+      }
       print("pixelX:");
       println(posXPixel);
       try {

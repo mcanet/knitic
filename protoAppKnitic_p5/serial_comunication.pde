@@ -35,8 +35,8 @@ void sendAndReceiveSerial() {
 void sendSerial() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>200  || !last16Selenoids.equals(_16Selenoids) ) {
-      
-      String _16SelenoidsNew = _16Selenoids.replace('9','0');
+
+      String _16SelenoidsNew = _16Selenoids.replace('9', '0');
       String message = ",s,"+_16SelenoidsNew+","+status+",e,";
       //println(_16SelenoidsNew);
       myPort.write(message);
@@ -96,11 +96,11 @@ void receiveSerial() {
         //section = Integer.valueOf(values[_start+1]);
         //print("section:");
         //println(section);
-        
+
         stitch = Integer.valueOf(values[_start+2]);
         section = int(stitch/8);
         endLineStarted = !values[_start+3].equals("0");
-        headDirection = Integer.valueOf(values[_start+4]);
+        headDirection = -Integer.valueOf(values[_start+4]);
         //status = values[_start+4];
 
         // get part message to other
