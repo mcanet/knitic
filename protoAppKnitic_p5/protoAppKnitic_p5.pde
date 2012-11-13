@@ -12,9 +12,9 @@ String selected;
 PImage kniticLogo;
 PFont laurentFont;
 int current_row = -1;
-int stitch = -1;
-int section = -1;
-int lastSection = -1;
+int stitch = -999;
+int section = -999;
+int lastSection = -999;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 int leftStick = -1;
@@ -44,7 +44,6 @@ int lastConnection;
 int lastMessageReceivedFromSerial;
 int lastMessageSendFromSerial;
 String last16Solenoids;
-
 
 int [] currentPixels;
 
@@ -89,17 +88,17 @@ void draw() {
 
 void keyPressed() {
   if (key=='w') {
-    section=1;
-    stitch=1;
-    current_row = -1;
+    section=-4;
+    stitch=-32;
+    current_row = 0;
     headDirection=1;
     endLineStarted = true;
     lastEndLineStarted = false;
   }
   if (key=='q') {
-    current_row = -1;
-    section=25;
-    stitch=200;
+    current_row = 0;
+    section=29;
+    stitch=232;
     headDirection=-1;
     endLineStarted = true;
     lastEndLineStarted = false;
@@ -107,7 +106,7 @@ void keyPressed() {
   if (key=='s' && endLineStarted) {
     stitch-=1;
     if (stitch<1) { 
-      stitch=1;
+      stitch=32;
     }
     else {
       headDirection =-1;
@@ -116,8 +115,8 @@ void keyPressed() {
   }
   if (key=='a' && endLineStarted) {
     stitch+=1;
-    if (stitch>200) { 
-      stitch=200;
+    if (stitch>232) { 
+      stitch=232;
     }
     else {
       headDirection =1;
@@ -236,6 +235,8 @@ void fillArrayWithImage(String imgPath) {
   }
 }
 
+// right 32
+// left  32
 void brain() {
   // start position
   if (endLineStarted && !lastEndLineStarted) {
@@ -246,12 +247,12 @@ void brain() {
   // put new pixels
   if ( endLineStarted ) {
     // found expected direction
-    if ( lastChangeHead != "right" && ( stitch==1 /*|| (int((100+rightStick)/8)>section && headDirection==1)*/ ) ) {
+    if ( lastChangeHead != "right" && ( stitch==(-32) /*|| (int((100+rightStick)/8)>section && headDirection==1)*/ ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "right";
     }
-    if ( lastChangeHead != "left" &&  (stitch==200 /*|| (int((rightStick)/8)<section && headDirection==-1)*/ ) ) { 
+    if ( lastChangeHead != "left" &&  (stitch==(232) /*|| (int((rightStick)/8)<section && headDirection==-1)*/ ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
       lastChangeHead = "left";
@@ -260,39 +261,39 @@ void brain() {
 
     //if (lastSection != section ) {
 
-      if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
-        println("ADVANCING");
-        _16Solenoids = "";
-        if (headDirection==-1)rightDirection();
-        if (headDirection==1)leftDirection();
-        laststitch = stitch;
-      }
-      //end rows if
+    if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
+      println("ADVANCING");
+      _16Solenoids = "";
+      //if (headDirection==-1)rightDirection();
+      if (headDirection==1)leftDirection();
+      laststitch = stitch;
+    }
+    //end rows if
     //}
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
 }
-
+/*
 void getCurrent200pixels() {
-  for (int i=0;i<200;i++) {
-    if (current_row<rows && i>(100-leftStick)  && i<((100-leftStick)+cols)) {
-      int posXPixel = i-(100-leftStick);
-      currentPixels[i] = pixelArray[posXPixel][(rows-1)-current_row];
-    }
-    else {
-      currentPixels[i] = -1;
-    }
-  }
-}
-
+ for (int i=0;i<200;i++) {
+ if (current_row<rows && i>(100-leftStick)  && i<((100-leftStick)+cols)) {
+ int posXPixel = i-(100-leftStick);
+ currentPixels[i] = pixelArray[posXPixel][(rows-1)-current_row];
+ }
+ else {
+ currentPixels[i] = -1;
+ }
+ }
+ }
+ */
 void rightDirection() {
   println("rightDirection");
   if ((section%2)!=1) {
     println("section 1");
     for (int _x=-8;_x<8;_x++) {
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      if (posXPixel<(200-stitch)) {
+      if (posXPixel<(stitch-168) && posXPixel<=168) {
         posXPixel = posXPixel+16;
         print("pixel modify:");
         println(posXPixel);
@@ -318,8 +319,8 @@ void rightDirection() {
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
       print(posXPixel);
       print("<");
-      print((200-stitch));
-      if (posXPixel<(200-stitch)) {
+      print((stitch-168));
+      if (posXPixel<(stitch-168) && posXPixel<=168) {
         posXPixel = posXPixel+16;
         print("pixel modify:");
         println(posXPixel);
@@ -341,7 +342,7 @@ void rightDirection() {
     }
     for (int _x=-8;_x<0;_x++) {
       int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      if (posXPixel<(200-stitch)) {
+      if (posXPixel<(stitch-168) && posXPixel<=168) {
         posXPixel = posXPixel+16;
         print("pixel modify:");
         println(posXPixel);
@@ -363,14 +364,14 @@ void rightDirection() {
     }
   }
 }
-
+//------------------------------------------------------------
 void leftDirection() {
   println("leftDirection");
   if ((section%2)!=1) {
     println("section0");
     for (int _x=8;_x<16;_x++) {
-      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      if (posXPixel>(200-stitch)) {
+      int posXPixel =  -((section)*8)+(cols-1-_x)+(100-rightStick);
+      if (posXPixel>(232-stitch)) {
         posXPixel = posXPixel-16;
         print("pixel modify:");
         println(posXPixel);
@@ -391,8 +392,8 @@ void leftDirection() {
       }
     }
     for (int _x=0;_x<8;_x++) {
-      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
-      if (posXPixel>(200-stitch)) {
+      int posXPixel =  -((section)*8)+(cols-1-_x)+(100-rightStick);
+      if (posXPixel>(232-stitch)) {
         posXPixel = posXPixel-16;
         print("pixel modify:");
         println(posXPixel);
@@ -415,11 +416,11 @@ void leftDirection() {
   else {
     println("section1");
     for (int _x=0;_x<16;_x++) {
-      int posXPixel =  -((section-1)*8)+(cols-1-_x)+(100-rightStick);
+      int posXPixel =  -((section)*8)+(cols-1-_x)+(100-rightStick)+32;
       print(posXPixel);
       print(">");
-      println(200-stitch);
-      if ( int(posXPixel)>int(200-stitch) ) {
+      println(232-stitch);
+      if ( int(posXPixel)>int(232-stitch) ) {
         posXPixel = posXPixel-16;
         print("pixel modify:");
         println(posXPixel);
