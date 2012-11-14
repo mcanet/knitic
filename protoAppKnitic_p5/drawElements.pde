@@ -31,13 +31,13 @@ void display() {
   else { 
     text("Row:"+Integer.toString(current_row), 30, 120);
   }
-  if (section<0) {
+  if (section==-999) {
     text("Section: -", 30, 170);
   }
   else {
     text("Section: "+Integer.toString(section), 30, 170);
   }
-  if (stitch<0) {
+  if (stitch==-999) {
     text("Stitch: -", 30, 220);
   }
   else {
@@ -155,6 +155,11 @@ void drawPatternGrid() {
 }
 
 void drawSelectedGrid() {
+  int sectionM = section;
+  if (headDirection==-1) sectionM +=4;
+  if (headDirection==1)  sectionM -=4;
+  if (sectionM>25) sectionM =25;
+  if (sectionM<1)  sectionM =1; 
   pushMatrix();
   int cubSize = 3;
   translate(230 +cubSize*199, 0);
@@ -164,10 +169,10 @@ void drawSelectedGrid() {
   try {
     int y = (rows-1)-current_row;
     for (int x=0;x<200;x++) {
-      if ( (headDirection==-1 && x>=((section-2)*8) && x<((section)*8)) 
-        || (headDirection==1 && x>=((section-1)*8) && x<((section+1)*8)) 
-        || (section==25 && x>=((section-2)*8) && x<((section)*8)) 
-        || (section==1 && x>=((section)*8) && x<((section+1)*8)) 
+      if ( (headDirection==-1 && x>=((sectionM-2)*8) && x<((sectionM)*8)) 
+        || (headDirection==1 && x>=((sectionM-1)*8) && x<((sectionM+1)*8)) 
+        || (sectionM==25 && x>=((sectionM-2)*8) && x<((sectionM)*8)) 
+        || (sectionM==1 && x>=((sectionM)*8) && x<((sectionM+1)*8)) 
         ) {
         //fill(243, 243, 1, 100);
         fill(255, 0, 0, 150);
