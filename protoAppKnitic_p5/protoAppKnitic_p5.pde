@@ -50,6 +50,11 @@ int [] currentPixels;
 int laststitch = -1;
 int posYOffSetPattern = 0;
 
+int patternMouseX;
+int patternMouseY;
+int buttonWithBar = 230;
+boolean editPixels = false;
+
 void setup() {
   size(1060, 800);
   // List all the available serial ports:
@@ -84,6 +89,8 @@ void draw() {
   //drawPatternThumbnail();
   myScrollBar.mouseMoveScroll();
   brain();
+  showCursorPosition();
+  updateEditPixels();
 }
 
 void keyPressed() {
@@ -274,19 +281,7 @@ void brain() {
   lastEndLineStarted = endLineStarted;
   lastSection = section;
 }
-/*
-void getCurrent200pixels() {
- for (int i=0;i<200;i++) {
- if (current_row<rows && i>(100-leftStick)  && i<((100-leftStick)+cols)) {
- int posXPixel = i-(100-leftStick);
- currentPixels[i] = pixelArray[posXPixel][(rows-1)-current_row];
- }
- else {
- currentPixels[i] = -1;
- }
- }
- }
- */
+
 void rightDirection() {
   println("rightDirection");
   if ((section%2)!=1) {

@@ -5,6 +5,7 @@ void addButtonsInSetup() {
   controlP5.addButton("Open", 4, 955, 45, 40, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 205, 20, 20).setId(4);
   controlP5.addButton("Go to row", 4, 855, 255, 80, 30).setId(5);
+  controlP5.addButton("Start edit image", 4, 855, 455, 80, 30).setId(6);
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -19,6 +20,19 @@ void controlEvent(ControlEvent theEvent) {
       current_row = Integer.valueOf(new_current_row);
     }
   }
+  if(theEvent.controller().id()==6){
+    editPixels =!editPixels;
+  }
+}
+
+void updateEditPixels(){
+  if (editPixels) {
+      cursor(CROSS);
+      //controlP5.getId(6).setText("Stop edit image");
+    } else {
+      cursor(ARROW);
+      //controlP5.getId(6).setText("Start edit image");
+    }
 }
 
 void startknitting() {

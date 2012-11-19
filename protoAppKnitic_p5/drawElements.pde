@@ -1,12 +1,12 @@
 void display() {  
   noStroke();
   fill(73, 202, 250);
-  rect(0, 0, 230, 80);
+  rect(0, 0, buttonWithBar, 80);
   fill(155, 155, 155);
-  rect(width-230, 0, 230, height);
-  rect(0, 80, 230, height);
+  rect(width-buttonWithBar, 0, buttonWithBar, height);
+  rect(0, 80, buttonWithBar, height);
   fill(100, 100, 100);
-  rect(width-230, 0, 230, 80);
+  rect(width-buttonWithBar, 0, buttonWithBar, 80);
 
   image(kniticLogo, 0, -10);
   draw16selenoids();
@@ -103,13 +103,15 @@ void display() {
   noStroke();
   // scroll bar
   fill(16, 62, 104);
-  rect(width-230, 0, 15, height);  
-  rect(width-230, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
+  rect(width-buttonWithBar, 0, 15, height);  
+  rect(width-buttonWithBar, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
+  text("patternMouseX:"+Integer.toString(patternMouseX), 855, 510);
+  text("patternMouseY:"+Integer.toString(patternMouseY), 855, 550);
 }
 
 void drawPattern() {
   pushMatrix();
-  translate(230+((100-leftStick)*sizePixel), 0);
+  translate(buttonWithBar+((100-leftStick)*sizePixel), 0);
   if (img.height>800) { 
     translate(0, (current_row*sizePixel)-posYOffSetPattern);
   }
@@ -142,10 +144,10 @@ void drawPatternGrid() {
   try {
     stroke(7, 146, 253);
     for (int j=0;j<200;j++) {
-      line(230+j*sizePixel, 0, 230+j*sizePixel, height);
+      line(buttonWithBar+j*sizePixel, 0, buttonWithBar+j*sizePixel, height);
     }
     for (int g=0;g<267;g++) {
-      line(230, g*sizePixel, width-231, g*sizePixel);
+      line(buttonWithBar, g*sizePixel, width-231, g*sizePixel);
     } 
     noStroke();
     stroke(30, 30, 30);
@@ -162,7 +164,7 @@ void drawSelectedGrid() {
   if (sectionM<1)  sectionM =1; 
   pushMatrix();
   int cubSize = 3;
-  translate(230 +cubSize*199, 0);
+  translate(buttonWithBar+cubSize*199, 0);
   if (img.height>800) { 
     translate(0, (current_row*sizePixel)-posYOffSetPattern);
   }
