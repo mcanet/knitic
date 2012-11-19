@@ -1,59 +1,58 @@
 /*
 Prototipe Knitic
  */
+//------------------------------------------------------------------------------------
+// libraries
+//------------------------------------------------------------------------------------
 import javax.swing.JOptionPane;
 import controlP5.*;
 import processing.serial.*;
 
-String _16Solenoids = "9999999999999999";
-// The serial port:
+//------------------------------------------------------------------------------------
+// Global variables
+//------------------------------------------------------------------------------------
+ControlP5 controlP5;
+scrollBar myScrollBar;
 Serial myPort;  
-String selected;
 PImage kniticLogo;
+PImage img;
 PFont laurentFont;
+String last16Solenoids;
+String selected;
+String direction = "-";
+String status = "off";
+String lastSerialData;
+String lastChangeHead;
+String _16Solenoids = "9999999999999999";
+float threshold = 127;
+int sizePixel = 3;
+int cols = -1;
+int rows = -1;
+int[][] pixelArray; 
+int [] currentPixels;
 int current_row = -1;
 int stitch = -999;
 int section = -999;
 int lastSection = -999;
-boolean endLineStarted = false;
-boolean lastEndLineStarted = false;
 int leftStick = -1;
 int rightStick = -1;
 int headDirection = 0;
 int headDirectionForNewPixels;
-String direction = "-";
-String status = "off";
-boolean loadPattern = false;
-boolean repedPatternMode = true;
-int sizePixel = 3;
-
-PImage img;
-int cols = -1;
-int rows = -1;
-int[][] pixelArray; 
-float threshold = 127;
-String lastSerialData;
-String lastChangeHead;
-
-ControlP5 controlP5;
-boolean usbConected = false;
-
-scrollBar myScrollBar;
-
 int lastConnection;
 int lastMessageReceivedFromSerial;
 int lastMessageSendFromSerial;
-String last16Solenoids;
-
-int [] currentPixels;
-
 int laststitch = -1;
 int posYOffSetPattern = 0;
-
 int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
+boolean usbConected = false;
+boolean loadPattern = false;
+boolean repedPatternMode = true;
 boolean editPixels = false;
+boolean endLineStarted = false;
+boolean lastEndLineStarted = false;
+//------------------------------------------------------------------------------------
 
 void setup() {
   size(1060, 800);
