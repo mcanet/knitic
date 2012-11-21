@@ -19,7 +19,7 @@ PFont laurentFont;
 String last16Solenoids;
 String selected;
 String direction = "-";
-String status = "off";
+String status = "o";
 String lastSerialData;
 String lastChangeHead;
 String _16Solenoids = "9999999999999999";
@@ -75,8 +75,7 @@ void setup() {
 void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Float.toString(frameRate));
   background(200, 200, 200);
-  sendAndReceiveSerial();
-  
+  autoConnectAndReceiveSerial();
   display();
   drawPatternGrid();
   if (loadPattern) { 

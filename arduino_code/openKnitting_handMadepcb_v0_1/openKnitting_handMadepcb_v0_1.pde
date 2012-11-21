@@ -7,8 +7,8 @@
  *
  */
 
-#define arduinoTypeMEGA "mega"
-//#define arduinoTypeUNO uno
+//#define arduinoTypeMEGA "mega"
+#define arduinoTypeUNO uno
 
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
@@ -21,7 +21,7 @@ private:
   #ifdef arduinoTypeMEGA
   int amegaPinsArray[16];
   #endif
-  unsigned long long lastArrayWrite;
+  unsigned long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
   int latchPin;
   //Pin connected to SH_CP of 74HC595
@@ -46,52 +46,6 @@ public:
   ~selenoids(){
   }
 
-  #ifdef arduinoTypeUNO
-  void setShiftOut(int myDataPin, int myClockPin, byte myDataOut){
-    // This shifts 8 bits out MSB first, 
-    //on the rising edge of the clock,
-    //clock idles low
-
-    //internal function setup
-    int i=0;
-    int pinState;
-    //pinMode(myClockPin, OUTPUT);
-    //pinMode(myDataPin, OUTPUT);
-
-    //clear everything out just in case to
-    //prepare shift register for bit shifting
-    digitalWrite(myDataPin, 0);
-    digitalWrite(myClockPin, 0);
-
-    //for each bit in the byte myDataOut
-    //NOTICE THAT WE ARE COUNTING DOWN in our for loop
-    //This means that %00000001 or "1" will go through such
-    //that it will be pin Q0 that lights. 
-    for (i=7; i>=0; i--)  {
-      digitalWrite(myClockPin, 0);
-
-      //if the value passed to myDataOut and a bitmask result 
-      // true then... so if we are at i=6 and our value is
-      // %11010100 it would the code compares it to %01000000 
-      // and proceeds to set pinState to 1.
-      if ( myDataOut & (1<<i) ) {
-        pinState= 1;
-      }
-      else {	
-        pinState= 0;
-      }
-
-      //Sets the pin to HIGH or LOW depending on pinState
-      digitalWrite(myDataPin, pinState);
-
-      //register shifts bits on upstroke of clock pin  
-      digitalWrite(myClockPin, 1);
-    }
-
-    //stop shifting
-    digitalWrite(myClockPin, 0);
-  }
-  #endif
   void setup(){
     //Pin connected to ST_CP of ULN2803A
     latchPin = 8;
@@ -137,6 +91,7 @@ public:
 
   void loop(){
     if((millis()-lastArrayWrite > 1000) || changedSelenoids ){
+      changedSelenoids = false;
       #ifdef arduinoTypeMEGA
       setArduinoMegaPins();
       #endif
@@ -144,6 +99,7 @@ public:
       #ifdef arduinoTypeUNO
       sendValuesToShifOut();
       #endif
+      lastArrayWrite = millis();
     }
   }
   
@@ -161,7 +117,6 @@ public:
   
   #ifdef arduinoTypeUNO
   void sendValuesToShifOut(){
-    changedSelenoids = false;
     //Serial.write("loop_selenoids\n");
     dataSector1 = 0x00;
     dataSector2 = 0x00;
@@ -191,9 +146,53 @@ public:
     //return the latch pin high to signal chip that it 
     //no longer needs to listen for information
     digitalWrite(latchPin, 1);
-
-    lastArrayWrite = millis();
   }
+  
+  void setShiftOut(int myDataPin, int myClockPin, byte myDataOut){
+    // This shifts 8 bits out MSB first, 
+    //on the rising edge of the clock,
+    //clock idles low
+
+    //internal function setup
+    int i=0;
+    int pinState;
+    //pinMode(myClockPin, OUTPUT);
+    //pinMode(myDataPin, OUTPUT);
+
+    //clear everything out just in case to
+    //prepare shift register for bit shifting
+    digitalWrite(myDataPin, 0);
+    digitalWrite(myClockPin, 0);
+
+    //for each bit in the byte myDataOut
+    //NOTICE THAT WE ARE COUNTING DOWN in our for loop
+    //This means that %00000001 or "1" will go through such
+    //that it will be pin Q0 that lights. 
+    for (i=7; i>=0; i--)  {
+      digitalWrite(myClockPin, 0);
+
+      //if the value passed to myDataOut and a bitmask result 
+      // true then... so if we are at i=6 and our value is
+      // %11010100 it would the code compares it to %01000000 
+      // and proceeds to set pinState to 1.
+      if ( myDataOut & (1<<i) ) {
+        pinState= 1;
+      }
+      else {	
+        pinState= 0;
+      }
+
+      //Sets the pin to HIGH or LOW depending on pinState
+      digitalWrite(myDataPin, pinState);
+
+      //register shifts bits on upstroke of clock pin  
+      digitalWrite(myClockPin, 1);
+    }
+
+    //stop shifting
+    digitalWrite(myClockPin, 0);
+  }
+  
   #endif
 };
 //---------------------------------------------------------------------------------
@@ -444,7 +443,7 @@ private:
   int* rowEnd;
   String* _status;
   char buf[48];
-  unsigned long long lastSendTimeStamp;
+  unsigned long lastSendTimeStamp;
   int readCnt;
 public:
   communication(){

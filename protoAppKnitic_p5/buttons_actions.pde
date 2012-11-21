@@ -1,7 +1,7 @@
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
-  controlP5.addButton("Start", 10, 855, 45, 40, 30).setId(1);
-  controlP5.addButton("Stop", 4, 905, 45, 40, 30).setId(2);
+  //controlP5.addButton("Start", 10, 855, 45, 40, 30).setId(1);
+  //controlP5.addButton("Stop", 4, 905, 45, 40, 30).setId(2);
   controlP5.addButton("Open", 4, 955, 45, 40, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 205, 20, 20).setId(4);
   controlP5.addButton("Go to row", 4, 855, 255, 80, 30).setId(5);
@@ -105,7 +105,7 @@ void fillArrayWithImage(String imgPath) {
           }
         }
       }
-      status = "reset_initialpos";
+      status = "r";
     }
   }
   catch(Exception e) {
