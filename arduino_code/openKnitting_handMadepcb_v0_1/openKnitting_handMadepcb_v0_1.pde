@@ -506,6 +506,9 @@ public:
         // get status
         else if(id==2 ){
           *_status = pch;
+          if(pch == "reset_initialpos"){
+          	myEndlines->started = false;
+          }
           id += 1;
         }
         pch = strtok(NULL, " ,.-");
