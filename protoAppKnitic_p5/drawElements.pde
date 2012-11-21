@@ -97,7 +97,7 @@ void display() {
   else { 
     text("USB: disconected", 865, 120);
   }
-  text("Status: "+status, 865, 170);
+  text("Status: "+status+"/"+statusMachine, 865, 170);
   text(_16Solenoids, 855, 310);
   noStroke();
   // scroll bar

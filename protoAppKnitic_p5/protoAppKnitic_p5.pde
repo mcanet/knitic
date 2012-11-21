@@ -20,6 +20,7 @@ String last16Solenoids;
 String selected;
 String direction = "-";
 String status = "o";
+String statusMachine = "o"; 
 String lastSerialData;
 String lastChangeHead;
 String _16Solenoids = "9999999999999999";
@@ -52,7 +53,6 @@ boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 //------------------------------------------------------------------------------------
-
 void setup() {
   size(1060, 800);
   frameRate(30);
@@ -143,11 +143,14 @@ void startLeftSide() {
 }
 //------------------------------------------------------------------------------------
 void brain() {
+  
   // start position
-  if (endLineStarted && !lastEndLineStarted) {
+  if ( status=="r" && endLineStarted && ( stitch>=200 || stitch<=0) ) {
     current_row = -1;
-    status = "knitting";
+    status = "k";
     lastChangeHead = "";
+    if (stitch<=0) startRightSide();
+    if (stitch>=200) startLeftSide();
   }
   // put new pixels
   if ( endLineStarted ) {
