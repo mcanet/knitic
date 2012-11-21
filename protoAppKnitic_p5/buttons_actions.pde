@@ -20,19 +20,20 @@ void controlEvent(ControlEvent theEvent) {
       current_row = Integer.valueOf(new_current_row);
     }
   }
-  if(theEvent.controller().id()==6){
+  if (theEvent.controller().id()==6) {
     editPixels =!editPixels;
   }
 }
 
-void updateEditPixels(){
+void updateEditPixels() {
   if (editPixels) {
-      cursor(CROSS);
-      //controlP5.getId(6).setText("Stop edit image");
-    } else {
-      cursor(ARROW);
-      //controlP5.getId(6).setText("Start edit image");
-    }
+    cursor(CROSS);
+    //controlP5.getId(6).setText("Stop edit image");
+  } 
+  else {
+    cursor(ARROW);
+    //controlP5.getId(6).setText("Start edit image");
+  }
 }
 
 void startknitting() {
@@ -50,6 +51,63 @@ void openknittingPattern() {
 void fileSelected(File selection) {
   if (selection != null) {
     fillArrayWithImage(selection.getAbsolutePath());
+  }
+}
+
+void fillArrayWithImage(String imgPath) { 
+  try {
+    img = loadImage(imgPath);
+    cols = img.width;
+    if (cols>200) {
+      JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels", "Alert from Knitic", 2);
+    }
+    else {
+      laststitch = -1;
+      section = -1;
+      rows = img.height;
+      if (img.height>750) { 
+        posYOffSetPattern = (img.height*sizePixel)-750;
+      }
+      else { 
+        posYOffSetPattern = 0;
+      }
+      endLineStarted = false;
+      lastEndLineStarted = false;
+      if (cols>0 && rows>0) loadPattern = true;
+      pixelArray = new int[cols][rows];
+      myScrollBar.setupScrollBar();
+      int restPixels = 200-cols;
+      leftStick = 100-(restPixels/2);
+      rightStick = 100-(restPixels/2);
+      if ( (100-leftStick)+cols+(100-rightStick) !=200) {
+        rightStick +=1;
+      }
+
+      String userStartStick="";
+      if (cols!=200) {
+
+        userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
+        if (!userStartStick.equals(Integer.toString(leftStick))) {
+          leftStick = Integer.valueOf(userStartStick);
+          rightStick = (cols+(100-leftStick))-100;
+        }
+      }
+
+      img.loadPixels(); 
+      for (int y = 0; y <rows; y++) {
+        for (int x = 0; x <  cols; x++) {
+          int loc = /*(cols-1)-*/x + y*cols;
+          if (brightness(img.pixels[loc]) > threshold) {
+            pixelArray[x][y] = 0;
+          }
+          else {
+            pixelArray[x][y] = 1;
+          }
+        }
+      }
+    }
+  }
+  catch(Exception e) {
   }
 }
 
