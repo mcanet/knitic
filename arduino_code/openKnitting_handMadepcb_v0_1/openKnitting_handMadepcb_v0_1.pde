@@ -15,8 +15,7 @@ private:
   int dataSector2;
   int dataArray[8];
   int dataArraypos[8];
-  long lastArrayWrite;
-
+  unsigned long long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
   int latchPin;
   //Pin connected to SH_CP of 74HC595
@@ -25,9 +24,11 @@ private:
   int dataPin;
 
 public:
+  boolean changedSelenoids;
   boolean selenoidState[16];
   String _16selenoids;
   selenoids(){
+    changedSelenoids=true;
   }
 
   ~selenoids(){
@@ -114,16 +115,16 @@ public:
     dataArray[6] = 0x02; //00000010
     dataArray[7] = 0x01; //00000001
 
-      for(int i=0;i<16;i++){
+    for(int i=0;i<16;i++){
       selenoidState[i] = (_16selenoids[i] != '0');
     }
 
     lastArrayWrite = millis();
-
   }
 
   void loop(){
-    if(millis()-lastArrayWrite > 200){
+    if((millis()-lastArrayWrite > 1000) || changedSelenoids ){
+      changedSelenoids = false;
       //Serial.write("loop_selenoids\n");
       dataSector1 = 0x00;
       dataSector2 = 0x00;
@@ -184,7 +185,7 @@ public:
     encoder0PinB = 3;
     encoder0PinC = 4;
     headDirection = 0;
-    encoder0Pos = -1;
+    encoder0Pos = -1000;
     lastEncoder0Pos = -1;
     segmentPosition = -1;
     _8segmentEncoder = "";
@@ -237,7 +238,7 @@ public:
         ){
         headDirectionAverage +=1;
         //Serial.println(directionEncoders+"-Left");
-        if((encoder0Pos != -1) && (encoder0Pos > 0)){
+        if((encoder0Pos != -1000) && (encoder0Pos/4 > -31)){
           encoder0Pos--;
         }
       }
@@ -250,7 +251,7 @@ public:
         ){
         headDirectionAverage -=1;
         //Serial.println(directionEncoders+"-Right");
-        if((encoder0Pos != -1) && (encoder0Pos/4 < 200)){
+        if((encoder0Pos != -1000) && (encoder0Pos/4 < 231)){
           encoder0Pos++;
         }
       }
@@ -406,7 +407,7 @@ private:
   int* rowEnd;
   String* _status;
   char buf[48];
-  unsigned long lastSendTimeStamp;
+  unsigned long long lastSendTimeStamp;
   int readCnt;
 public:
   communication(){
@@ -432,7 +433,7 @@ public:
   // send data to OF
 
   void sendSerialToComputer(){
-    if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>600 ){
+    if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>200 ){
       lastSendTimeStamp = millis();
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
@@ -493,12 +494,25 @@ public:
         }
         // get selenoids
         else if(id==1){
+          boolean changedSelenoids = false;
           for(int i=0; i<16;i++){
-            if(pch[i]=='0'){
-              mySelenoids->selenoidState[i] = false;
+            if( pch[i]=='0' ) ){
+              if(mySelenoids->selenoidState[i] != false) changedSelenoids = true;
             }
             else{
-              mySelenoids->selenoidState[i] = true;
+              if(mySelenoids->selenoidState[i] != true) changedSelenoids = true;
+            }
+          }
+          //set new values if there is new values
+          if(changedSelenoids){
+            mySelenoids->changedSelenoids = true;
+            for(int i=0; i<16;i++){
+              if(pch[i]=='0'){
+                mySelenoids->selenoidState[i] = false;
+              }
+              else{
+                mySelenoids->selenoidState[i] = true;
+              }
             }
           }
           id +=1;
@@ -506,8 +520,9 @@ public:
         // get status
         else if(id==2 ){
           *_status = pch;
-          if(pch == "reset_initialpos"){
-          	myEndlines->started = false;
+          //reset_initialpos
+          if(pch[0] == 'r'){
+            myEndlines->started = false;
           }
           id += 1;
         }
@@ -538,6 +553,7 @@ public:
         if(rc == 'e'){
           // signal to break while loop
           readCnt = -readCnt;
+          break;
         }
         else if(readCnt >= (bufsize-1)){
           readCnt = 0;
@@ -599,6 +615,7 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
 
 
 
