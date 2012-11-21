@@ -9,7 +9,7 @@
 
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
-class selenoids{
+class solenoids{
 private:
   int dataSector1;
   int dataSector2;
@@ -24,14 +24,14 @@ private:
   int dataPin;
 
 public:
-  boolean changedSelenoids;
-  boolean selenoidState[16];
-  String _16selenoids;
-  selenoids(){
-    changedSelenoids=true;
+  boolean changedSolenoids;
+  boolean solenoidState[16];
+  String _16solenoids;
+  solenoids(){
+    changedSolenoids=true;
   }
 
-  ~selenoids(){
+  ~solenoids(){
   }
 
   void setShiftOut(int myDataPin, int myClockPin, byte myDataOut){
@@ -87,7 +87,7 @@ public:
     //Pin connected to DS of 74HC595
     dataPin = 11;
 
-    _16selenoids = "1010101010101010";
+    _16solenoids = "1010101010101010";
 
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
@@ -115,16 +115,16 @@ public:
     dataArray[6] = 0x02; //00000010
     dataArray[7] = 0x01; //00000001
 
-    for(int i=0;i<16;i++){
-      selenoidState[i] = (_16selenoids[i] != '0');
+      for(int i=0;i<16;i++){
+      solenoidState[i] = (_16solenoids[i] != '0');
     }
 
     lastArrayWrite = millis();
   }
 
   void loop(){
-    if((millis()-lastArrayWrite > 1000) || changedSelenoids ){
-      changedSelenoids = false;
+    if((millis()-lastArrayWrite > 1000) || changedSolenoids ){
+      changedSolenoids = false;
       //Serial.write("loop_selenoids\n");
       dataSector1 = 0x00;
       dataSector2 = 0x00;
@@ -138,10 +138,10 @@ public:
 
       for (int j = 0; j < 8; ++j) {
         //load the light sequence you want from array
-        if(selenoidState[j]==true){
+        if(solenoidState[j]==true){
           dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
         }
-        if(selenoidState[j+8]==true){
+        if(solenoidState[j+8]==true){
           dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
         }  
       }
@@ -403,7 +403,7 @@ class communication{
 private:
   encoders* myEncoders;
   endLines* myEndlines;
-  selenoids* mySelenoids;
+  solenoids* mySolenoids;
   int* rowEnd;
   String* _status;
   char buf[48];
@@ -415,10 +415,10 @@ public:
   ~communication(){
   }
 
-  void setup(encoders* _myEncoders, endLines* _myEndlines, selenoids* _mySelenoids,int* _rowEnd, String* __status){
+  void setup(encoders* _myEncoders, endLines* _myEndlines, solenoids* _mySolenoids,int* _rowEnd, String* __status){
     myEncoders = _myEncoders;
     myEndlines = _myEndlines;
-    mySelenoids = _mySelenoids;
+    mySolenoids = _mySolenoids;
     _status = __status;
     rowEnd = _rowEnd;
     lastSendTimeStamp = millis();
@@ -492,26 +492,26 @@ public:
           if(*pch=='s') 
             id+=1;        
         }
-        // get selenoids
+        // get solenoids
         else if(id==1){
-          boolean changedSelenoids = false;
+          boolean changedSolenoids = false;
           for(int i=0; i<16;i++){
             if( pch[i]=='0' ){
-              if(mySelenoids->selenoidState[i] != false) changedSelenoids = true;
+              if(mySolenoids->solenoidState[i] != false) changedSolenoids = true;
             }
             else{
-              if(mySelenoids->selenoidState[i] != true) changedSelenoids = true;
+              if(mySolenoids->solenoidState[i] != true) changedSolenoids = true;
             }
           }
           //set new values if there is new values
-          if(changedSelenoids){
-            mySelenoids->changedSelenoids = true;
+          if(changedSolenoids){
+            mySolenoids->changedSolenoids = true;
             for(int i=0; i<16;i++){
               if(pch[i]=='0'){
-                mySelenoids->selenoidState[i] = false;
+                mySolenoids->solenoidState[i] = false;
               }
               else{
-                mySelenoids->selenoidState[i] = true;
+                mySolenoids->solenoidState[i] = true;
               }
             }
           }
@@ -581,7 +581,7 @@ public:
 // class declaration
 encoders myEncoders;
 endLines myEndlines;
-selenoids mySelenoids;
+solenoids mySolenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
 
@@ -594,11 +594,11 @@ void setup()
 { 
   Serial.begin(115200);
   mySoundAlerts.setup();
-  mySelenoids.setup();
+  mySolenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
+  myCommunicator.setup(&myEncoders,&myEndlines,&mySolenoids, &rowEnd, &_status);
   _status = "off";
 } 
 
@@ -607,7 +607,7 @@ void loop() {
   myCommunicator.loop();
   myEncoders.loop();
   myEndlines.loop();
-  mySelenoids.loop();
+  mySolenoids.loop();
 } 
 
 void resetToStartNewPattern(){
