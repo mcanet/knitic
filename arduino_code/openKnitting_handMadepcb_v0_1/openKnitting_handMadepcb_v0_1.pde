@@ -496,7 +496,7 @@ public:
         else if(id==1){
           boolean changedSelenoids = false;
           for(int i=0; i<16;i++){
-            if( pch[i]=='0' ) ){
+            if( pch[i]=='0' ){
               if(mySelenoids->selenoidState[i] != false) changedSelenoids = true;
             }
             else{
