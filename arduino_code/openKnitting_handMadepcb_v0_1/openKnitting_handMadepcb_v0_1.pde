@@ -7,6 +7,9 @@
  *
  */
 
+#define arduinoTypeMEGA "mega"
+//#define arduinoTypeUNO uno
+
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
 class selenoids{
@@ -15,6 +18,9 @@ private:
   int dataSector2;
   int dataArray[8];
   int dataArraypos[8];
+  #ifdef arduinoTypeMEGA
+  int amegaPinsArray[16];
+  #endif
   unsigned long long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
   int latchPin;
@@ -22,18 +28,25 @@ private:
   int clockPin;
   //Pin connected to DS of 74HC595
   int dataPin;
-
 public:
   boolean changedSelenoids;
   boolean selenoidState[16];
   String _16selenoids;
   selenoids(){
-    changedSelenoids=true;
+    changedSelenoids = true;
+    #ifdef arduinoTypeMEGA
+    int amegaPinsArrayTemp[16] = {14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};
+    for(int i=0; i<16; i++){
+      amegaPinsArray[i] = amegaPinsArrayTemp[i];
+      pinMode(amegaPinsArrayTemp[i], OUTPUT);
+    }
+    #endif
   }
 
   ~selenoids(){
   }
 
+  #ifdef arduinoTypeUNO
   void setShiftOut(int myDataPin, int myClockPin, byte myDataOut){
     // This shifts 8 bits out MSB first, 
     //on the rising edge of the clock,
@@ -78,7 +91,7 @@ public:
     //stop shifting
     digitalWrite(myClockPin, 0);
   }
-
+  #endif
   void setup(){
     //Pin connected to ST_CP of ULN2803A
     latchPin = 8;
@@ -124,40 +137,64 @@ public:
 
   void loop(){
     if((millis()-lastArrayWrite > 1000) || changedSelenoids ){
-      changedSelenoids = false;
-      //Serial.write("loop_selenoids\n");
-      dataSector1 = 0x00;
-      dataSector2 = 0x00;
-
-      // clear registers
-      digitalWrite(latchPin, 0);
-      setShiftOut(dataPin, clockPin, dataSector2);   
-      setShiftOut(dataPin, clockPin, dataSector1);
-      digitalWrite(latchPin, 1);
-
-
-      for (int j = 0; j < 8; ++j) {
-        //load the light sequence you want from array
-        if(selenoidState[j]==true){
-          dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
-        }
-        if(selenoidState[j+8]==true){
-          dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
-        }  
-      }
-
-      //ground latchPin and hold low for as long as you are transmitting
-      digitalWrite(latchPin, 0);
-      //move 'em out
-      setShiftOut(dataPin, clockPin, dataSector2);   
-      setShiftOut(dataPin, clockPin, dataSector1);
-      //return the latch pin high to signal chip that it 
-      //no longer needs to listen for information
-      digitalWrite(latchPin, 1);
-
-      lastArrayWrite = millis();
+      #ifdef arduinoTypeMEGA
+      setArduinoMegaPins();
+      #endif
+      
+      #ifdef arduinoTypeUNO
+      sendValuesToShifOut();
+      #endif
     }
   }
+  
+  #ifdef arduinoTypeMEGA
+  void setArduinoMegaPins(){
+    for(int i=0;i<16;i++){
+      if(selenoidState[i]==true){
+        digitalWrite(amegaPinsArray[i], 1);
+      }else{
+        digitalWrite(amegaPinsArray[i], 0);
+      }
+    }
+  }
+  #endif
+  
+  #ifdef arduinoTypeUNO
+  void sendValuesToShifOut(){
+    changedSelenoids = false;
+    //Serial.write("loop_selenoids\n");
+    dataSector1 = 0x00;
+    dataSector2 = 0x00;
+
+    // clear registers
+    digitalWrite(latchPin, 0);
+    setShiftOut(dataPin, clockPin, dataSector2);   
+    setShiftOut(dataPin, clockPin, dataSector1);
+    digitalWrite(latchPin, 1);
+
+
+    for (int j = 0; j < 8; ++j) {
+      //load the light sequence you want from array
+      if(selenoidState[j]==true){
+        dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
+      }
+      if(selenoidState[j+8]==true){
+        dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
+      }  
+    }
+
+    //ground latchPin and hold low for as long as you are transmitting
+    digitalWrite(latchPin, 0);
+    //move 'em out
+    setShiftOut(dataPin, clockPin, dataSector2);   
+    setShiftOut(dataPin, clockPin, dataSector1);
+    //return the latch pin high to signal chip that it 
+    //no longer needs to listen for information
+    digitalWrite(latchPin, 1);
+
+    lastArrayWrite = millis();
+  }
+  #endif
 };
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
@@ -615,6 +652,7 @@ void resetToStartNewPattern(){
     _status = "ready";
   }
 }
+
 
 
 
