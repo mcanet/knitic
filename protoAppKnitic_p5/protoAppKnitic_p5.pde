@@ -76,6 +76,7 @@ void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Float.toString(frameRate));
   background(200, 200, 200);
   sendAndReceiveSerial();
+  
   display();
   drawPatternGrid();
   if (loadPattern) { 
@@ -90,6 +91,10 @@ void draw() {
 }
 //------------------------------------------------------------------------------------
 void keyPressed() {
+  if (key=='o') {
+    openknittingPattern();
+  }
+  // key for debug program
   if (key=='w') {
     startRightSide();
   }
@@ -115,9 +120,6 @@ void keyPressed() {
       headDirection =1;
     }
     section = ceil(float(stitch)/8.0f);
-  }
-  if (key=='o') {
-    openknittingPattern();
   }
 }
 //------------------------------------------------------------------------------------
@@ -151,27 +153,30 @@ void brain() {
   // put new pixels
   if ( endLineStarted ) {
     // found expected direction
-    if ( lastChangeHead != "right" && ( stitch==(-32) || ((100-rightStick-32)<stitch && headDirection==1) ) ) {
+    if ( lastChangeHead != "right" && ( stitch==(-30) || ((100-rightStick-32)>stitch && headDirection==1) ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "right";
+      println("endLine right");
     }
-    if ( lastChangeHead != "left" &&  (stitch==(232) || ((100+leftStick+32)>stitch && headDirection==-1) ) ) { 
+    if ( lastChangeHead != "left" &&  (stitch==(229) || ((100+leftStick+32)<stitch && headDirection==-1) ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
       lastChangeHead = "left";
       if (current_row>rows && repedPatternMode==true) rows=0;
+      println("endLine left");
     }
     if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
       println("ADVANCING");
       _16Solenoids = "";
-      if (headDirection==-1)rightDirection(); // works in theory
-      if (headDirection==1)leftDirection();
+      if (headDirection == -1)  rightDirection(); 
+      if (headDirection == 1)   leftDirection();
       laststitch = stitch;
     }
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
+  sendSerial();
 }
 //------------------------------------------------------------------------------------
 void rightDirection() {

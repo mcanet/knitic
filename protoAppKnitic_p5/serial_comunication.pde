@@ -10,7 +10,7 @@ void setupSerialConnection() {
   }
 }
 
-void sendAndReceiveSerial() {
+void autoConnectAndReceiveSerial() {
   try {
     // knowing if is connected
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
@@ -25,7 +25,6 @@ void sendAndReceiveSerial() {
     else {
       usbConected = true;
     }
-    sendSerial();
     receiveSerial();
   }
   catch(Exception e) {
@@ -34,7 +33,7 @@ void sendAndReceiveSerial() {
 
 void sendSerial() {
   try {
-    if ( (millis()-lastMessageSendFromSerial)>200  || !last16Solenoids.equals(_16Solenoids) ) {
+    if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
       String _16SolenoidsNew = _16Solenoids.replace('9', '0');
       String message = ",s,"+_16SolenoidsNew+","+status+",e,";
       //println(_16SolenoidsNew);
@@ -59,7 +58,7 @@ void receiveSerial() {
     if (myPort!=null && myPort.available()>0) {
       //println("Receive Serial___");
       String all = "";
-      while (myPort.available ()>0) {
+      while (myPort.available()>0) {
         all += myPort.readChar();
       }
       myPort.clear();
