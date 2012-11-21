@@ -10,8 +10,8 @@ void addButtonsInSetup() {
 
 void controlEvent(ControlEvent theEvent) {
   println(theEvent.controller().id());
-  if (theEvent.controller().id()==1) startknitting();
-  if (theEvent.controller().id()==2) stopknitting();
+  //if (theEvent.controller().id()==1) startknitting();
+  //if (theEvent.controller().id()==2) stopknitting();
   if (theEvent.controller().id()==3) openknittingPattern();
   if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
   if (theEvent.controller().id()==5) {
@@ -35,7 +35,7 @@ void updateEditPixels() {
     //controlP5.getId(6).setText("Start edit image");
   }
 }
-
+/*
 void startknitting() {
   status = "1";
 }
@@ -43,7 +43,7 @@ void startknitting() {
 void stopknitting() {
   status = "0";
 }
-
+*/
 void openknittingPattern() {  
   selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }
@@ -105,6 +105,7 @@ void fillArrayWithImage(String imgPath) {
           }
         }
       }
+      status = "reset_initialpos";
     }
   }
   catch(Exception e) {

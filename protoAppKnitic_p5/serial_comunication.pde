@@ -35,18 +35,15 @@ void sendAndReceiveSerial() {
 void sendSerial() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>200  || !last16Solenoids.equals(_16Solenoids) ) {
-
       String _16SolenoidsNew = _16Solenoids.replace('9', '0');
       String message = ",s,"+_16SolenoidsNew+","+status+",e,";
       //println(_16SolenoidsNew);
       myPort.write(message);
-
       String filler = "";
       for (int i = message.length(); i<46; i++) {
         filler += "e";
       }
       myPort.write(filler);
-
       //println("send serial");
       lastMessageSendFromSerial = millis();
     }
@@ -96,13 +93,16 @@ void receiveSerial() {
         //section = Integer.valueOf(values[_start+1]);
         //print("section:");
         //println(section);
-
         stitch = Integer.valueOf(values[_start+2]);
         section = int(stitch/8);
         endLineStarted = !values[_start+3].equals("0");
         headDirection = -Integer.valueOf(values[_start+4]);
-        //status = values[_start+4];
-
+        status = values[_start+4];
+        if (status=="reset_initialpos" && endLineStarted) {
+          status="knitting";
+          if (stitch==0) startRightSide();
+          if (stitch==200) startLeftSide();
+        }
         // get part message to other
         if (_end+1<values.length) {
           for (int i=_end+1;i<values.length;i++) {

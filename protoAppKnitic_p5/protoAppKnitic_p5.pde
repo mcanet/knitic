@@ -91,22 +91,10 @@ void draw() {
 //------------------------------------------------------------------------------------
 void keyPressed() {
   if (key=='w') {
-    section=-4;
-    stitch=-32;
-    current_row = 0;
-    headDirection=1;
-    endLineStarted = true;
-    lastEndLineStarted = false;
-    lastChangeHead = "right";
+    startRightSide();
   }
   if (key=='q') {
-    current_row = 0;
-    section=29;
-    stitch=232;
-    headDirection=-1;
-    endLineStarted = true;
-    lastEndLineStarted = false;
-    lastChangeHead = "left";
+    startLeftSide();
   }
   if (key=='s' && endLineStarted) {
     stitch-=1;
@@ -131,6 +119,26 @@ void keyPressed() {
   if (key=='o') {
     openknittingPattern();
   }
+}
+//------------------------------------------------------------------------------------
+void startRightSide() {
+  section=-4;
+  stitch=-32;
+  current_row = 0;
+  headDirection=1;
+  endLineStarted = true;
+  lastEndLineStarted = false;
+  lastChangeHead = "right";
+}
+//------------------------------------------------------------------------------------
+void startLeftSide() {
+  current_row = 0;
+  section=29;
+  stitch=232;
+  headDirection=-1;
+  endLineStarted = true;
+  lastEndLineStarted = false;
+  lastChangeHead = "left";
 }
 //------------------------------------------------------------------------------------
 void brain() {
@@ -261,3 +269,4 @@ void getPixelsFromPosition(int posXPixel) {
   }
 }
 //------------------------------------------------------------
+
