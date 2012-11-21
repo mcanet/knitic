@@ -15,7 +15,6 @@ void autoConnectAndReceiveSerial() {
     // knowing if is connected
     
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
-      /*
       if (abs(lastConnection-millis())>1500) {
         usbConected = false;
         myPort.clear();
@@ -23,7 +22,6 @@ void autoConnectAndReceiveSerial() {
         myPort = null;
         setupSerialConnection();
       }
-      */
     }
     else {
       usbConected = true;
@@ -59,11 +57,11 @@ void sendSerial() {
 
 void receiveSerial() {
   try {
-    while(myPort!=null && myPort.available()>0) {
-      //println("Receive Serial___");
+    while(myPort!=null && myPort.available()>0 ) {
+      println("Receive Serial___"+Integer.toString(myPort.available()));
       String all = "";
       // read from buffer, but only if there's no end-of-message to be processed
-      while ( (myPort.available ()>0) && !(lastSerialData+all).contains("e") && !(lastSerialData+all).contains("s") ) {
+      while ( (myPort.available ()>0) && !((lastSerialData+all).contains("e") && (lastSerialData+all).contains("s") ) ) {
         all += myPort.readChar();
       }
       //myPort.clear();
@@ -93,15 +91,17 @@ void receiveSerial() {
       //println("end:"+Integer.toString(_end));
       // when we find start and end then take out variables
       if ( _start!=-1 && _end!=-1  && _end > _start+5 ) {
+        println("Receive Serial_WITH ALL MESSAGE");
         lastMessageReceivedFromSerial = millis();
         //section = Integer.valueOf(values[_start+1]);
-        //print("section:");
+        
         //println(section);
         stitch = Integer.valueOf(values[_start+2]);
         section = int(stitch/8);
         endLineStarted = !values[_start+3].equals("0");
         headDirection = -Integer.valueOf(values[_start+4]);
         status = values[_start+4];
+        println("end of getting values");
         if (status=="reset_initialpos" && endLineStarted) {
           status="knitting";
           if (stitch==0) startRightSide();
@@ -114,10 +114,9 @@ void receiveSerial() {
             lastSerialData +=","+values[i];
           }
         }
-        
-        // call brain
+        // calculate with new data
         brain();
-        
+        println("call brain");
       }
       else {
         lastSerialData +=all;
