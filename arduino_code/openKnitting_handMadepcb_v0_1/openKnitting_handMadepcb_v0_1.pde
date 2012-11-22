@@ -527,22 +527,16 @@ public:
           for(int i=0; i<16;i++){
             if( pch[i]=='0' ){
               if(mysolenoids->solenoidstate[i] != false) changedsolenoids = true;
+              mysolenoids->solenoidstate[i] = false;
             }
             else{
               if(mysolenoids->solenoidstate[i] != true) changedsolenoids = true;
+              mysolenoids->solenoidstate[i] = true;
             }
           }
           //set new values if there is new values
           if(changedsolenoids){
             mysolenoids->changedsolenoids = true;
-            for(int i=0; i<16;i++){
-              if(pch[i]=='0'){
-                mysolenoids->solenoidstate[i] = false;
-              }
-              else{
-                mysolenoids->solenoidstate[i] = true;
-              }
-            }
           }
           id +=1;
         }
