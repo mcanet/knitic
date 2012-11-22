@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
-class selenoids{
+class solenoids{
 private:
   int dataSector1;
   int dataSector2;
@@ -30,11 +30,11 @@ private:
   //Pin connected to DS of 74HC595
   int dataPin;
 public:
-  boolean changedSelenoids;
-  boolean selenoidState[16];
-  String _16selenoids;
-  selenoids(){
-    changedSelenoids = true;
+  boolean changedsolenoids;
+  boolean solenoidstate[16];
+  String _16solenoids;
+  solenoids(){
+    changedsolenoids = true;
     #ifdef arduinoTypeMEGA
     int amegaPinsArrayTemp[16] = {22,24,26,28,30,32,34,36,21,23,25,27,29,31,33,35};
     for(int i=0; i<16; i++){
@@ -44,7 +44,7 @@ public:
     #endif
   }
 
-  ~selenoids(){
+  ~solenoids(){
   }
 
   void setup(){
@@ -55,7 +55,7 @@ public:
     //Pin connected to DS of 74HC595
     dataPin = 11;
 
-    _16selenoids = "1010101010101010";
+    _16solenoids = "1010101010101010";
 
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
@@ -84,15 +84,15 @@ public:
     dataArray[7] = 0x01; //00000001
 
     for(int i=0;i<16;i++){
-      selenoidState[i] = (_16selenoids[i] != '0');
+      solenoidstate[i] = (_16solenoids[i] != '0');
     }
 
     lastArrayWrite = millis();
   }
 
   void loop(){
-    if(/*(millis()-lastArrayWrite > 1000) ||*/ changedSelenoids ){
-      changedSelenoids = false;
+    if(/*(millis()-lastArrayWrite > 1000) ||*/ changedsolenoids ){
+      changedsolenoids = false;
       #ifdef arduinoTypeMEGA
       setArduinoMegaPins();
       #endif
@@ -107,7 +107,7 @@ public:
   #ifdef arduinoTypeMEGA
   void setArduinoMegaPins(){
     for(int i=0;i<16;i++){
-      if(selenoidState[i]==true){
+      if(solenoidstate[i]==true){
         digitalWrite(amegaPinsArray[i], 1);
       }else{
         digitalWrite(amegaPinsArray[i], 0);
@@ -118,7 +118,7 @@ public:
   
   #ifdef arduinoTypeUNO
   void sendValuesToShifOut(){
-    //Serial.write("loop_selenoids\n");
+    //Serial.write("loop_solenoids\n");
     dataSector1 = 0x00;
     dataSector2 = 0x00;
 
@@ -131,10 +131,10 @@ public:
 
     for (int j = 0; j < 8; ++j) {
       //load the light sequence you want from array
-      if(selenoidState[j]==true){
+      if(solenoidstate[j]==true){
         dataSector1 = dataSector1 ^ dataArray[dataArraypos[j]];
       }
-      if(selenoidState[j+8]==true){
+      if(solenoidstate[j+8]==true){
         dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
       }  
     }
@@ -440,7 +440,7 @@ class communication{
 private:
   encoders* myEncoders;
   endLines* myEndlines;
-  selenoids* mySelenoids;
+  solenoids* mysolenoids;
   char buf[48];
   unsigned long lastSendTimeStamp;
   int readCnt;
@@ -451,10 +451,10 @@ public:
   ~communication(){
   }
 
-  void setup(encoders* _myEncoders, endLines* _myEndlines, selenoids* _mySelenoids){
+  void setup(encoders* _myEncoders, endLines* _myEndlines, solenoids* _mysolenoids){
     myEncoders = _myEncoders;
     myEndlines = _myEndlines;
-    mySelenoids = _mySelenoids;
+    mysolenoids = _mysolenoids;
     lastSendTimeStamp = millis();
     readCnt = 0;
   }
@@ -521,26 +521,26 @@ public:
           if(*pch=='s') 
             id+=1;        
         }
-        // get selenoids
+        // get solenoids
         else if(id==1){
-          boolean changedSelenoids = false;
+          boolean changedsolenoids = false;
           for(int i=0; i<16;i++){
             if( pch[i]=='0' ){
-              if(mySelenoids->selenoidState[i] != false) changedSelenoids = true;
+              if(mysolenoids->solenoidstate[i] != false) changedsolenoids = true;
             }
             else{
-              if(mySelenoids->selenoidState[i] != true) changedSelenoids = true;
+              if(mysolenoids->solenoidstate[i] != true) changedsolenoids = true;
             }
           }
           //set new values if there is new values
-          if(changedSelenoids){
-            mySelenoids->changedSelenoids = true;
+          if(changedsolenoids){
+            mysolenoids->changedsolenoids = true;
             for(int i=0; i<16;i++){
               if(pch[i]=='0'){
-                mySelenoids->selenoidState[i] = false;
+                mysolenoids->solenoidstate[i] = false;
               }
               else{
-                mySelenoids->selenoidState[i] = true;
+                mysolenoids->solenoidstate[i] = true;
               }
             }
           }
@@ -610,7 +610,7 @@ public:
 // class declaration
 encoders myEncoders;
 endLines myEndlines;
-selenoids mySelenoids;
+solenoids mysolenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
 
@@ -618,18 +618,18 @@ void setup()
 { 
   Serial.begin(115200);
   mySoundAlerts.setup();
-  mySelenoids.setup();
+  mysolenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids);
+  myCommunicator.setup(&myEncoders,&myEndlines,&mysolenoids);
   myCommunicator._status = "o";
 } 
 
 void loop() {
-  // receive selenoids from computer
+  // receive solenoids from computer
   myCommunicator.receiveSerialFromComputer();
-  mySelenoids.loop();
+  mysolenoids.loop();
   // get data from sensors and send to computer
   myEncoders.loop();
   myEndlines.loop();
