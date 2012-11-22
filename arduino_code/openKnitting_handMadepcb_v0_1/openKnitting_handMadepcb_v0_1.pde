@@ -18,6 +18,7 @@ private:
   int dataSector2;
   int dataArray[8];
   int dataArraypos[8];
+  byte myDataOut;
   #ifdef arduinoTypeMEGA
   int amegaPinsArray[16];
   #endif
@@ -35,7 +36,7 @@ public:
   selenoids(){
     changedSelenoids = true;
     #ifdef arduinoTypeMEGA
-    int amegaPinsArrayTemp[16] = {14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};
+    int amegaPinsArrayTemp[16] = {22,24,26,28,30,32,34,36,21,23,25,27,29,31,33,35};
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
       pinMode(amegaPinsArrayTemp[i], OUTPUT);
@@ -90,7 +91,7 @@ public:
   }
 
   void loop(){
-    if((millis()-lastArrayWrite > 1000) || changedSelenoids ){
+    if(/*(millis()-lastArrayWrite > 1000) ||*/ changedSelenoids ){
       changedSelenoids = false;
       #ifdef arduinoTypeMEGA
       setArduinoMegaPins();
@@ -440,30 +441,22 @@ private:
   encoders* myEncoders;
   endLines* myEndlines;
   selenoids* mySelenoids;
-  int* rowEnd;
-  String* _status;
   char buf[48];
   unsigned long lastSendTimeStamp;
   int readCnt;
 public:
+  String _status;
   communication(){
   }
   ~communication(){
   }
 
-  void setup(encoders* _myEncoders, endLines* _myEndlines, selenoids* _mySelenoids,int* _rowEnd, String* __status){
+  void setup(encoders* _myEncoders, endLines* _myEndlines, selenoids* _mySelenoids){
     myEncoders = _myEncoders;
     myEndlines = _myEndlines;
     mySelenoids = _mySelenoids;
-    _status = __status;
-    rowEnd = _rowEnd;
     lastSendTimeStamp = millis();
     readCnt = 0;
-  }
-
-  void loop(){
-    sendSerialToComputer();
-    receiveSerialFromComputer();
   }
 
   // send data to OF
@@ -485,7 +478,7 @@ public:
       Serial.print(",");
       Serial.print(myEncoders->headDirection);
       Serial.print(",");
-      Serial.print(*_status);
+      Serial.print(_status);
       Serial.println(",e,");
 
       //
@@ -555,9 +548,9 @@ public:
         }
         // get status
         else if(id==2 ){
-          *_status = pch;
+          _status = pch[0];
           //reset_initialpos
-          if(pch[0] == 'r'){
+          if(_status == 'r'){
             myEndlines->started = false;
           }
           id += 1;
@@ -621,11 +614,6 @@ selenoids mySelenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
 
-//int val;
-int rowEnd;
-String _status;
-byte myDataOut;
-
 void setup()
 { 
   Serial.begin(115200);
@@ -634,23 +622,20 @@ void setup()
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids, &rowEnd, &_status);
-  _status = "off";
+  myCommunicator.setup(&myEncoders,&myEndlines,&mySelenoids);
+  myCommunicator._status = "o";
 } 
 
 void loop() {
-  //mySoundAlerts.loop();
-  myCommunicator.loop();
+  // receive selenoids from computer
+  myCommunicator.receiveSerialFromComputer();
+  mySelenoids.loop();
+  // get data from sensors and send to computer
   myEncoders.loop();
   myEndlines.loop();
-  mySelenoids.loop();
+  myCommunicator.sendSerialToComputer();
 } 
 
-void resetToStartNewPattern(){
-  if(_status == "reseat"){
-    _status = "ready";
-  }
-}
 
 
 
