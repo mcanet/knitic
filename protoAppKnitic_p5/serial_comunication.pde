@@ -59,7 +59,7 @@ void receiveSerial() {
   try {
     int timeStart = millis();
     while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<200) ) {
-      println("Receive Serial___"+Integer.toString(myPort.available()));
+      //println("Receive Serial___"+Integer.toString(myPort.available()));
       String all = "";
       // read from buffer, but only if there's no end-of-message to be processed
       boolean findMessage = false;
@@ -67,7 +67,7 @@ void receiveSerial() {
         all += myPort.readChar();
       }
       findMessage = findOneMessage(all);
-      println(lastSerialData+all);
+      //println(lastSerialData+all);
     }
   }
   catch(Exception e) {
@@ -103,12 +103,14 @@ boolean findOneMessage(String all) {
     section = int(stitch/8);
     //print(","+Integer.toString(section));
     endLineStarted = !values[_start+3].equals("0");
+    /*
     if (endLineStarted) { 
       print(",true");
     }
     else {
       print(",false");
     }
+    */
     headDirection = -Integer.valueOf(values[_start+4]);
     //print(","+Integer.toString(headDirection));
     
@@ -120,8 +122,7 @@ boolean findOneMessage(String all) {
       println(values.length);
     }
     
-    //print(","+status);
-    println("end of getting values");
+    //println("end of getting values");
     
     lastSerialData = "";
     // get part message to other
@@ -132,7 +133,7 @@ boolean findOneMessage(String all) {
     }
     // calculate with new data
     brain();
-    println("call brain");
+    //println("call brain");
     return true;
   }
   else {

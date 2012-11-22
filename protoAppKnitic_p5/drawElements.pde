@@ -104,8 +104,8 @@ void display() {
   fill(16, 62, 104);
   rect(width-buttonWithBar, 0, 15, height);  
   rect(width-buttonWithBar, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
-  text("patternMouseX:"+Integer.toString(patternMouseX), 855, 510);
-  text("patternMouseY:"+Integer.toString(patternMouseY), 855, 550);
+  text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
+  text("MouseY:"+Integer.toString(patternMouseY), 855, 550);
 }
 
 void drawPattern() {

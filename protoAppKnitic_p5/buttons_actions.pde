@@ -1,8 +1,6 @@
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
-  //controlP5.addButton("Start", 10, 855, 45, 40, 30).setId(1);
-  //controlP5.addButton("Stop", 4, 905, 45, 40, 30).setId(2);
-  controlP5.addButton("Open", 4, 955, 45, 40, 30).setId(3);
+  controlP5.addButton("Open", 4, 855, 45, 40, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 205, 20, 20).setId(4);
   controlP5.addButton("Go to row", 4, 855, 255, 80, 30).setId(5);
   controlP5.addButton("Start edit image", 4, 855, 455, 80, 30).setId(6);
@@ -35,15 +33,7 @@ void updateEditPixels() {
     //controlP5.getId(6).setText("Start edit image");
   }
 }
-/*
-void startknitting() {
-  status = "1";
-}
 
-void stopknitting() {
-  status = "0";
-}
-*/
 void openknittingPattern() {  
   selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }

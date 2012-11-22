@@ -46,6 +46,7 @@ int posYOffSetPattern = 0;
 int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
+int offsetKeedles = 24;
 boolean usbConected = false;
 boolean loadPattern = false;
 boolean repedPatternMode = true;
@@ -80,7 +81,7 @@ void draw() {
   drawPatternGrid();
   if (loadPattern) { 
     drawPattern();
-    drawSelectedGrid();
+    if(status=="k") drawSelectedGrid();
   }
   //drawPatternThumbnail();
   myScrollBar.mouseMoveScroll();
@@ -96,9 +97,13 @@ void keyPressed() {
   // key for debug program
   if (key=='w') {
     startRightSide();
+    section=-4;
+    stitch=-32;
   }
   if (key=='q') {
     startLeftSide();
+    section=29;
+    stitch=232;
   }
   if (key=='s' && endLineStarted) {
     stitch-=1;
@@ -123,27 +128,22 @@ void keyPressed() {
 }
 //------------------------------------------------------------------------------------
 void startRightSide() {
-  section=-4;
-  stitch=-32;
   current_row = 0;
-  headDirection=1;
+  headDirectionForNewPixels=+1;
   endLineStarted = true;
-  lastEndLineStarted = false;
+  //lastEndLineStarted = false;
   lastChangeHead = "right";
 }
 //------------------------------------------------------------------------------------
 void startLeftSide() {
   current_row = 0;
-  section=29;
-  stitch=232;
-  headDirection=-1;
+  headDirectionForNewPixels=-1;
   endLineStarted = true;
-  lastEndLineStarted = false;
+  //lastEndLineStarted = false;
   lastChangeHead = "left";
 }
 //------------------------------------------------------------------------------------
 void brain() {
-  
   // start position
   if ( status=="r" && endLineStarted && ( stitch>=200 || stitch<=0) ) {
     current_row = -1;
@@ -155,13 +155,13 @@ void brain() {
   // put new pixels
   if ( endLineStarted ) {
     // found expected direction
-    if ( lastChangeHead != "right" && ( stitch==(-30) || ((100-rightStick-32)>stitch && headDirection==1) ) ) {
+    if ( lastChangeHead != "right" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && headDirection==1) ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "right";
       println("endLine right");
     }
-    if ( lastChangeHead != "left" &&  (stitch==(229) || ((100+leftStick+32)<stitch && headDirection==-1) ) ) { 
+    if ( lastChangeHead != "left" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && headDirection==-1) ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
       lastChangeHead = "left";
@@ -174,6 +174,8 @@ void brain() {
       if (headDirection == -1)  rightDirection(); 
       if (headDirection == 1)   leftDirection();
       laststitch = stitch;
+    }else{
+      //println("not ADVANCING");
     }
   }
   lastEndLineStarted = endLineStarted;
@@ -232,13 +234,13 @@ void leftDirection() {
 }
 //------------------------------------------------------------
 int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
-  int posXPixel =  -((section-1)*8)+(cols+_x)+(100-rightStick)-32;
+  int posXPixel =  -((section-1)*8)+(cols+_x)+(100-rightStick)-offsetKeedles-16;
   print(posXPixel);
   print(" | ");
   print(posXPixel);
   print("<");
-  print(-(stitch-168));
-  if (posXPixel<-(stitch-168) && posXPixel>=0 ) {
+  print(((16-offsetKeedles)+(199-stitch)));
+  if (posXPixel<((16-offsetKeedles-16)+(199-stitch)) && posXPixel>=0 ) {
     posXPixel = posXPixel+16;
     print(" | pixel modify ");
   }
@@ -246,14 +248,31 @@ int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
   //println(posXPixel);
   return posXPixel;
 }
-//------------------------------------------------------------
-int leftPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
-  int posXPixel = -((section)*8)+(cols-1-_x)+(100-rightStick)+32+8; 
+/*
+int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
+  int posXPixel =  -((section-1)*8)+(cols+_x)+(100-rightStick)-offsetKeedles+16;
+  print(posXPixel);
   print(" | ");
   print(posXPixel);
   print("<");
-  print(232-stitch);
-  if ( int(posXPixel)>=int(232-stitch) ) {
+  print(-(stitch-(200-offsetKeedles)));
+  if (posXPixel<-(16+stitch-(200-(offsetKeedles))) && posXPixel>=0 ) {
+    posXPixel = posXPixel+16;
+    print(" | pixel modify ");
+  }
+  print(" | pixelX:");
+  //println(posXPixel);
+  return posXPixel;
+}
+*/
+//------------------------------------------------------------
+int leftPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
+  int posXPixel = -((section)*8)+(cols-1-_x)+(100-rightStick)+8+offsetKeedles; 
+  print(" | ");
+  print(posXPixel);
+  print("<");
+  print((200+offsetKeedles)-stitch);
+  if ( int(posXPixel)>=int((200+offsetKeedles)-stitch)  ) {
     posXPixel = posXPixel-16;
     print(" | pixel modify ");
   }
