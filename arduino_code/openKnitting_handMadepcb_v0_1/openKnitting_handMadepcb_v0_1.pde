@@ -117,8 +117,8 @@ public:
           dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
         }  
       }
-      sendValuesToShifOut(dataSector1, dataSector2);//classic ShiftOut
-      //iProcess(dataSector1, dataSector2);// fast ShiftOut
+      //sendValuesToShifOut(dataSector1, dataSector2);//classic ShiftOut
+      iProcess(dataSector1, dataSector2);// fast ShiftOut
 #endif
       lastArrayWrite = millis();
     }
@@ -146,6 +146,9 @@ public:
     // at 2 Shift Registers - 225 fails, 275 works ..
     //--- Using shiftOutFast:
     // at 2 Shift Register - 50 fails, 75 works
+    latchPinPORTB = latchPin - 8;
+    clockPinPORTB = clockPin - 8;
+    dataPinPORTB = dataPin - 8;
     digitalWrite(latchPin,LOW);
     digitalWrite(dataPin,LOW);
     digitalWrite(clockPin,LOW);
