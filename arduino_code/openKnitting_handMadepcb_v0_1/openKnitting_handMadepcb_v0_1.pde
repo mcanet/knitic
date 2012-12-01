@@ -7,8 +7,8 @@
  *
  */
 
-//#define arduinoTypeMEGA "mega"
-#define arduinoTypeUNO uno
+#define arduinoTypeMEGA "mega"
+//#define arduinoTypeUNO uno
 
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
@@ -21,7 +21,6 @@ private:
   byte myDataOut;
 #ifdef arduinoTypeMEGA
   int amegaPinsArray[16];
-  boolean solenoidstateChanged[16];
 #endif
   unsigned long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
@@ -35,14 +34,17 @@ private:
   int clockPinPORTB;
   int dataPinPORTB;
 public:
+#ifdef arduinoTypeMEGA
+  boolean solenoidstateChanged[16];
+#endif
   boolean changedsolenoids;
   boolean solenoidstate[16];
   String _16solenoids;
   solenoids(){
     changedsolenoids = true;
 #ifdef arduinoTypeMEGA
-    int amegaPinsArrayTemp[16] = {
-      22,24,26,28,30,32,34,36,21,23,25,27,29,31,33,35            };
+    //int amegaPinsArrayTemp[16] = {22,24,26,28,30,32,34,36,21,23,25,27,29,31,33,35};
+    int amegaPinsArrayTemp[16] = {21,23,25,27,29,31,33,35,22,24,26,28,30,32,34,36};
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
       pinMode(amegaPinsArrayTemp[i], OUTPUT);
@@ -61,12 +63,12 @@ public:
     //Pin connected to DS of 74HC595
     dataPin = 11;
 
-    _16solenoids = "1010101010101010";
-
     //set pins to output because they are addressed in the main loop
     pinMode(latchPin, OUTPUT);
     pinMode(clockPin, OUTPUT);
     pinMode(dataPin, OUTPUT);
+
+    _16solenoids = "1010101010101010";
 
     // Holds the actual order in which the bits have to be shifted in
     dataArraypos[0] = 0x07;
@@ -89,17 +91,17 @@ public:
     dataArray[6] = 0x02; //00000010
     dataArray[7] = 0x01; //00000001
 
-      for(int i=0;i<16;i++){
+    for(int i=0;i<16;i++){
       solenoidstate[i] = (_16solenoids[i] != '0');
     }
 
     lastArrayWrite = millis();
-
-    setupSPI();
+    changedsolenoids=true;
+    //setupSPI();
   }
 
   void loop(){
-    if(/*(millis()-lastArrayWrite > 1000) ||*/ changedsolenoids && (millis()-lastArrayWrite > 75) ){
+    if(/*(millis()-lastArrayWrite > 1000) || */ changedsolenoids==true /*&& (millis()-lastArrayWrite > 150)*/ ){
       changedsolenoids = false;
 #ifdef arduinoTypeMEGA
       setArduinoMegaPins();
@@ -117,8 +119,8 @@ public:
           dataSector2 = dataSector2 ^ dataArray[dataArraypos[j]];
         }  
       }
-      //sendValuesToShifOut(dataSector1, dataSector2);//classic ShiftOut
-      iProcess(dataSector1, dataSector2);// fast ShiftOut
+      sendValuesToShifOut(dataSector1, dataSector2);//classic ShiftOut
+      //iProcess(dataSector1, dataSector2);// fast ShiftOut
 #endif
       lastArrayWrite = millis();
     }
@@ -127,12 +129,12 @@ public:
 #ifdef arduinoTypeMEGA
   void setArduinoMegaPins(){
     for(int i=0;i<16;i++){
-      if(mysolenoids->solenoidstateChanged[i]==true){
+      if(solenoidstateChanged[i]==true){
         if(solenoidstate[i]==true){
-          digitalWrite(amegaPinsArray[i], 1);
+          digitalWrite(amegaPinsArray[i], HIGH);
         }
         else{
-          digitalWrite(amegaPinsArray[i], 0);
+          digitalWrite(amegaPinsArray[i], LOW);
         }
       }
     }
@@ -140,7 +142,7 @@ public:
 #endif
 
 #ifdef arduinoTypeUNO
-  // fast shiftOut
+  // fast shiftOut ----------------------------------------------------------
   void setupSPI(){
     //--- Using standard shiftOut:
     // at 2 Shift Registers - 225 fails, 275 works ..
@@ -149,6 +151,7 @@ public:
     latchPinPORTB = latchPin - 8;
     clockPinPORTB = clockPin - 8;
     dataPinPORTB = dataPin - 8;
+
     digitalWrite(latchPin,LOW);
     digitalWrite(dataPin,LOW);
     digitalWrite(clockPin,LOW);
@@ -165,36 +168,38 @@ public:
 
   void iProcess(byte data1, byte data2){
     //--- This code can run using a 20 timer delay! :)
-    latchOff();   
-    spi_transfer(data2);   
-    spi_transfer(data1);   
+    latchOff();     
+    //spi_transfer(data2); 
+    //spi_transfer(data1); 
+    shiftOutFast(dataPin,clockPin,data2); 
+    shiftOutFast(dataPin,clockPin,data1);    
     latchOn();
   }
-
+  
   //--- shiftOutFast - Shiftout method done in a faster way .. needed for tighter timer process
-  void shiftOutFast(int myDataPin, int myClockPin, byte myDataOut) {
-    //=== This function shifts 8 bits out MSB first much faster than the normal shiftOut function by writing directly to the memory addres for port
-    //--- clear data pin
-    dataOff();
+void shiftOutFast(int myDataPin, int myClockPin, byte myDataOut) {
+  //=== This function shifts 8 bits out MSB first much faster than the normal shiftOut function by writing directly to the memory address for port
+  //--- clear data pin
+  dataOff();
 
-    //Send each bit of the myDataOut byte MSBFIRST
-    for (int i=7; i>=0; i--)  {
-      clockOff();
-      //--- Turn data on or off based on value of bit
-      if ( bitRead(myDataOut,i) == 1) {
-        dataOn();
-      }
-      else {      
-        dataOff();
-      }
-      //register shifts bits on upstroke of clock pin  
-      clockOn();
-      //zero the data pin after shift to prevent bleed through
+  //Send each bit of the myDataOut byte MSBFIRST
+  for (int i=7; i>=0; i--)  {
+    clockOff();
+    //--- Turn data on or off based on value of bit
+    if ( bitRead(myDataOut,i) == 1) {
+      dataOn();
+    }
+    else {      
       dataOff();
     }
-    //stop shifting
-    digitalWrite(myClockPin, 0);
+    //register shifts bits on upstroke of clock pin  
+    clockOn();
+    //zero the data pin after shift to prevent bleed through
+    dataOff();
   }
+  //stop shifting
+  digitalWrite(myClockPin, 0);
+}
 
   void dataOff(){
     bitClear(PORTB,dataPinPORTB);
@@ -219,17 +224,15 @@ public:
   void latchOff(){
     bitClear(PORTB,latchPinPORTB);
   }
-
+/*
   byte spi_transfer(byte data)
   {
-    SPDR = data;                    // Start the transmission
-    while (!(SPSR & (1<<SPIF)))     // Wait the end of the transmission
-    {
-    };
+    SPDR = data;            // Start the transmission
+    loop_until_bit_is_set(SPSR, SPIF); 
     return SPDR;                    // return the received byte, we don't need that
   }
-
-  // classic shiftOut
+*/
+  // classic shiftOut -----------------------------------------------------
   void sendValuesToShifOut(byte data1, byte data2){
 
     // clear registers
@@ -317,9 +320,16 @@ public:
   int lastEncoder0Pos;
   int headDirection;
   encoders(){
+    #ifdef arduinoTypeUNO
     encoder0PinA = 2;
     encoder0PinB = 3;
     encoder0PinC = 4;
+    #endif
+     #ifdef arduinoTypeMEGA
+    encoder0PinA = 2;
+    encoder0PinB = 3;
+    encoder0PinC = 4;
+    #endif
     headDirection = 0;
     encoder0Pos = -1000;
     lastEncoder0Pos = -1;
@@ -742,6 +752,7 @@ void loop() {
   myEndlines.loop();
   myCommunicator.sendSerialToComputer();
 } 
+
 
 
 
