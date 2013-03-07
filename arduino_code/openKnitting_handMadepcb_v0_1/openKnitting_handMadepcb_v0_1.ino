@@ -22,6 +22,7 @@ private:
   byte myDataOut;
 #ifdef arduinoTypeDUE
   int amegaPinsArray[16];
+  int ledArrayTemp[16];
 #endif
   unsigned long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
@@ -43,11 +44,13 @@ public:
   String _16solenoids;
   solenoids(){
     changedsolenoids = true;
-#ifdef arduinoTypeDUE    
-    int amegaPinsArrayTemp[totalArrayFromSelenoids] = {23,25,27,29,31,33,35,37,22,24,26,28,30,32,34,36};
+#ifdef arduinoTypeDUE  
+    int ledArrayTemp[totalArrayFromSelenoids] =       {38,40,42,44,46,48,50,52,39,41,43,45,47,49,51,53};
+    int amegaPinsArrayTemp[totalArrayFromSelenoids] = {37,35,33,31,29,27,25,23,22,24,26,28,30,32,34,36};
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
       pinMode(amegaPinsArrayTemp[i], OUTPUT);
+      pinMode(ledArrayTemp[i], OUTPUT);
     }
 #endif
   }
@@ -132,9 +135,11 @@ public:
       if(solenoidstateChanged[i]==true){
         if(solenoidstate[i]==true){
           digitalWrite(amegaPinsArray[i], HIGH);
+          digitalWrite(ledArrayTemp[i], HIGH);
         }
         else{
           digitalWrite(amegaPinsArray[i], LOW);
+          digitalWrite(ledArrayTemp[i], LOW);
         }
       }
     }
