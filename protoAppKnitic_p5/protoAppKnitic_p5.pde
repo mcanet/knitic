@@ -25,6 +25,7 @@ String lastSerialData;
 String lastChangeHead;
 String _16Solenoids = "9999999999999999";
 float threshold = 127;
+int counterMessagesReceive=0;
 int sizePixel = 3;
 int cols = -1;
 int rows = -1;
@@ -47,6 +48,7 @@ int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
 int offsetKeedles = 24;
+int serialAvailableBuffer;
 boolean usbConected = false;
 boolean loadPattern = false;
 boolean repedPatternMode = true;
@@ -56,7 +58,7 @@ boolean lastEndLineStarted = false;
 //------------------------------------------------------------------------------------
 void setup() {
   size(1060, 800);
-  frameRate(30);
+  frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
@@ -132,7 +134,7 @@ void startRightSide() {
   headDirectionForNewPixels=+1;
   endLineStarted = true;
   //lastEndLineStarted = false;
-  lastChangeHead = "right";
+  lastChangeHead = "left";
 }
 //------------------------------------------------------------------------------------
 void startLeftSide() {
@@ -140,7 +142,7 @@ void startLeftSide() {
   headDirectionForNewPixels=-1;
   endLineStarted = true;
   //lastEndLineStarted = false;
-  lastChangeHead = "left";
+  lastChangeHead = "right";
 }
 //------------------------------------------------------------------------------------
 void brain() {
@@ -155,18 +157,18 @@ void brain() {
   // put new pixels
   if ( endLineStarted ) {
     // found expected direction
-    if ( lastChangeHead != "right" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && headDirection==1) ) ) {
+    if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && headDirection==1) ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
-      lastChangeHead = "right";
-      println("endLine right");
+      lastChangeHead = "left";
+      println("endLine left");
     }
-    if ( lastChangeHead != "left" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && headDirection==-1) ) ) { 
+    if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && headDirection==-1) ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
-      lastChangeHead = "left";
+      lastChangeHead = "right";
       if (current_row>rows && repedPatternMode==true) rows=0;
-      println("endLine left");
+      println("endLine right");
     }
     if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
       println("ADVANCING");

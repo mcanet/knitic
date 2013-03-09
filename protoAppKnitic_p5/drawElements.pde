@@ -72,7 +72,9 @@ void display() {
   else { 
     text("Not started", 30, 520);
   }
-  text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 570);
+  int n = round(counterMessagesReceive/(millis()*0.001)) ;
+  text("M per Sec: "+Integer.toString(n), 30, 550);
+  text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 590);
   text("Right pixel: "+Integer.toString(((100+rightStick)/8)), 30, 630);
   text(Integer.toString( -((section-1)*8)+(cols)+(100-rightStick)-16 ), 30, 700);
   text("lastChangeHead:"+lastChangeHead, 30, 740);
@@ -105,7 +107,8 @@ void display() {
   rect(width-buttonWithBar, 0, 15, height);  
   rect(width-buttonWithBar, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
   text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
-  text("MouseY:"+Integer.toString(patternMouseY), 855, 550);
+  text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
+  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600); 
 }
 
 void drawPattern() {
