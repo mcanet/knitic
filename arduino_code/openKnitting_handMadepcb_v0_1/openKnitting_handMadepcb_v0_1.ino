@@ -22,7 +22,7 @@ private:
   byte myDataOut;
 #ifdef arduinoTypeDUE
   int amegaPinsArray[16];
-  int ledArrayTemp[16];
+  int ledArray[16];
 #endif
   unsigned long lastArrayWrite;
   //Pin connected to ST_CP of 74HC595
@@ -45,10 +45,13 @@ public:
   solenoids(){
     changedsolenoids = true;
 #ifdef arduinoTypeDUE  
-    int ledArrayTemp[totalArrayFromSelenoids] =       {38,40,42,44,46,48,50,52,39,41,43,45,47,49,51,53};
-    int amegaPinsArrayTemp[totalArrayFromSelenoids] = {37,35,33,31,29,27,25,23,22,24,26,28,30,32,34,36};
+    int ledArrayTemp[totalArrayFromSelenoids] =       {
+      38,40,42,44,46,48,50,52,39,41,43,45,47,49,51,53        };
+    int amegaPinsArrayTemp[totalArrayFromSelenoids] = {
+      22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23        };
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
+      ledArray[i] = ledArrayTemp[i];
       pinMode(amegaPinsArrayTemp[i], OUTPUT);
       pinMode(ledArrayTemp[i], OUTPUT);
     }
@@ -71,7 +74,7 @@ public:
     pinMode(clockPin, OUTPUT);
     pinMode(dataPin, OUTPUT);
 
-    _16solenoids = "1010101010101010";
+    _16solenoids = "0000000000000000";
 
     // Holds the actual order in which the bits have to be shifted in
     dataArraypos[0] = 0x07;
@@ -96,6 +99,7 @@ public:
 
     for(int i=0;i<16;i++){
       solenoidstate[i] = (_16solenoids[i] != '0');
+      solenoidstateChanged[i] = true;
     }
 
     lastArrayWrite = millis();
@@ -135,12 +139,13 @@ public:
       if(solenoidstateChanged[i]==true){
         if(solenoidstate[i]==true){
           digitalWrite(amegaPinsArray[i], HIGH);
-          digitalWrite(ledArrayTemp[i], HIGH);
+          digitalWrite(ledArray[i], HIGH);
         }
         else{
           digitalWrite(amegaPinsArray[i], LOW);
-          digitalWrite(ledArrayTemp[i], LOW);
+          digitalWrite(ledArray[i], LOW);
         }
+        solenoidstateChanged[i]=false;
       }
     }
   }
@@ -180,31 +185,31 @@ public:
     shiftOutFast(dataPin,clockPin,data1);    
     latchOn();
   }
-  
-  //--- shiftOutFast - Shiftout method done in a faster way .. needed for tighter timer process
-void shiftOutFast(int myDataPin, int myClockPin, byte myDataOut) {
-  //=== This function shifts 8 bits out MSB first much faster than the normal shiftOut function by writing directly to the memory address for port
-  //--- clear data pin
-  dataOff();
 
-  //Send each bit of the myDataOut byte MSBFIRST
-  for (int i=7; i>=0; i--)  {
-    clockOff();
-    //--- Turn data on or off based on value of bit
-    if ( bitRead(myDataOut,i) == 1) {
-      dataOn();
-    }
-    else {      
+  //--- shiftOutFast - Shiftout method done in a faster way .. needed for tighter timer process
+  void shiftOutFast(int myDataPin, int myClockPin, byte myDataOut) {
+    //=== This function shifts 8 bits out MSB first much faster than the normal shiftOut function by writing directly to the memory address for port
+    //--- clear data pin
+    dataOff();
+
+    //Send each bit of the myDataOut byte MSBFIRST
+    for (int i=7; i>=0; i--)  {
+      clockOff();
+      //--- Turn data on or off based on value of bit
+      if ( bitRead(myDataOut,i) == 1) {
+        dataOn();
+      }
+      else {      
+        dataOff();
+      }
+      //register shifts bits on upstroke of clock pin  
+      clockOn();
+      //zero the data pin after shift to prevent bleed through
       dataOff();
     }
-    //register shifts bits on upstroke of clock pin  
-    clockOn();
-    //zero the data pin after shift to prevent bleed through
-    dataOff();
+    //stop shifting
+    digitalWrite(myClockPin, 0);
   }
-  //stop shifting
-  digitalWrite(myClockPin, 0);
-}
 
   void dataOff(){
     bitClear(PORTB,dataPinPORTB);
@@ -229,14 +234,14 @@ void shiftOutFast(int myDataPin, int myClockPin, byte myDataOut) {
   void latchOff(){
     bitClear(PORTB,latchPinPORTB);
   }
-/*
+  /*
   byte spi_transfer(byte data)
-  {
-    SPDR = data;            // Start the transmission
-    loop_until_bit_is_set(SPSR, SPIF); 
-    return SPDR;                    // return the received byte, we don't need that
-  }
-*/
+   {
+   SPDR = data;            // Start the transmission
+   loop_until_bit_is_set(SPSR, SPIF); 
+   return SPDR;                    // return the received byte, we don't need that
+   }
+   */
   // classic shiftOut -----------------------------------------------------
   void sendValuesToShifOut(byte data1, byte data2){
 
@@ -325,16 +330,16 @@ public:
   int lastEncoder0Pos;
   int headDirection;
   encoders(){
-    #ifdef arduinoTypeUNO
+#ifdef arduinoTypeUNO
     encoder0PinA = 2;
     encoder0PinB = 3;
     encoder0PinC = 4;
-    #endif
-     #ifdef arduinoTypeDUE
+#endif
+#ifdef arduinoTypeDUE
     encoder0PinA = 2;
     encoder0PinB = 3;
     encoder0PinC = 4;
-    #endif
+#endif
     headDirection = 0;
     encoder0Pos = -1000;
     lastEncoder0Pos = -1;
@@ -485,10 +490,14 @@ private:
   int endLineLeftAPin;
   int endLineRightAPin;
   int * encoderPos; 
-  int filterValueLeft;
-  int filterValueRight;
+  int filterValueLeftMin;
+  int filterValueRightMin;
+  int filterValueLeftMax;
+  int filterValueRightMax;
   int lastLeft;
   int lastRight;
+  int maxLeft;
+  int maxRight;
 public:
   boolean started;
   int * segmentPosition;
@@ -499,10 +508,14 @@ public:
   }
 
   void setup(){
-    endLineLeftAPin = 0;
-    endLineRightAPin = 1;
-    filterValueLeft = 730;
-    filterValueRight = 730;
+    maxLeft = 0;
+    maxRight= 0;
+    endLineLeftAPin = 1;
+    endLineRightAPin = 0;
+    filterValueLeftMin = 10;
+    filterValueRightMin = 10;
+    filterValueLeftMax = 730;
+    filterValueRightMax = 730;
     row = 0;
     started = false;
   }
@@ -514,14 +527,23 @@ public:
   }
 
   void loop(){
-    //if(analogRead(endLineLeftAPin)>600) Serial.println(analogRead(endLineLeftAPin));
-    if( analogRead(endLineLeftAPin) > filterValueLeft   ){
+    int valueEndLineLeft = analogRead(endLineLeftAPin);
+    int valueEndLineRight = analogRead(endLineRightAPin);
+    /*
+    if(maxLeft<=valueEndLineLeft){ 
+     maxLeft = valueEndLineLeft; 
+     //Serial.println(maxLeft);
+     }
+     
+     if(maxRight<valueEndLineRight){ 
+     maxRight = valueEndLineRight; 
+     //Serial.println(maxRight);
+     }
+     */
+    if( analogRead(endLineLeftAPin) <filterValueLeftMin || analogRead(endLineLeftAPin) >filterValueLeftMax){ 
       if(!lastLeft){
         *encoderPos = 200*4;
         *segmentPosition = 25;
-        //Serial.print("inside left:");
-        //Serial.print("change encoder0Pos:");
-        //Serial.println(*encoderPos);
         started = true;
       }
       lastLeft = true;
@@ -530,8 +552,7 @@ public:
       lastLeft = false;
     }
 
-    //if(analogRead(endLineRightAPin)>600) Serial.println(analogRead(endLineRightAPin));
-    if( analogRead(endLineRightAPin) > filterValueRight ){
+    if( valueEndLineRight <filterValueRightMin || analogRead(endLineRightAPin) >filterValueRightMax){
       if(!lastRight){
         *encoderPos = 0;
         *segmentPosition = 1;
@@ -651,7 +672,7 @@ public:
               }
               mysolenoids->solenoidstate[i] = false;
             }
-            else{
+            else if(pch[i]=='1'){
               if(mysolenoids->solenoidstate[i] != true){ 
                 changedsolenoids = true;
 #ifdef arduinoTypeDUE
@@ -757,6 +778,8 @@ void loop() {
   myEndlines.loop();
   myCommunicator.sendSerialToComputer();
 } 
+
+
 
 
 
