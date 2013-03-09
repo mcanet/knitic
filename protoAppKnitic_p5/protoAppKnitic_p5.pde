@@ -83,7 +83,7 @@ void draw() {
   drawPatternGrid();
   if (loadPattern) { 
     drawPattern();
-    if(status=="k") drawSelectedGrid();
+    if (status=="k") drawSelectedGrid();
   }
   //drawPatternThumbnail();
   myScrollBar.mouseMoveScroll();
@@ -126,6 +126,18 @@ void keyPressed() {
       headDirection =1;
     }
     section = ceil(float(stitch)/8.0f);
+  }
+  if (key=='1') {
+    _16Solenoids = "1100000000000000";
+  }
+  if (key=='2') {
+    _16Solenoids = "1010000100000001";
+  }
+  if (key=='3') {
+    _16Solenoids = "1111111100000000";
+  }
+  if (key=='4') {
+    _16Solenoids = "1111111111111111";
   }
 }
 //------------------------------------------------------------------------------------
@@ -176,7 +188,8 @@ void brain() {
       if (headDirection == -1)  rightDirection(); 
       if (headDirection == 1)   leftDirection();
       laststitch = stitch;
-    }else{
+    }
+    else {
       //println("not ADVANCING");
     }
   }
@@ -252,21 +265,21 @@ int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
 }
 /*
 int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
-  int posXPixel =  -((section-1)*8)+(cols+_x)+(100-rightStick)-offsetKeedles+16;
-  print(posXPixel);
-  print(" | ");
-  print(posXPixel);
-  print("<");
-  print(-(stitch-(200-offsetKeedles)));
-  if (posXPixel<-(16+stitch-(200-(offsetKeedles))) && posXPixel>=0 ) {
-    posXPixel = posXPixel+16;
-    print(" | pixel modify ");
-  }
-  print(" | pixelX:");
-  //println(posXPixel);
-  return posXPixel;
-}
-*/
+ int posXPixel =  -((section-1)*8)+(cols+_x)+(100-rightStick)-offsetKeedles+16;
+ print(posXPixel);
+ print(" | ");
+ print(posXPixel);
+ print("<");
+ print(-(stitch-(200-offsetKeedles)));
+ if (posXPixel<-(16+stitch-(200-(offsetKeedles))) && posXPixel>=0 ) {
+ posXPixel = posXPixel+16;
+ print(" | pixel modify ");
+ }
+ print(" | pixelX:");
+ //println(posXPixel);
+ return posXPixel;
+ }
+ */
 //------------------------------------------------------------
 int leftPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
   int posXPixel = -((section)*8)+(cols-1-_x)+(100-rightStick)+8+offsetKeedles; 

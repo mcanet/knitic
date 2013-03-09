@@ -100,7 +100,7 @@ void display() {
     text("USB: disconected", 865, 120);
   }
   text("Status: "+status+"/"+statusMachine, 865, 170);
-  text(_16Solenoids, 855, 310);
+  text(_16Solenoids, 840, 310);
   noStroke();
   // scroll bar
   fill(16, 62, 104);
@@ -207,6 +207,7 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
+      // Define the colors depending if is "1", "0" or "9" (9 this means pin not defined yet )
       if ( _16Solenoids.substring(i, i+1).equals("1") ) {
         if (getSelectedSelenoid(i)) {
           stroke(255, 0, 0);
@@ -236,8 +237,8 @@ void draw16selenoids() {
           fill(73, 202, 250);
         }
       }
-      //rect(2+(15-i)*10, 3, 5, 5);
-      rect(2+i*10, 3, 5, 5);
+      
+      rect(2+((15*10)-(i*10)), 3, 5, 5);
       noStroke();
     }
   }
