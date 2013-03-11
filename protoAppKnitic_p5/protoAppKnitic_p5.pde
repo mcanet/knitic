@@ -168,7 +168,7 @@ void brain() {
   }
   // put new pixels
   if ( endLineStarted ) {
-    // found expected direction
+    // END of LINE
     if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && headDirection==1) ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
@@ -182,11 +182,12 @@ void brain() {
       if (current_row>rows && repedPatternMode==true) rows=0;
       println("endLine right");
     }
+    // ADVANCING IN THE LINE
     if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
       println("ADVANCING");
       _16Solenoids = "";
-      if (headDirection == -1)  rightDirection(); 
       if (headDirection == 1)   leftDirection();
+      if (headDirection == -1)  rightDirection(); 
       laststitch = stitch;
     }
     else {
@@ -197,7 +198,34 @@ void brain() {
   lastSection = section;
   sendSerial();
 }
+//------------------------------------------------------------
+// THIS IS OK
+void leftDirection() {
+  println("leftDirection");
+  if ((section%2)!=0) {
+    println("section0");
+    for (int _x=8;_x<16;_x++) {
+      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick);
+      println(posXPixel);
+      getPixelsFromPosition(posXPixel);
+    }
+    for (int _x=0;_x<8;_x++) {
+      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick);
+      println(posXPixel);
+      getPixelsFromPosition(posXPixel);
+    }
+  }
+  else {
+    println("section1");
+    for (int _x=0;_x<16;_x++) {
+      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick)+32;
+      println(posXPixel);
+      getPixelsFromPosition(posXPixel);
+    }
+  }
+}
 //------------------------------------------------------------------------------------
+// NEED TO FIX
 void rightDirection() {
   println("rightDirection");
   if ((section%2)!=1) {
@@ -223,29 +251,18 @@ void rightDirection() {
   }
 }
 //------------------------------------------------------------
-void leftDirection() {
-  println("leftDirection");
-  if ((section%2)!=0) {
-    println("section0");
-    for (int _x=8;_x<16;_x++) {
-      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick);
-      println(posXPixel);
-      getPixelsFromPosition(posXPixel);
-    }
-    for (int _x=0;_x<8;_x++) {
-      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick);
-      println(posXPixel);
-      getPixelsFromPosition(posXPixel);
-    }
+int leftPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
+  int posXPixel = -((section)*8)+(cols-1-_x)+(100-rightStick)+8+offsetKeedles; 
+  print(" | ");
+  print(posXPixel);
+  print("<");
+  print((200+offsetKeedles)-stitch);
+  if ( int(posXPixel)>=int((200+offsetKeedles)-stitch)  ) {
+    posXPixel = posXPixel-16;
+    print(" | pixel modify ");
   }
-  else {
-    println("section1");
-    for (int _x=0;_x<16;_x++) {
-      int posXPixel =  leftPixelPosCalculator(section, cols, _x, rightStick );//-((section)*8)+(cols-1-_x)+(100-rightStick)+32;
-      println(posXPixel);
-      getPixelsFromPosition(posXPixel);
-    }
-  }
+  print(" | pixelX:");
+  return posXPixel;
 }
 //------------------------------------------------------------
 int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
@@ -280,20 +297,6 @@ int rightPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
  return posXPixel;
  }
  */
-//------------------------------------------------------------
-int leftPixelPosCalculator(int section, int cols, int _x, int rightStick ) {
-  int posXPixel = -((section)*8)+(cols-1-_x)+(100-rightStick)+8+offsetKeedles; 
-  print(" | ");
-  print(posXPixel);
-  print("<");
-  print((200+offsetKeedles)-stitch);
-  if ( int(posXPixel)>=int((200+offsetKeedles)-stitch)  ) {
-    posXPixel = posXPixel-16;
-    print(" | pixel modify ");
-  }
-  print(" | pixelX:");
-  return posXPixel;
-}
 //------------------------------------------------------------
 void getPixelsFromPosition(int posXPixel) {
   try {

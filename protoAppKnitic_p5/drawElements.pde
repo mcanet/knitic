@@ -156,11 +156,11 @@ void drawPatternGrid() {
   catch(Exception e) {
   }
 }
-
+/*
 void drawSelectedGrid() {
   int sectionM = section;
-  if (headDirection==-1) sectionM +=4;
-  if (headDirection==1)  sectionM -=4;
+  if (headDirection==-1) sectionM +=4; // right
+  if (headDirection==1)  sectionM -=4; // left
   if (sectionM>25) sectionM =25;
   if (sectionM<1)  sectionM =1; 
   pushMatrix();
@@ -195,6 +195,64 @@ void drawSelectedGrid() {
   catch(Exception e) {
   }
   popMatrix();
+}
+*/
+
+void drawSelectedGrid() {
+  int stitchViz = stitch;
+  int leftReduced  = 24;
+  int rightReduced = 24;
+  int totalCub = 16;
+  // LEFT visualization
+  if(stitch<leftReduced && headDirection==1){ 
+      stitchViz = 0;
+      if(stitch>8){
+        totalCub = (stitch-8);
+      }else{
+        totalCub =0;
+      }
+  }else if(headDirection==1){
+      stitchViz = stitch-leftReduced;
+      if(stitch>208){
+        totalCub = 16-(stitch-208);
+      }
+  }
+  // RIGHT visualization
+  if(stitch>176 && headDirection==-1){ 
+      stitchViz = 200;
+      if(stitch<192){
+        totalCub = 192-stitch;
+        println("First part :"+Integer.toString(totalCub));
+      }else{
+        totalCub =0;
+      }
+  }else if(headDirection==-1){
+      stitchViz = stitch+rightReduced;
+      println("Second part");
+      if(stitch<-8){
+        totalCub = 16+(stitch+8);
+      }
+  }
+  // Draw 
+  if(totalCub>0){
+    pushMatrix();
+    int cubSize = 3;
+    translate(buttonWithBar+cubSize*199, 0);
+    int y = (rows-1)-current_row;
+    // Color direction
+    int width16Solenoids = cubSize*totalCub;
+    if(headDirection==1){
+      fill(255, 0, 0, 150);
+      rect(-((stitchViz-1)*cubSize)-width16Solenoids, y*cubSize, width16Solenoids, cubSize);
+    }else{
+      fill(0, 255, 0, 150);
+      rect(-((stitchViz-1)*cubSize), y*cubSize, width16Solenoids, cubSize);
+    }
+    
+    
+    popMatrix();
+  }
+  
 }
 
 void draw16selenoids() {
