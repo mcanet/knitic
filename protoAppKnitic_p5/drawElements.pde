@@ -108,7 +108,7 @@ void display() {
   rect(width-buttonWithBar, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
   text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
   text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
-  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600); 
+  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
 }
 
 void drawPattern() {
@@ -156,103 +156,99 @@ void drawPatternGrid() {
   catch(Exception e) {
   }
 }
-/*
-void drawSelectedGrid() {
-  int sectionM = section;
-  if (headDirection==-1) sectionM +=4; // right
-  if (headDirection==1)  sectionM -=4; // left
-  if (sectionM>25) sectionM =25;
-  if (sectionM<1)  sectionM =1; 
-  pushMatrix();
-  int cubSize = 3;
-  translate(buttonWithBar+cubSize*199, 0);
-  if (img.height>800) { 
-    translate(0, (current_row*sizePixel)-posYOffSetPattern);
-  }
-  try {
-    int y = (rows-1)-current_row;
-    for (int x=0;x<200;x++) {
-      if ( (headDirection==-1 && x>=((sectionM-2)*8) && x<((sectionM)*8)) 
-        || (headDirection==1 && x>=((sectionM-1)*8) && x<((sectionM+1)*8)) 
-        || (sectionM==25 && x>=((sectionM-2)*8) && x<((sectionM)*8)) 
-        || (sectionM==1 && x>=((sectionM)*8) && x<((sectionM+1)*8)) 
-        ) {
-        fill(255, 0, 0, 150);
-        if (lastChangeHead == "left") {
-          rect(-(x*cubSize), y*cubSize, cubSize, cubSize);
-        }
-        else {
-          if (sectionM<5) {
-            rect(-(x*cubSize), y*cubSize, cubSize, cubSize);
-          }
-          else {
-            rect(-(x*cubSize-(32*cubSize)), y*cubSize, cubSize, cubSize);
-          }
-        }
-      }
+
+void drawAndSetSelectedGrid() {
+  int stitchViz = stitch;
+  int startStitch  = 24;
+  int totalCub = 16;
+  _16Solenoids = "";
+  // LEFT visualization
+  if (stitch<startStitch && headDirection==1) { 
+    stitchViz = 0;
+    if (stitch>8) {
+      totalCub = (stitch-8);
+    }
+    else {
+      totalCub =0;
     }
   }
-  catch(Exception e) {
-  }
-  popMatrix();
-}
-*/
-
-void drawSelectedGrid() {
-  int stitchViz = stitch;
-  int leftReduced  = 24;
-  int rightReduced = 24;
-  int totalCub = 16;
-  // LEFT visualization
-  if(stitch<leftReduced && headDirection==1){ 
-      stitchViz = 0;
-      if(stitch>8){
-        totalCub = (stitch-8);
-      }else{
-        totalCub =0;
-      }
-  }else if(headDirection==1){
-      stitchViz = stitch-leftReduced;
-      if(stitch>208){
-        totalCub = 16-(stitch-208);
-      }
+  else if (headDirection==1) {
+    stitchViz = stitch-startStitch;
+    if (stitch>208) {
+      totalCub = 16-(stitch-208);
+    }
   }
   // RIGHT visualization
-  if(stitch>176 && headDirection==-1){ 
-      stitchViz = 200;
-      if(stitch<192){
-        totalCub = 192-stitch;
-        println("First part :"+Integer.toString(totalCub));
-      }else{
-        totalCub =0;
-      }
-  }else if(headDirection==-1){
-      stitchViz = stitch+rightReduced;
-      println("Second part");
-      if(stitch<-8){
-        totalCub = 16+(stitch+8);
-      }
+  if (stitch>176 && headDirection==-1) { 
+    stitchViz = 200;
+    if (stitch<192) {
+      totalCub = 192-stitch;
+      println("First part :"+Integer.toString(totalCub));
+    }
+    else {
+      totalCub =0;
+    }
+  }
+  else if (headDirection==-1) {
+    stitchViz = stitch+startStitch;
+    println("Second part");
+    if (stitch<-8) {
+      totalCub = 16+(stitch+8);
+    }
+  }
+  for (int i=0;i<16;i++) {
+    _16SolenoidsAr[i]="9";
   }
   // Draw 
-  if(totalCub>0){
+  if (totalCub>0) {
     pushMatrix();
     int cubSize = 3;
     translate(buttonWithBar+cubSize*199, 0);
     int y = (rows-1)-current_row;
     // Color direction
     int width16Solenoids = cubSize*totalCub;
-    if(headDirection==1){
+
+    if (headDirection==1) {
       fill(255, 0, 0, 150);
       rect(-((stitchViz-1)*cubSize)-width16Solenoids, y*cubSize, width16Solenoids, cubSize);
-    }else{
+      for (int i=(stitchViz-1);i<(stitchViz+totalCub);i++) {
+        int solenoidId = ((i)%16);
+        int pixelId = getReadPixelsFromPosition(i);
+        if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
+          _16SolenoidsAr[solenoidId] = "1";
+        }
+        else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
+          _16SolenoidsAr[solenoidId] = "0";
+        }
+        else if (pixelId==9 && solenoidId<16 && solenoidId>=0) {
+          _16SolenoidsAr[solenoidId] = "9";
+        }
+      }
+    }
+    else {
       fill(0, 255, 0, 150);
       rect(-((stitchViz-1)*cubSize), y*cubSize, width16Solenoids, cubSize);
+
+      for (int i=(stitchViz-1);i>((stitchViz-1)-totalCub);i--) {
+        int solenoidId = ((i)%16);
+        int pixelId = getReadPixelsFromPosition(i);
+        if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
+          _16SolenoidsAr[solenoidId] = "1";
+        }
+        else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
+          _16SolenoidsAr[solenoidId] = "0";
+        }
+        else if (pixelId==9 && solenoidId<16 && solenoidId>=0) {
+          _16SolenoidsAr[solenoidId] = "9";
+        }
+      }
     }
-    
-    
     popMatrix();
   }
-  
+  // pass from array to string to send to arduino
+  for (int i=0;i<16;i++) {
+    _16Solenoids +=_16SolenoidsAr[i];
+  }
 }
 
 void draw16selenoids() {
@@ -267,35 +263,18 @@ void draw16selenoids() {
     for (int i=0;i<16;i++) {
       // Define the colors depending if is "1", "0" or "9" (9 this means pin not defined yet )
       if ( _16Solenoids.substring(i, i+1).equals("1") ) {
-        if (getSelectedSelenoid(i)) {
-          stroke(255, 0, 0);
-        }
-        else {
-          stroke(0);
-        }
+        stroke(0);
         fill(255, 255, 255);
       }
       else if ( _16Solenoids.substring(i, i+1).equals("0") ) {
-        if (getSelectedSelenoid(i)) {
-          stroke(255, 0, 0);
-        }
-        else {
-          stroke(0);
-        }
+        stroke(0);
         fill(0, 0, 0);
       }
       else if ( _16Solenoids.substring(i, i+1).equals("9") ) {
         noStroke();
-        if (getSelectedSelenoid(i)) {
-          stroke(255, 0, 0);
-          fill(73, 202, 250);
-        }
-        else {
-          stroke(73, 202, 250);
-          fill(73, 202, 250);
-        }
+        stroke(73, 202, 250);
+        fill(73, 202, 250);
       }
-      
       rect(2+((15*10)-(i*10)), 3, 5, 5);
       noStroke();
     }
@@ -304,10 +283,5 @@ void draw16selenoids() {
     _16Solenoids.length();
   }
   popMatrix();
-}
-
-boolean getSelectedSelenoid(int i) {
-  //return stitch%16==i+1 || stitch%16==0 && i==15;
-  return false;
 }
 
