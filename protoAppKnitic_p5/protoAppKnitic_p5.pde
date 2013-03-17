@@ -12,7 +12,7 @@ import processing.serial.*;
 //------------------------------------------------------------------------------------
 ControlP5 controlP5;
 scrollBar myScrollBar;
-Serial myPort;  
+Serial myPort = null;  
 PImage kniticLogo;
 PImage img;
 PFont laurentFont;
@@ -176,32 +176,20 @@ void brain() {
   // put new pixels
   if ( endLineStarted ) {
     // END of LINE
-    if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && headDirection==1) ) ) {
+    if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && lastChangeHead != "left") ) ) {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "left";
+      if (current_row>=rows && repedPatternMode==true) current_row=0;
       println("endLine left");
     }
-    if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && headDirection==-1) ) ) { 
+    if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
       lastChangeHead = "right";
-      if (current_row>rows && repedPatternMode==true) rows=0;
+      if (current_row>=rows && repedPatternMode==true) current_row=0;
       println("endLine right");
     }
-    // ADVANCING IN THE LINE
-    /*
-    if (stitch!=laststitch && headDirectionForNewPixels==headDirection ) {
-      println("ADVANCING");
-      //_16Solenoids = "";
-      //if (headDirection == 1)   leftDirection();
-      //if (headDirection == -1)  rightDirection(); 
-      laststitch = stitch;
-    }
-    else {
-      //println("not ADVANCING");
-    }
-    */
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;

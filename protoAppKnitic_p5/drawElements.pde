@@ -66,6 +66,13 @@ void display() {
   else {
     text("Right Stick: "+Integer.toString(rightStick), 30, 470);
   } 
+  if (repedPatternMode) {
+    text("Repeat: true", 30, 500);
+  }
+  else {
+    text("Repeat: false", 30, 500);
+  } 
+  
   if (endLineStarted) { 
     text("Started", 30, 520);
   }
@@ -113,18 +120,18 @@ void display() {
 
 void drawPattern() {
   pushMatrix();
-  translate(buttonWithBar+((100-leftStick)*sizePixel), 0);
-  if (img.height>800) { 
-    translate(0, (current_row*sizePixel)-posYOffSetPattern);
-  }
+  translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel),((27-rows)+current_row)*sizePixel);
   noSmooth();
+  scale(-1,1);
+  
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
   smooth();
-  for (int x=0;x<cols;x++) {
+  // draw grid
+  for (int x=0;x<cols+1;x++) {
     stroke(0);
     line(x*sizePixel, 0, x*sizePixel, rows*sizePixel);
   }
-  for (int y=0;y<rows;y++) {
+  for (int y=0;y<rows+1;y++) {
     stroke(0);
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
@@ -202,18 +209,17 @@ void drawAndSetSelectedGrid() {
   // Draw 
   if (totalCub>0) {
     pushMatrix();
-    int cubSize = 3;
-    translate(buttonWithBar+cubSize*199, 0);
-    int y = (rows-1)-current_row;
+    translate(buttonWithBar+sizePixel*199, 0);
+    int y = 26;//(rows-1)-current_row;
     // Color direction
-    int width16Solenoids = cubSize*totalCub;
-
+    int width16Solenoids = sizePixel*totalCub;
+    int rightStickOffset = 100-rightStick;
     if (headDirection==1) {
       fill(255, 0, 0, 150);
-      rect(-((stitchViz-1)*cubSize)-width16Solenoids, y*cubSize, width16Solenoids, cubSize);
+      rect(-((stitchViz-1)*sizePixel)-width16Solenoids, y*sizePixel, width16Solenoids, sizePixel);
       for (int i=(stitchViz-1);i<(stitchViz+totalCub);i++) {
         int solenoidId = ((i)%16);
-        int pixelId = getReadPixelsFromPosition(i);
+        int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
         if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
           _16SolenoidsAr[solenoidId] = "1";
         }
@@ -227,11 +233,11 @@ void drawAndSetSelectedGrid() {
     }
     else {
       fill(0, 255, 0, 150);
-      rect(-((stitchViz-1)*cubSize), y*cubSize, width16Solenoids, cubSize);
+      rect(-((stitchViz-1)*sizePixel), y*sizePixel, width16Solenoids, sizePixel);
 
       for (int i=(stitchViz-1);i>((stitchViz-1)-totalCub);i--) {
         int solenoidId = ((i)%16);
-        int pixelId = getReadPixelsFromPosition(i);
+        int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
         if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
           _16SolenoidsAr[solenoidId] = "1";
         }

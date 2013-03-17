@@ -8,18 +8,16 @@ void addButtonsInSetup() {
 
 void controlEvent(ControlEvent theEvent) {
   println(theEvent.controller().id());
-  //if (theEvent.controller().id()==1) startknitting();
-  //if (theEvent.controller().id()==2) stopknitting();
   if (theEvent.controller().id()==3) openknittingPattern();
   if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
-  if (theEvent.controller().id()==5) {
-    String new_current_row = JOptionPane.showInputDialog(frame, "To whish row you want to jump ?", Integer.toString(current_row));
-    if ( !Integer.toString(current_row).equals(new_current_row) ) {
-      current_row = Integer.valueOf(new_current_row);
-    }
-  }
-  if (theEvent.controller().id()==6) {
-    editPixels =!editPixels;
+  if (theEvent.controller().id()==5) jumpToRow();
+  if (theEvent.controller().id()==6) editPixels =!editPixels;
+}
+
+void jumpToRow() {
+  String new_current_row = JOptionPane.showInputDialog(frame, "To whish row you want to jump ?", Integer.toString(current_row));
+  if ( !Integer.toString(current_row).equals(new_current_row) ) {
+    current_row = Integer.valueOf(new_current_row);
   }
 }
 
@@ -73,20 +71,14 @@ void fillArrayWithImage(String imgPath) {
         rightStick +=1;
       }
 
-      String userStartStick="";
       if (cols!=200) {
-
-        userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
-        if (!userStartStick.equals(Integer.toString(leftStick))) {
-          leftStick = Integer.valueOf(userStartStick);
-          rightStick = (cols+(100-leftStick))-100;
-        }
+        howMuchPatternToLeft("");
       }
 
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
-          int loc = /*(cols-1)-*/x + y*cols;
+          int loc = (cols-1)-x + y*cols;
           if (brightness(img.pixels[loc]) > threshold) {
             pixelArray[x][y] = 0;
           }
@@ -100,5 +92,23 @@ void fillArrayWithImage(String imgPath) {
   }
   catch(Exception e) {
   }
+}
+
+void howMuchPatternToLeft(String message) {
+  String userStartStick="";
+  if(message==""){
+    userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
+  }else{
+    userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
+  }
+  if (!userStartStick.equals(Integer.toString(leftStick))) {
+      if((100-Integer.valueOf(userStartStick))+cols>200 ){  
+        howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
+      }else{
+        leftStick = Integer.valueOf(userStartStick);
+        rightStick = (cols+(100-leftStick))-100;
+      }
+    }
+  
 }
 
