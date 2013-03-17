@@ -1,4 +1,4 @@
-knitic
+Knitic
 ======
 
 This code is part of a project to make an open hardware knitting machine at the moment based in old electronic Brother knitting machines. Here we are testing with KH930, but we will work with any Digital Brother Knitting machine. 
