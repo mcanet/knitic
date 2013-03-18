@@ -26,7 +26,6 @@ void jumpToRow() {
 }
 
 void udpLivePatternMode(){
-
 }
 
 void changeEditPixels() {

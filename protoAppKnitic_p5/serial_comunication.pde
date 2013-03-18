@@ -38,7 +38,7 @@ void autoConnectAndReceiveSerial() {
 void sendSerial() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
-      String _16SolenoidsNew = _16Solenoids.replace('9', '0');
+      String _16SolenoidsNew = _16Solenoids.replace('9', '1');
       String message = ",s,"+_16SolenoidsNew+","+status+",e,";
       println(_16SolenoidsNew);
       myPort.write(message);
