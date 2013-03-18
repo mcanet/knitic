@@ -5,6 +5,7 @@ Prototipe Knitic
 // libraries
 //------------------------------------------------------------------------------------
 import javax.swing.JOptionPane;
+import javax.swing.ImageIcon;
 import controlP5.*;
 import processing.serial.*;
 //------------------------------------------------------------------------------------
@@ -64,18 +65,21 @@ void setup() {
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
+    ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
+    frame.setIconImage(titlebaricon.getImage());
   }
   // List all the available serial ports:
   println(Serial.list());
   setupSerialConnection();
   addButtonsInSetup();
   kniticLogo = loadImage("logo_knitic.png");
-  laurentFont = loadFont("LaurenScript-20.vlw");
+  laurentFont = loadFont("Quantico-Regular-20.vlw");
   myScrollBar = new scrollBar();
   currentPixels = new int[200];
   _16SolenoidsAr = new String[16]; 
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
+  
 }
 //------------------------------------------------------------------------------------
 void draw() {

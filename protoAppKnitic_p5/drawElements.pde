@@ -13,109 +13,124 @@ void display() {
   textFont(laurentFont); 
   stroke(255);
   noFill();
-  rect(25, 90, 180, 35);
-  rect(25, 140, 180, 35);
-  rect(25, 190, 180, 35);
-  rect(25, 240, 180, 35);
-  rect(25, 290, 180, 35);
-  rect(25, 340, 180, 35);
-  rect(25, 390, 180, 35);
-  rect(25, 440, 180, 35);
-  rect(25, 490, 180, 35);
+  rect(15, 90, 190, 35);
+  rect(15, 140, 190, 35);
+  rect(15, 190, 190, 35);
+  rect(15, 240, 190, 35);
+  rect(15, 290, 190, 35);
+  rect(15, 340, 190, 35);
+  rect(15, 390, 190, 35);
+  rect(15, 440, 190, 35);
+  
   fill(255); 
   // columne left
-  if (current_row<0) { 
-    text("Row:-", 30, 120);
+  if (usbConected) {    
+    text("USB: connected", 20, 120);
   }
   else { 
-    text("Row:"+Integer.toString(current_row), 30, 120);
+    text("USB: disconnected", 20, 120);
   }
-  if (section==-999) {
-    text("Section: -", 30, 170);
+  if (current_row<0) { 
+    text("Row:-", 20, 170);
   }
-  else {
-    text("Section: "+Integer.toString(section), 30, 170);
+  else { 
+    text("Row:"+Integer.toString(current_row), 20, 170);
   }
   if (stitch==-999) {
-    text("Stitch: -", 30, 220);
+    text("Stitch: -", 20, 220);
   }
   else {
-    text("Stitch: "+Integer.toString(stitch), 30, 220);
+    text("Stitch: "+Integer.toString(stitch), 20, 220);
   }
   if (cols<0) {
-    text("Width: -", 30, 320);
+    text("Width: -", 20, 320);
   }
   else {
-    text("Width: "+Integer.toString(cols), 30, 320);
+    text("Width: "+Integer.toString(cols), 20, 320);
   } 
   if (rows<0) {
-    text("Height: -", 30, 370);
+    text("Height: -", 20, 370);
   }
   else {
-    text("Height: "+Integer.toString(rows), 30, 370);
+    text("Height: "+Integer.toString(rows), 20, 370);
   }
   if (leftStick<0) {
-    text("Left Stick: -", 30, 420);
+    text("Left Stick: -", 20, 420);
   }
   else {
-    text("Left Stick: "+Integer.toString(leftStick), 30, 420);
+    text("Left Stick: "+Integer.toString(leftStick), 20, 420);
   }
   if (rightStick<0) {
-    text("Right Stick: -", 30, 470);
+    text("Right Stick: -", 20, 470);
   }
   else {
-    text("Right Stick: "+Integer.toString(rightStick), 30, 470);
+    text("Right Stick: "+Integer.toString(rightStick), 20, 470);
   } 
+  
+  fill(255);
+  if (headDirection==0) { 
+    text("Direction: none", 20, 270);
+  }
+  else if (headDirection==1) { 
+    text("Direction: left", 20, 270);
+  }
+  else if (headDirection==-1) { 
+    text("Direction: right", 20, 270);
+  }
+  
+ 
+  noStroke();
+  // scroll bar
+  fill(16, 62, 104);
+  rect(buttonWithBar-9, 0, 9, height);
+  rect(width-buttonWithBar, 0, 9, height);
+  // show small lines for rail of visualization knitles 
+  noStroke();
+  fill(255);
+  rect(buttonWithBar-9, 26*3+1,9, 2);
+  rect((width-buttonWithBar), 26*3+1,9, 2);
+  stroke(255);
+}
+
+void drawDebugVariables(){
+  rect(15, 490, 190, 35);
+  if (endLineStarted) { 
+    text("Started", 20, 520);
+  }
+  else { 
+    text("Not started", 20, 520);
+  }
+  
+  stroke(255);
+  noFill();
+  rect(855, 140, 180, 35);
+  fill(255);
+  text("Status: "+status+"/"+statusMachine, 865, 170);
+  
+  int n = round(counterMessagesReceive/(millis()*0.001)) ;
+  text("M per Sec: "+Integer.toString(n), 30, 550);
+  
+  text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
+  text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
+  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
+  
   if (repedPatternMode) {
     text("Repeat: true", 30, 500);
   }
   else {
     text("Repeat: false", 30, 500);
   } 
-  
-  if (endLineStarted) { 
-    text("Started", 30, 520);
-  }
-  else { 
-    text("Not started", 30, 520);
-  }
-  int n = round(counterMessagesReceive/(millis()*0.001)) ;
-  text("M per Sec: "+Integer.toString(n), 30, 550);
-  text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 590);
+   text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 590);
   text("Right pixel: "+Integer.toString(((100+rightStick)/8)), 30, 630);
   text(Integer.toString( -((section-1)*8)+(cols)+(100-rightStick)-16 ), 30, 700);
   text("lastChangeHead:"+lastChangeHead, 30, 740);
-  // columne right
-  stroke(255);
-  noFill();
-  rect(855, 140, 180, 35);
-  rect(855, 90, 180, 35);
-  fill(255);
-  if (headDirection==0) { 
-    text("Direction: none", 30, 270);
+  if (section==-999) {
+    text("Section: -", 30, 170);
   }
-  else if (headDirection==1) { 
-    text("Direction: left", 30, 270);
+  else {
+    text("Section: "+Integer.toString(section), 30, 170);
   }
-  else if (headDirection==-1) { 
-    text("Direction: right", 30, 270);
-  }
-  if (usbConected) {    
-    text("USB: conected", 865, 120);
-  }
-  else { 
-    text("USB: disconected", 865, 120);
-  }
-  text("Status: "+status+"/"+statusMachine, 865, 170);
   text(_16Solenoids, 840, 310);
-  noStroke();
-  // scroll bar
-  fill(16, 62, 104);
-  rect(width-buttonWithBar, 0, 15, height);  
-  rect(width-buttonWithBar, myScrollBar.posYscrollBar, 15, myScrollBar.heightYScrollBar);
-  text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
-  text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
-  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
 }
 
 void drawPattern() {

@@ -1,9 +1,11 @@
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
   controlP5.addButton("Open", 4, 855, 45, 40, 30).setId(3);
-  controlP5.addToggle("Repeating pattern mode", true, 855, 205, 20, 20).setId(4);
-  controlP5.addButton("Go to row", 4, 855, 255, 80, 30).setId(5);
-  controlP5.addButton("Start edit image", 4, 855, 455, 80, 30).setId(6);
+  controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
+  //controlP5.addToggle("UDP live pattern mode", true, 855, 255, 20, 20).setId(8);
+  controlP5.addButton("Go to row", 4, 855, 90, 80, 30).setId(5);
+  controlP5.addButton("Move pattern", 4, 855, 130, 80, 30).setId(6);
+  controlP5.addButton("Start edit image", 4, 855, 170, 80, 30).setId(7);
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -11,7 +13,9 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.controller().id()==3) openknittingPattern();
   if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
   if (theEvent.controller().id()==5) jumpToRow();
-  if (theEvent.controller().id()==6) editPixels =!editPixels;
+  if (theEvent.controller().id()==6) howMuchPatternToLeft("");
+  if (theEvent.controller().id()==7) changeEditPixels();
+  if (theEvent.controller().id()==8) udpLivePatternMode();
 }
 
 void jumpToRow() {
@@ -21,14 +25,25 @@ void jumpToRow() {
   }
 }
 
-void updateEditPixels() {
+void udpLivePatternMode(){
+
+}
+
+void changeEditPixels() {
+  editPixels =!editPixels;
   if (editPixels) {
     cursor(CROSS);
-    //controlP5.getId(6).setText("Stop edit image");
+    controlP5.controller("Start edit image").captionLabel().set("Stop edit image");
   } 
   else {
+    controlP5.controller("Start edit image").captionLabel().set("Start edit image");
     cursor(ARROW);
-    //controlP5.getId(6).setText("Start edit image");
+  }
+}
+void updateEditPixels() {
+  if (editPixels) {
+  } 
+  else {
   }
 }
 
@@ -96,19 +111,20 @@ void fillArrayWithImage(String imgPath) {
 
 void howMuchPatternToLeft(String message) {
   String userStartStick="";
-  if(message==""){
+  if (message=="") {
     userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
-  }else{
+  }
+  else {
     userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
   }
   if (!userStartStick.equals(Integer.toString(leftStick))) {
-      if((100-Integer.valueOf(userStartStick))+cols>200 ){  
-        howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
-      }else{
-        leftStick = Integer.valueOf(userStartStick);
-        rightStick = (cols+(100-leftStick))-100;
-      }
+    if ((100-Integer.valueOf(userStartStick))+cols>200 ) {  
+      howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
     }
-  
+    else {
+      leftStick = Integer.valueOf(userStartStick);
+      rightStick = (cols+(100-leftStick))-100;
+    }
+  }
 }
 

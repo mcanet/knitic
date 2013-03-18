@@ -1,7 +1,7 @@
 void showCursorPosition() {
   if ( mouseX>buttonWithBar && mouseX<(width-buttonWithBar) ) {
-    patternMouseX = (mouseX-buttonWithBar)/sizePixel;
-    patternMouseY = (mouseY/sizePixel);
+    patternMouseX = cols -(((mouseX-buttonWithBar)/sizePixel)-(100-leftStick))-1 ;
+    patternMouseY = (mouseY/sizePixel)-(27-rows)+current_row+1;
   }
 }
 
