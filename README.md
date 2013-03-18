@@ -7,7 +7,7 @@ Here we are testing with KH930, KH940, but we will work with any Digital Brother
 We have developed in an artist residency at Marginalia+Lab in Belo Horizonte (Brazil) and Constant(Belgium). 
 There more information in the project website: http://knitic.com
 
-Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcanet.info). We are a couple of new media artist that we like to buidl our own tools.
+Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcanet.info). We are a couple of new media artist that we like to build our own tools.
 
 
 The project copyright with GNU-GPL: http://es.wikipedia.org/wiki/GNU_General_Public_License
