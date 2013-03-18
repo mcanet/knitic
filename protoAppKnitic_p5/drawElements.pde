@@ -21,7 +21,7 @@ void display() {
   rect(15, 340, 190, 35);
   rect(15, 390, 190, 35);
   rect(15, 440, 190, 35);
-  
+
   fill(255); 
   // columne left
   if (usbConected) {    
@@ -66,7 +66,7 @@ void display() {
   else {
     text("Right Stick: "+Integer.toString(rightStick), 20, 470);
   } 
-  
+
   fill(255);
   if (headDirection==0) { 
     text("Direction: none", 20, 270);
@@ -77,8 +77,6 @@ void display() {
   else if (headDirection==-1) { 
     text("Direction: right", 20, 270);
   }
-  
- 
   noStroke();
   // scroll bar
   fill(16, 62, 104);
@@ -87,12 +85,12 @@ void display() {
   // show small lines for rail of visualization knitles 
   noStroke();
   fill(255);
-  rect(buttonWithBar-9, 26*3+1,9, 2);
-  rect((width-buttonWithBar), 26*3+1,9, 2);
+  rect(buttonWithBar-9, 26*3+1, 9, 2);
+  rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
 }
 
-void drawDebugVariables(){
+void drawDebugVariables() {
   rect(15, 490, 190, 35);
   if (endLineStarted) { 
     text("Started", 20, 520);
@@ -100,27 +98,27 @@ void drawDebugVariables(){
   else { 
     text("Not started", 20, 520);
   }
-  
+
   stroke(255);
   noFill();
   rect(855, 140, 180, 35);
   fill(255);
   text("Status: "+status+"/"+statusMachine, 865, 170);
-  
+
   int n = round(counterMessagesReceive/(millis()*0.001)) ;
   text("M per Sec: "+Integer.toString(n), 30, 550);
-  
+
   text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
   text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
   text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
-  
+
   if (repedPatternMode) {
     text("Repeat: true", 30, 500);
   }
   else {
     text("Repeat: false", 30, 500);
   } 
-   text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 590);
+  text("Left pixel: "+Integer.toString(((100-leftStick)/8)), 30, 590);
   text("Right pixel: "+Integer.toString(((100+rightStick)/8)), 30, 630);
   text(Integer.toString( -((section-1)*8)+(cols)+(100-rightStick)-16 ), 30, 700);
   text("lastChangeHead:"+lastChangeHead, 30, 740);
@@ -135,10 +133,9 @@ void drawDebugVariables(){
 
 void drawPattern() {
   pushMatrix();
-  translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel),((27-rows)+current_row)*sizePixel);
+  translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
   noSmooth();
-  scale(-1,1);
-  
+  scale(-1, 1);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
   smooth();
   // draw grid
@@ -222,53 +219,72 @@ void drawAndSetSelectedGrid() {
     _16SolenoidsAr[i]="9";
   }
   // Draw 
+
   if (totalCub>0) {
     pushMatrix();
     translate(buttonWithBar+sizePixel*199, 0);
-    int y = 26;//(rows-1)-current_row;
+    int y = 26;          
     // Color direction
     int width16Solenoids = sizePixel*totalCub;
     int rightStickOffset = 100-rightStick;
-    if (headDirection==1) {
-      fill(255, 0, 0, 150);
-      rect(-((stitchViz-1)*sizePixel)-width16Solenoids, y*sizePixel, width16Solenoids, sizePixel);
-      for (int i=(stitchViz-1);i<(stitchViz+totalCub);i++) {
-        int solenoidId = ((i)%16);
-        int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
-        if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
-          _16SolenoidsAr[solenoidId] = "1";
+    try {
+      if (headDirection==1) {
+        fill(255, 0, 0, 150);
+        rect(-((stitchViz-1)*sizePixel)-width16Solenoids, y*sizePixel, width16Solenoids, sizePixel);
+        for (int i=(stitchViz-1);i<(stitchViz+totalCub);i++) {
+          int solenoidId = ((i)%16);
+          int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
+          if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
+            _16SolenoidsAr[solenoidId] = "1";
+          }
+          else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
+            _16SolenoidsAr[solenoidId] = "0";
+          }
+          else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz<(201) ) {
+            _16SolenoidsAr[solenoidId] = "9";
+          }
+          else if (stitchViz>=201 ) {
+            _16SolenoidsAr[solenoidId] = "0";
+          }
         }
-        else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-          _16SolenoidsAr[solenoidId] = "0";
-        }
-        else if (pixelId==9 && solenoidId<16 && solenoidId>=0) {
-          _16SolenoidsAr[solenoidId] = "9";
+      }
+      else {
+        fill(0, 255, 0, 150);
+        rect(-((stitchViz-1)*sizePixel), y*sizePixel, width16Solenoids, sizePixel);
+        for (int i=(stitchViz-1);i>((stitchViz-1)-totalCub);i--) {
+          int solenoidId = ((i)%16);
+          int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
+          if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
+            _16SolenoidsAr[solenoidId] = "1";
+          }
+          else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
+            _16SolenoidsAr[solenoidId] = "0";
+          }
+          else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz>-1) {
+            _16SolenoidsAr[solenoidId] = "9";
+          }
+          else if (stitchViz<=-1 ) {
+            _16SolenoidsAr[solenoidId] = "0";
+          }
         }
       }
     }
-    else {
-      fill(0, 255, 0, 150);
-      rect(-((stitchViz-1)*sizePixel), y*sizePixel, width16Solenoids, sizePixel);
-
-      for (int i=(stitchViz-1);i>((stitchViz-1)-totalCub);i--) {
-        int solenoidId = ((i)%16);
-        int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
-        if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
-          _16SolenoidsAr[solenoidId] = "1";
-        }
-        else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-          _16SolenoidsAr[solenoidId] = "0";
-        }
-        else if (pixelId==9 && solenoidId<16 && solenoidId>=0) {
-          _16SolenoidsAr[solenoidId] = "9";
-        }
-      }
+    catch(Exception e) {
     }
     popMatrix();
   }
   // pass from array to string to send to arduino
-  for (int i=0;i<16;i++) {
-    _16Solenoids +=_16SolenoidsAr[i];
+  try {
+    for (int i=0;i<16;i++) {
+      if (totalCub>0) {
+        _16Solenoids +=_16SolenoidsAr[i];
+      }
+      else {
+        _16Solenoids +="0";
+      }
+    }
+  }
+  catch(Exception e) {
   }
 }
 

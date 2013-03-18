@@ -12,7 +12,6 @@ import processing.serial.*;
 // Global variables
 //------------------------------------------------------------------------------------
 ControlP5 controlP5;
-scrollBar myScrollBar;
 Serial myPort = null;  
 PImage kniticLogo;
 PImage img;
@@ -26,6 +25,8 @@ String lastSerialData;
 String lastChangeHead;
 String[] _16SolenoidsAr;
 String _16Solenoids = "9999999999999999";
+int lastSolenoidChange;
+boolean headDownSelenoid = false;
 float threshold = 127;
 int counterMessagesReceive=0;
 int sizePixel = 3;
@@ -35,6 +36,7 @@ int[][] pixelArray;
 int [] currentPixels;
 int current_row = -1;
 int stitch = -999;
+int _lastStitch;
 int section = -999;
 int lastSection = -999;
 int leftStick = -1;
@@ -74,16 +76,14 @@ void setup() {
   addButtonsInSetup();
   kniticLogo = loadImage("logo_knitic.png");
   laurentFont = loadFont("Quantico-Regular-20.vlw");
-  myScrollBar = new scrollBar();
   currentPixels = new int[200];
   _16SolenoidsAr = new String[16]; 
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
-  
 }
 //------------------------------------------------------------------------------------
 void draw() {
-  frame.setTitle("Knitic pattern manager v.01 F:"+Float.toString(frameRate));
+  frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
   autoConnectAndReceiveSerial();
   display();
@@ -92,8 +92,6 @@ void draw() {
     drawPattern();
     drawAndSetSelectedGrid();
   }
-  //drawPatternThumbnail();
-  myScrollBar.mouseMoveScroll();
   brain();
   showCursorPosition();
   updateEditPixels();
@@ -138,18 +136,18 @@ void keyPressed() {
   }
   /*
   if (key=='1') {
-    _16Solenoids = "1100000000000000";
-  }
-  if (key=='2') {
-    _16Solenoids = "1010000100000001";
-  }
-  if (key=='3') {
-    _16Solenoids = "1111111100000000";
-  }
-  if (key=='4') {
-    _16Solenoids = "1111111111111111";
-  }
-  */
+   _16Solenoids = "1100000000000000";
+   }
+   if (key=='2') {
+   _16Solenoids = "1010000100000001";
+   }
+   if (key=='3') {
+   _16Solenoids = "1111111100000000";
+   }
+   if (key=='4') {
+   _16Solenoids = "1111111111111111";
+   }
+   */
 }
 //------------------------------------------------------------------------------------
 void startRightSide() {
@@ -184,21 +182,36 @@ void brain() {
       headDirectionForNewPixels=+1;
       current_row += 1;
       lastChangeHead = "left";
-      if (current_row>=rows && repedPatternMode==true) current_row=0;
+      if (isPatternFinishKnitting() && repedPatternMode==true) { 
+        current_row=0;
+      }
+      else {
+        setOFFSolenoids();
+      }
+      //_16SolenoidsNew = "0000000000000000";
       println("endLine left");
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
       current_row += 1;
       lastChangeHead = "right";
-      if (current_row>=rows && repedPatternMode==true) current_row=0;
+      if (isPatternFinishKnitting() && repedPatternMode==true) { 
+        current_row=0;
+      }
+      else {
+        setOFFSolenoids();
+      }
+      //_16SolenoidsNew = "0000000000000000";
       println("endLine right");
     }
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
-  sendSerial();
+  checkNotOnSolenoidsForLongTime();
+  sendSerial16();
 }
+
+
 
 //------------------------------------------------------------
 int getReadPixelsFromPosition(int posXPixel) {
@@ -209,6 +222,25 @@ int getReadPixelsFromPosition(int posXPixel) {
     println("ERROR in pixels to solenoids");
   }
   return 9;
+}
+
+//------------------------------------------------------------
+
+void setOFFSolenoids() {
+  for (int i=0;i<16;i++) {
+    _16SolenoidsAr[i] ="0";
+  }
+}
+
+//------------------------------------------------------------
+
+boolean isPatternFinishKnitting(){
+  return current_row>=rows;
+}
+
+//------------------------------------------------------------
+boolean isPatternOnKnitting(){
+  return current_row>-1 && current_row<rows;
 }
 //------------------------------------------------------------
 

@@ -4,7 +4,6 @@ void setupSerialConnection() {
     println(Serial.list()[0]);
     // Open the port you are using at the rate you want:
     myPort = new Serial(this, Serial.list()[0], 115200);
-    //delay(4000);// this is here for fix a mega error
     lastConnection = millis();
   }
   catch(Exception e) {
@@ -35,10 +34,13 @@ void autoConnectAndReceiveSerial() {
   }
 }
 
-void sendSerial() {
+void sendSerial16() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
       String _16SolenoidsNew = _16Solenoids.replace('9', '1');
+      if (headDownSelenoid || isPatternFinishKnitting() ) {
+        _16SolenoidsNew ="00000000000000";
+      }
       String message = ",s,"+_16SolenoidsNew+","+status+",e,";
       println(_16SolenoidsNew);
       myPort.write(message);
@@ -47,7 +49,6 @@ void sendSerial() {
         filler += "e";
       }
       myPort.write(filler);
-      //println("send serial");
       lastMessageSendFromSerial = millis();
     }
     last16Solenoids = _16Solenoids;
@@ -72,8 +73,6 @@ void receiveSerial() {
           break;
         }
       }
-      //findMessage = findOneMessage(all);
-      //println(lastSerialData+all);
     }
   }
   catch(Exception e) {
@@ -154,73 +153,3 @@ boolean findOneMessage(String all) {
   }
 }
 
-/*
-void receiveSerial() {
- try {
- //println("try to Receive Serial___"+Integer.toString(myPort.available()));
- if (myPort!=null && myPort.available()>0) {
- println("Receive Serial___");
- String all = "";
- while (myPort.available ()>0) {
- all += myPort.readChar();
- }
- myPort.clear();
- //println(lastSerialData+all);
- // get data from serial
- String[] values = split(lastSerialData+all, ',');
- 
- int _start =-1;
- int _end =-1;
- // look for start inside string received
- for (int i=0;i<values.length;i++) {
- if (values[i].equals("s")) {
- _start =i;
- break;
- }
- }
- //println("start:"+Integer.toString(_start));
- // look for end inside string received
- if (_start!=-1) {
- for (int i=_start;i<values.length;i++) {
- if (values[i].equals("e")) {
- _end =i;
- break;
- }
- }
- }
- //println("end:"+Integer.toString(_end));
- // when we find start and end then take out variables
- if ( _start!=-1 && _end!=-1  && _end > _start+5 ) {
- println("Receive Serial_WITH ALL MESSAGE");
- lastMessageReceivedFromSerial = millis();
- //section = Integer.valueOf(values[_start+1]);
- //print("section:");
- //println(section);
- stitch = Integer.valueOf(values[_start+2]);
- section = int(stitch/8);
- endLineStarted = !values[_start+3].equals("0");
- headDirection = -Integer.valueOf(values[_start+4]);
- status = values[_start+4];
- if (status=="r" && endLineStarted) {
- status="k";
- if (stitch==0) startRightSide();
- if (stitch==200) startLeftSide();
- }
- // get part message to other
- lastSerialData ="";
- if (_end+1<values.length) {
- for (int i=_end+1;i<values.length;i++) {
- lastSerialData +=","+values[i];
- }
- }
- }
- else {
- lastSerialData +=all;
- }
- }
- }
- catch(Exception e) {
- println("ERROR in receive serial");
- }
- }
- */

@@ -25,11 +25,11 @@ void jumpToRow() {
   }
 }
 
-void udpLivePatternMode(){
+void udpLivePatternMode() {
 }
 
 void changeEditPixels() {
-  editPixels =!editPixels;
+  editPixels =! editPixels;
   if (editPixels) {
     cursor(CROSS);
     controlP5.controller("Start edit image").captionLabel().set("Stop edit image");
@@ -39,6 +39,7 @@ void changeEditPixels() {
     cursor(ARROW);
   }
 }
+
 void updateEditPixels() {
   if (editPixels) {
   } 
@@ -77,7 +78,6 @@ void fillArrayWithImage(String imgPath) {
       lastEndLineStarted = false;
       if (cols>0 && rows>0) loadPattern = true;
       pixelArray = new int[cols][rows];
-      myScrollBar.setupScrollBar();
       int restPixels = 200-cols;
       leftStick = 100-(restPixels/2);
       rightStick = 100-(restPixels/2);
@@ -88,7 +88,6 @@ void fillArrayWithImage(String imgPath) {
       if (cols!=200) {
         howMuchPatternToLeft("");
       }
-
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
@@ -109,21 +108,27 @@ void fillArrayWithImage(String imgPath) {
 }
 
 void howMuchPatternToLeft(String message) {
-  String userStartStick="";
-  if (message=="") {
-    userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
-  }
-  else {
-    userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
-  }
-  if (!userStartStick.equals(Integer.toString(leftStick))) {
-    if ((100-Integer.valueOf(userStartStick))+cols>200 ) {  
-      howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
+  try {
+    String userStartStick="";
+    if (message=="") {
+      userStartStick = JOptionPane.showInputDialog(frame, "Do you want to start from left " +Integer.toString(leftStick)+"?", Integer.toString(leftStick));
     }
     else {
-      leftStick = Integer.valueOf(userStartStick);
-      rightStick = (cols+(100-leftStick))-100;
+      userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
+    }
+    if (!userStartStick.equals(Integer.toString(leftStick))) {
+      if ((100-Integer.valueOf(userStartStick))+cols>200 ) {  
+        howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
+      }
+      else {
+        leftStick = Integer.valueOf(userStartStick);
+        rightStick = (cols+(100-leftStick))-100;
+      }
     }
   }
+  catch(Exception e) {
+  }
 }
+
+
 
