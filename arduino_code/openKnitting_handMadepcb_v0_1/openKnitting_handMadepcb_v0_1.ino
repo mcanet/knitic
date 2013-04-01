@@ -46,9 +46,9 @@ public:
     changedsolenoids = true;
 #ifdef arduinoTypeDUE  
     int ledArrayTemp[totalArrayFromSelenoids] =       {
-      38,40,42,44,46,48,50,52,39,41,43,45,47,49,51,53        };
+      38,40,42,44,46,48,50,52,39,41,43,45,47,49,51,53                                    };
     int amegaPinsArrayTemp[totalArrayFromSelenoids] = {
-      22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23        };
+      22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23                                    };
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
       ledArray[i] = ledArrayTemp[i];
@@ -97,7 +97,7 @@ public:
     dataArray[6] = 0x02; //00000010
     dataArray[7] = 0x01; //00000001
 
-    for(int i=0;i<16;i++){
+      for(int i=0;i<16;i++){
       solenoidstate[i] = (_16solenoids[i] != '0');
       solenoidstateChanged[i] = true;
     }
@@ -579,6 +579,11 @@ private:
   char buf[48];
   unsigned long lastSendTimeStamp;
   int readCnt;
+  unsigned int received;
+  unsigned int lastReceived;
+  boolean changedsolenoids;
+  unsigned int bitRegister16Solenoid[16];
+
 public:
   String _status;
   communication(){
@@ -592,9 +597,16 @@ public:
     mysolenoids = _mysolenoids;
     lastSendTimeStamp = millis();
     readCnt = 0;
+    // table - bit encoding
+    unsigned int bitRegister16SolenoidTemp[16] = 
+    {
+      32768,16384,8192,4096,2048,1024,512,256,128,64,32,16,8,4,2,1                };
+    for(int i=0; i<16; i++){
+      bitRegister16Solenoid[i] = bitRegister16SolenoidTemp[i];
+    }
   }
 
-  // send data to OF
+  // send data to processing
 
   void sendSerialToComputer(){
     if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>200 ){
@@ -621,132 +633,49 @@ public:
     }
   }
 
-  // get data from OF
+  void checkSolenoid(int i){
+    mysolenoids->solenoidstateChanged[i] = false;
+    if( bitRegister16Solenoid[i] == (received & bitRegister16Solenoid[i])){
+      if(mysolenoids->solenoidstate[i] !=true){
+        changedsolenoids = true;
+        mysolenoids->solenoidstateChanged[i] = true;
+        mysolenoids->solenoidstate[i] = true;
+      }
+    }
+    else{
+      if(mysolenoids->solenoidstate[i] !=false){
+        changedsolenoids = true;
+        mysolenoids->solenoidstateChanged[i] = true;
+        mysolenoids->solenoidstate[i] = false;
+      }
+    }
+  }
+
+  void setSolenoids(){
+    if(lastReceived != received){
+      changedsolenoids = false;
+      lastReceived = received;
+      for(int i=0; i<16; i++){
+        checkSolenoid(i);
+      }
+      if(changedsolenoids){
+        mysolenoids->changedsolenoids = true;
+      }
+    }
+  }
+
+  // get data from processing
   void receiveSerialFromComputer(){
-    GetString(buf, sizeof(buf));
-
-    int start = -1;
-    int _end  = -1;
-
-    // look for start inside string received
-    for(int i=0;i<sizeof(buf);i++){
-      if(buf[i]=='s'){
-        start =i;
-        break;
-      }
-    }
-
-    // look for end inside string received
-    for(int i=sizeof(buf)-1;i>0;i--){
-      if(buf[i]=='e'){
-        _end =i;
-        break;
-      }
-    }
-
-    if(start!=-1 && _end!=-1 )
-    {
-      int id = 0;
-      char * pch;
-      pch = strtok (buf," ,.-");
-      while (pch != NULL)
-      {
-        // get start
-        if(id == 0){
-          if(*pch=='s') 
-            id+=1;        
-        }
-        // get solenoids
-        else if(id==1){
-          boolean changedsolenoids = false;
-          for(int i=0; i<16;i++){
-#ifdef arduinoTypeDUE
-            mysolenoids->solenoidstateChanged[i] = false;
-#endif
-            if( pch[i]=='0' ){
-              if(mysolenoids->solenoidstate[i] != false){ 
-                changedsolenoids = true;
-#ifdef arduinoTypeDUE
-                mysolenoids->solenoidstateChanged[i] = true;
-#endif
-              }
-              mysolenoids->solenoidstate[i] = false;
-            }
-            else if(pch[i]=='1'){
-              if(mysolenoids->solenoidstate[i] != true){ 
-                changedsolenoids = true;
-#ifdef arduinoTypeDUE
-                mysolenoids->solenoidstateChanged[i] = true;
-#endif
-              }
-              mysolenoids->solenoidstate[i] = true;
-            }
-          }
-          //set new values if there is new values
-          if(changedsolenoids){
-            mysolenoids->changedsolenoids = true;
-          }
-          id +=1;
-        }
-        // get status
-        else if(id==2 ){
-          _status = String(pch[0]);
-          //reset_initialpos
-          if(_status == "r"){
-            myEndlines->started = false;
-          }
-          id += 1;
-          //break; // exit from while
-        }
-        pch = strtok(NULL, " ,.-");
-      }
-
-      // clear buffer
-      for (int i=0; (i<sizeof(buf))&&(id==3); ++i){
-        buf[i] = 'X';
-      }
+    if (Serial.available() > 0) {
+      char buffer[2];
+      Serial.readBytesUntil(',', &buffer[0], 4);
+      received = 0;
+      received = buffer[0] <<8;
+      received = received | buffer[1];
+      setSolenoids();
     }
   }
 
-  void GetString(char *buf, int bufsize)
-  {
-    // while there's stuff to read and we haven't seen an end
-    while(Serial.available() && (readCnt >= 0)){
-      char rc = Serial.read();
-      // waiting for start signal
-      if((readCnt == 0) && (rc == 's')){
-        buf[readCnt] = 's';
-        readCnt++;
-      }
-      // have seen start signal
-      else if(readCnt>0){
-        buf[readCnt] = rc;
-        readCnt++;
-        if(rc == 'e'){
-          // signal to break while loop
-          readCnt = -readCnt;
-          break;
-        }
-        else if(readCnt >= (bufsize-1)){
-          readCnt = 0;
-        }
-      }
-    }
-
-    // check for end conditions
-    if(readCnt < 0){
-      /*
-      Serial.print("##");
-       for (int i=0; i<abs(readCnt); ++i){
-       Serial.print(buf[i]);
-       Serial.flush();
-       }
-       Serial.println("##");
-       Serial.flush();
-       */
-      readCnt = 0;
-    }
-  }
 };
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
@@ -756,6 +685,7 @@ endLines myEndlines;
 solenoids mysolenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
+int patternLine[200];
 
 void setup()
 { 
@@ -778,6 +708,13 @@ void loop() {
   myEndlines.loop();
   myCommunicator.sendSerialToComputer();
 } 
+
+
+
+
+
+
+
 
 
 
