@@ -1,3 +1,5 @@
+//------------------------------------------------------------------------------------
+
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
   controlP5.addButton("Open", 4, 855, 45, 40, 30).setId(3);
@@ -8,6 +10,8 @@ void addButtonsInSetup() {
   controlP5.addButton("Start edit image", 4, 855, 170, 80, 30).setId(7);
 }
 
+//------------------------------------------------------------------------------------
+
 void controlEvent(ControlEvent theEvent) {
   println(theEvent.controller().id());
   if (theEvent.controller().id()==3) openknittingPattern();
@@ -15,8 +19,10 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.controller().id()==5) jumpToRow();
   if (theEvent.controller().id()==6) howMuchPatternToLeft("");
   if (theEvent.controller().id()==7) changeEditPixels();
-  if (theEvent.controller().id()==8) udpLivePatternMode();
+  if (theEvent.controller().id()==8) UDP_LivePatternMode();
 }
+
+//------------------------------------------------------------------------------------
 
 void jumpToRow() {
   String new_current_row = JOptionPane.showInputDialog(frame, "To whish row you want to jump ?", Integer.toString(current_row));
@@ -25,8 +31,12 @@ void jumpToRow() {
   }
 }
 
-void udpLivePatternMode() {
+//------------------------------------------------------------------------------------
+
+void UDP_LivePatternMode() {
 }
+
+//------------------------------------------------------------------------------------
 
 void changeEditPixels() {
   editPixels =! editPixels;
@@ -40,6 +50,8 @@ void changeEditPixels() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void updateEditPixels() {
   if (editPixels) {
   } 
@@ -47,15 +59,21 @@ void updateEditPixels() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void openknittingPattern() {  
   selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }
+
+//------------------------------------------------------------------------------------
 
 void fileSelected(File selection) {
   if (selection != null) {
     fillArrayWithImage(selection.getAbsolutePath());
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void fillArrayWithImage(String imgPath) { 
   try {
@@ -107,6 +125,8 @@ void fillArrayWithImage(String imgPath) {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void howMuchPatternToLeft(String message) {
   try {
     String userStartStick="";
@@ -129,6 +149,8 @@ void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
 
 
 

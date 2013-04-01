@@ -1,14 +1,24 @@
+import java.io.*;
+import java.util.*;
+
+int BAUD_RATE = 115200;
+
 void setupSerialConnection() {
   try {
     println("try to connect");
     println(Serial.list()[0]);
-    // Open the port you are using at the rate you want:
-    myPort = new Serial(this, Serial.list()[0], 115200);
+    myPort = new Serial(this, Serial.list()[0], BAUD_RATE);
     lastConnection = millis();
-  }
-  catch(Exception e) {
+  } 
+  catch (Exception e) {
+    if (e.getMessage().contains("<init>")) {
+      println("port in use, trying again later...");
+      //Timeout retrySerialTimeout = new Timeout(this, "initSerial", 5000);
+    }
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void autoConnectAndReceiveSerial() {
   try {
@@ -21,7 +31,7 @@ void autoConnectAndReceiveSerial() {
           myPort.stop();
         }
         myPort = null;
-        setupSerialConnection();
+        //setupSerialConnection();
       }
     }
     else {
@@ -34,21 +44,26 @@ void autoConnectAndReceiveSerial() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void sendSerial16() {
   try {
     if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
       String _16SolenoidsNew = _16Solenoids.replace('9', '1');
       if (headDownSelenoid || isPatternFinishKnitting() ) {
         _16SolenoidsNew ="00000000000000";
+        dataToSolenoidHex = 0;
       }
-      String message = ",s,"+_16SolenoidsNew+","+status+",e,";
-      println(_16SolenoidsNew);
-      myPort.write(message);
-      String filler = "";
-      for (int i = message.length(); i<46; i++) {
-        filler += "e";
-      }
-      myPort.write(filler);
+
+      // new method send data
+      char c1 = char(dataToSolenoidHex >> 8);
+      char c2 = char(dataToSolenoidHex & 0xFF);
+      myPort.write(c1);
+      // lower 8 bits
+      myPort.write(c2);
+      myPort.write(',');
+
+      //myPort.write();
       lastMessageSendFromSerial = millis();
     }
     last16Solenoids = _16Solenoids;
@@ -57,6 +72,8 @@ void sendSerial16() {
     println("Error in send serial");
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void receiveSerial() {
   try {
@@ -79,6 +96,8 @@ void receiveSerial() {
     println("ERROR in receive serial "+e.getMessage());
   }
 }
+
+//------------------------------------------------------------------------------------
 
 boolean findOneMessage(String all) {
   String[] values = split(lastSerialData+all, ',');
@@ -152,4 +171,21 @@ boolean findOneMessage(String all) {
     return false;
   }
 }
+
+int hexToInt(String hexValue) {
+  return Integer.parseInt(hexValue.substring(2), 16);
+}
+
+//------------------------------------------------------------------------------------
+
+void convertSolenoidsToBinary() {
+  int dataSector = 0;
+  // IF IS NOT EQUAL TO 0 PLACE "1" IN EACH BYTE
+  for (int i=0;i<16;i++) { 
+    if (_16SolenoidsAr[i]!='0') dataSector = dataSector ^ bitRegister16SolenoidTemp[i];
+  }
+  dataToSolenoidHex  = dataSector;
+} 
+
+//------------------------------------------------------------------------------------
 

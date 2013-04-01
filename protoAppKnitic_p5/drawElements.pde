@@ -1,3 +1,5 @@
+//------------------------------------------------------------------------------------
+
 void display() {  
   noStroke();
   fill(73, 202, 250);
@@ -90,6 +92,8 @@ void display() {
   stroke(255);
 }
 
+//------------------------------------------------------------------------------------
+
 void drawDebugVariables() {
   rect(15, 490, 190, 35);
   if (endLineStarted) { 
@@ -131,6 +135,8 @@ void drawDebugVariables() {
   text(_16Solenoids, 840, 310);
 }
 
+//------------------------------------------------------------------------------------
+
 void drawPattern() {
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
@@ -150,6 +156,8 @@ void drawPattern() {
   popMatrix();
 }
 
+//------------------------------------------------------------------------------------
+
 void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
@@ -159,6 +167,8 @@ void drawPatternThumbnail() {
     smooth();
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void drawPatternGrid() {
   try {
@@ -175,6 +185,8 @@ void drawPatternGrid() {
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void drawAndSetSelectedGrid() {
   int stitchViz = stitch;
@@ -216,7 +228,7 @@ void drawAndSetSelectedGrid() {
     }
   }
   for (int i=0;i<16;i++) {
-    _16SolenoidsAr[i]="9";
+    _16SolenoidsAr[i]='9';
   }
   // Draw 
 
@@ -235,16 +247,16 @@ void drawAndSetSelectedGrid() {
           int solenoidId = ((i)%16);
           int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
           if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
-            _16SolenoidsAr[solenoidId] = "1";
+            _16SolenoidsAr[solenoidId] = '1';
           }
           else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
           else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz<(201) ) {
-            _16SolenoidsAr[solenoidId] = "9";
+            _16SolenoidsAr[solenoidId] = '9';
           }
           else if (stitchViz>=201 ) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
         }
       }
@@ -255,16 +267,16 @@ void drawAndSetSelectedGrid() {
           int solenoidId = ((i)%16);
           int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
           if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "1";
+            _16SolenoidsAr[solenoidId] = '1';
           }
           else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
           else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz>-1) {
-            _16SolenoidsAr[solenoidId] = "9";
+            _16SolenoidsAr[solenoidId] = '9';
           }
           else if (stitchViz<=-1 ) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
         }
       }
@@ -274,6 +286,8 @@ void drawAndSetSelectedGrid() {
     popMatrix();
   }
   // pass from array to string to send to arduino
+  convertSolenoidsToBinary();
+  // solenoids to string
   try {
     for (int i=0;i<16;i++) {
       if (totalCub>0) {
@@ -287,6 +301,8 @@ void drawAndSetSelectedGrid() {
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void draw16selenoids() {
   pushMatrix();
@@ -321,4 +337,5 @@ void draw16selenoids() {
   }
   popMatrix();
 }
+//------------------------------------------------------------------------------------
 
