@@ -7,12 +7,9 @@
  *
  */
 
-
 #define arduinoTypeDUE "due"
 //#define arduinoTypeUNO uno
 #define totalArrayFromSelenoids 16
-
-#include "encoders.h"
 
 //---------------------------------------------------------------------------------
 // Controled by Toshiva
@@ -312,138 +309,138 @@ public:
 #endif
 };
 //---------------------------------------------------------------------------------
-unsigned char encoderRead(){
- // Read the encoder lines into a variable
- unsigned char result = 0;
- if (digitalRead(encoder0PinA)){
-   result |= 1; // NOTE: IF THE DIRECTION IS WRONG THEN SWAP
- }
- if (digitalRead(encoder0PinB)){
-   result |= 2; // NOTE: THESE TWO LINES
- }
- if (digitalRead(encoder0PinC)){
-   result |= 4;
- }
- return result;
-}
-
 //---------------------------------------------------------------------------------
 class encoders{
 private:
-  unsigned char encoderState;
-  unsigned char nextState[RS_MAX_STATES][RS_NUM_INPUT_VALUES];
-  unsigned char lastInput;
-
+  // digital pins
+  int encoder0PinA;
+  int encoder0PinB;
+  int encoder0PinC;
+  int encoder0PinALast;
+  int encoder0PinBLast;
+  int encoder0PinCLast;
+  String directionEncoders;
+  String lastDirectionEncoders;
+  int headDirectionAverage;
 public:
-  unsigned char _8segmentEncoder, last8segmentEncoder;
+  String _8segmentEncoder;   
+  String last8segmentEncoder;
   int segmentPosition;
   int encoder0Pos;
   int lastEncoder0Pos;
-  signed char headDirection;
+  int headDirection;
   encoders(){
+#ifdef arduinoTypeUNO
+    encoder0PinA = 2;
+    encoder0PinB = 3;
+    encoder0PinC = 4;
+#endif
+#ifdef arduinoTypeDUE
+    encoder0PinA = 2;
+    encoder0PinB = 3;
+    encoder0PinC = 4;
+#endif
     headDirection = 0;
     encoder0Pos = -1000;
     lastEncoder0Pos = -1;
     segmentPosition = -1;
+    _8segmentEncoder = "";
+    last8segmentEncoder = "";
+    lastDirectionEncoders = "";
+    headDirectionAverage = 0;
   }
 
   ~encoders(){
   }
 
-
-
   void setup(){
     pinMode(encoder0PinA,INPUT);
     pinMode(encoder0PinB,INPUT);
     pinMode(encoder0PinC,INPUT);
-    lastInput = encoderRead();
-    
-    encoderState = RS_REST;
-    // Apparently there is no simple way to do this initialization in c++
-    // State 0 RS_REST
-    nextState[0][0] = RS_WF3;
-    nextState[0][1] = RS_CCW1;
-    nextState[0][2] = RS_CW1;
-    nextState[0][3] = RS_REST;
-    // State 1 RS_WF3
-    nextState[1][0] = RS_WF3;
-    nextState[1][1] = RS_WF3;
-    nextState[1][2] = RS_WF3;
-    nextState[1][3] = RS_REST;
-    // State 2 RS_CCW1
-    nextState[2][0] = RS_CCW2;
-    nextState[2][1] = RS_CCW1;
-    nextState[2][2] = RS_WF3;
-    nextState[2][3] = RS_REST;
-    // State 3 RS_CCW2
-    nextState[3][0] = RS_CCW2;
-    nextState[3][1] = RS_WF3;
-    nextState[3][2] = RS_CCW3;
-    nextState[3][3] = RS_REST;
-    // State 4 RS_CCW3
-    nextState[4][0] = RS_WF3;
-    nextState[4][1] = RS_WF3;
-    nextState[4][2] = RS_CCW3;
-    nextState[4][3] = RS_REST | RS_INC_CCW;
-    // State 5 RS_CW1
-    nextState[5][0] = RS_CW2;
-    nextState[5][1] = RS_WF3;
-    nextState[5][2] = RS_CW1;
-    nextState[5][3] = RS_REST;
-    // State 6 RS_CW2
-    nextState[6][0] = RS_CW2;
-    nextState[6][1] = RS_CW3;
-    nextState[6][2] = RS_WF3;
-    nextState[6][3] = RS_REST;
-    // State 7 RS_CW3
-    nextState[7][0] = RS_WF3;
-    nextState[7][1] = RS_CW3;
-    nextState[7][2] = RS_WF3;
-    nextState[7][3] = RS_REST | RS_INC_CW;
   }
 
   void loop(){
-    unsigned char currentInput, oldState, newval;
-
-    currentInput =  encoderRead();
-    if (currentInput == lastInput){
-      return; // nothing to do
+    directionEncoders = "";
+    if(digitalRead(encoder0PinA)== HIGH){ 
+      directionEncoders += "ON"; 
     }
-
-    // First process the encoder
-    newval = currentInput & 0x03; // mask off the encoder bits
-    oldState = encoderState;
-
-
-    encoderState = nextState[oldState][newval];
-
-    // Check the high bits to see whether we completed a position
-    if (encoderState & RS_INC_CCW) {
-        //Serial.println("d:+1");
-        headDirection = 1;
-        if((encoder0Pos != -1000) && (encoder0Pos > -31)){
+    else{ 
+      directionEncoders += "OFF"; 
+    }
+    directionEncoders += "-";
+    if(digitalRead(encoder0PinB)== HIGH){ 
+      directionEncoders += "ON"; 
+    }
+    else{ 
+      directionEncoders += "OFF"; 
+    }
+    last8segmentEncoder = _8segmentEncoder;
+    _8segmentEncoder = "";
+    if(digitalRead(encoder0PinC)== HIGH){ 
+      _8segmentEncoder += "ON"; 
+    }
+    else{ 
+      _8segmentEncoder += "OFF"; 
+    }
+    //directionEncoders +=_8segmentEncoder;
+    // head direction
+    if(lastDirectionEncoders!=directionEncoders){
+      if( 
+      (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-OFF") || 
+        (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="ON-OFF") || 
+        (lastDirectionEncoders=="ON-OFF" && directionEncoders=="ON-ON") || 
+        (lastDirectionEncoders=="ON-ON" && directionEncoders=="OFF-ON") || 
+        (lastDirectionEncoders=="OFF-ON" && directionEncoders=="OFF-OFF") 
+        ){
+        headDirectionAverage +=1;
+        //Serial.println(directionEncoders+"-Left");
+        if((encoder0Pos != -1000) && (encoder0Pos/4 > -31)){
           encoder0Pos--;
         }
-
-
-    } else if (encoderState & RS_INC_CW) {
-        //Serial.println("d:-1");
-        headDirection = -1;
-        if((encoder0Pos != -1000) && (encoder0Pos < 231)){
+      }
+      else if( 
+      (lastDirectionEncoders=="OFF-ON" && directionEncoders=="ON-ON") || 
+        (lastDirectionEncoders=="ON-ON" && directionEncoders=="ON-ON") || 
+        (lastDirectionEncoders=="ON-ON" && directionEncoders=="ON-OFF") || 
+        (lastDirectionEncoders=="ON-OFF" && directionEncoders=="OFF-OFF") || 
+        (lastDirectionEncoders=="OFF-OFF" && directionEncoders=="OFF-ON") 
+        ){
+        headDirectionAverage -=1;
+        //Serial.println(directionEncoders+"-Right");
+        if((encoder0Pos != -1000) && (encoder0Pos/4 < 231)){
           encoder0Pos++;
         }
+      }
     }
-
-    // save the clean state for next time
-    encoderState &= RS_MASK;
-
-     _8segmentEncoder = currentInput & 0x04; // mask off the 8segment encoder bit
-    last8segmentEncoder = lastInput & 0x04;
 
     // know when head changer from one 8 knidles segment 
     if(_8segmentEncoder!=last8segmentEncoder ){ 
-      segmentPosition += headDirection;
+      //
+      if(headDirectionAverage>2){
+        headDirection =+1;
+        //Serial.println("d:+1");
+      }
+      else if(headDirectionAverage<-2){
+        headDirection =-1;
+        //Serial.println("d:-1");
+      }
+      else{
+        headDirection = headDirection*-1;
+        //Serial.println("change direction"+String(headDirection));
+      }
+      headDirectionAverage = 0;
+      segmentPosition +=headDirection;
+      //encoder0Pos = segmentPosition*8;
+      /*
+       Serial.print(",s,");
+       Serial.print(headDirection);
+       Serial.print(",");
+       Serial.print(segmentPosition);
+       Serial.println(",e,");
+       */
     }
+    lastDirectionEncoders = directionEncoders;
+
   }
 };
 //---------------------------------------------------------------------------------
@@ -617,7 +614,7 @@ public:
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);
       Serial.print(",");
-      Serial.print(myEncoders->encoder0Pos);
+      Serial.print(myEncoders->encoder0Pos/4);
       Serial.print(",");
       if(myEndlines->started){ 
         Serial.print('1');
@@ -711,6 +708,7 @@ void loop() {
   myEndlines.loop();
   myCommunicator.sendSerialToComputer();
 } 
+
 
 
 
