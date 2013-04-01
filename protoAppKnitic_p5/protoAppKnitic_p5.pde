@@ -84,25 +84,26 @@ void setup() {
   lastConnection = millis();
 
   bitRegister16SolenoidTemp = new int[16];
-  
-  bitRegister16SolenoidTemp[0] =  32768; // 1000000000000000
-  bitRegister16SolenoidTemp[1] =  16384; // 0100000000000000
-  bitRegister16SolenoidTemp[2] =  8192; // 0010000000000000
-  bitRegister16SolenoidTemp[3] =  4096; // 0001000000000000
-  bitRegister16SolenoidTemp[4] =  2048; // 0000100000000000
-  bitRegister16SolenoidTemp[5] =  1024; // 0000010000000000
-  bitRegister16SolenoidTemp[6] =  512; // 0000001000000000
-  bitRegister16SolenoidTemp[7] =  256; // 0000000100000000
-  bitRegister16SolenoidTemp[8] =  128; // 0000000010000000
-  bitRegister16SolenoidTemp[9] =  64; // 0000000001000000
-  bitRegister16SolenoidTemp[10] =  32; // 0000000000100000
-  bitRegister16SolenoidTemp[11] =  16; // 0000000000010000
-  bitRegister16SolenoidTemp[12] =  8;  // 0000000000001000
-  bitRegister16SolenoidTemp[13] =  4; // 0000000000000100
-  bitRegister16SolenoidTemp[14] =  2;// 0000000000000010
-  bitRegister16SolenoidTemp[15] =  1;// 0000000000000001
+  bitRegister16SolenoidTemp[0] =  32768;   // 1000000000000000
+  bitRegister16SolenoidTemp[1] =  16384;   // 0100000000000000
+  bitRegister16SolenoidTemp[2] =  8192;    // 0010000000000000
+  bitRegister16SolenoidTemp[3] =  4096;    // 0001000000000000
+  bitRegister16SolenoidTemp[4] =  2048;    // 0000100000000000
+  bitRegister16SolenoidTemp[5] =  1024;    // 0000010000000000
+  bitRegister16SolenoidTemp[6] =  512;     // 0000001000000000
+  bitRegister16SolenoidTemp[7] =  256;     // 0000000100000000
+  bitRegister16SolenoidTemp[8] =  128;     // 0000000010000000
+  bitRegister16SolenoidTemp[9] =  64;      // 0000000001000000
+  bitRegister16SolenoidTemp[10] =  32;     // 0000000000100000
+  bitRegister16SolenoidTemp[11] =  16;     // 0000000000010000
+  bitRegister16SolenoidTemp[12] =  8;      // 0000000000001000
+  bitRegister16SolenoidTemp[13] =  4;      // 0000000000000100
+  bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
+  bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 }
+
 //------------------------------------------------------------------------------------
+
 void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
@@ -119,6 +120,7 @@ void draw() {
 }
 
 //------------------------------------------------------------------------------------
+
 void brain() {
   // start position
   if ( status=="r" && endLineStarted && ( stitch>=200 || stitch<=0) ) {
@@ -188,8 +190,10 @@ boolean isPatternFinishKnitting() {
 }
 
 //------------------------------------------------------------
+
 boolean isPatternOnKnitting() {
   return current_row>-1 && current_row<rows;
 }
+
 //------------------------------------------------------------
 

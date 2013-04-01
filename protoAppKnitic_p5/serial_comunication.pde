@@ -54,7 +54,6 @@ void sendSerial16() {
         _16SolenoidsNew ="00000000000000";
         dataToSolenoidHex = 0;
       }
-
       // new method send data
       char c1 = char(dataToSolenoidHex >> 8);
       char c2 = char(dataToSolenoidHex & 0xFF);
@@ -62,8 +61,6 @@ void sendSerial16() {
       // lower 8 bits
       myPort.write(c2);
       myPort.write(',');
-
-      //myPort.write();
       lastMessageSendFromSerial = millis();
     }
     last16Solenoids = _16Solenoids;
