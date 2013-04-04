@@ -24,15 +24,19 @@ void autoConnectAndReceiveSerial() {
   try {
     // knowing if is connected
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
+     
       if (abs(lastConnection-millis())>5000) {
         usbConected = false;
+        /*
         if ( myPort != null) {
           myPort.clear();
           myPort.stop();
         }
         myPort = null;
         //setupSerialConnection();
+        */
       }
+     
     }
     else {
       usbConected = true;
