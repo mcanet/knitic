@@ -96,11 +96,16 @@ void fillArrayWithImage(String imgPath) {
       lastEndLineStarted = false;
       if (cols>0 && rows>0) loadPattern = true;
       pixelArray = new int[cols][rows];
-      int restPixels = 200-cols;
-      leftStick = 100-(restPixels/2);
-      rightStick = 100-(restPixels/2);
-      if ( (100-leftStick)+cols+(100-rightStick) !=200) {
-        rightStick +=1;
+      if(cols==200){
+        leftStick = 100;
+        rightStick = 100;
+      }else{
+        int restPixels = (200-cols);
+        leftStick = (100-(restPixels/2));
+        rightStick = 100-(restPixels/2);
+        if ( (100-leftStick)+cols+(100-rightStick) !=200) {
+          rightStick -=1;
+        }
       }
 
       if (cols!=200) {
@@ -137,7 +142,7 @@ void howMuchPatternToLeft(String message) {
       userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
     }
     if (!userStartStick.equals(Integer.toString(leftStick))) {
-      if ((100-Integer.valueOf(userStartStick))+cols>200 ) {  
+      if ((100-(Integer.valueOf(userStartStick)))+cols>200 ) {  
         howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
       }
       else {
