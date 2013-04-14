@@ -1,3 +1,11 @@
+#ifndef COMMUNICATION_H_
+#define COMMUNICATION_H_
+
+#include "arduino.h"
+#include "encoders.h"
+#include "solenoids.h"
+#include "endLines.h"
+
 class communication{
 private:
   encoders* myEncoders;
@@ -114,3 +122,5 @@ public:
   }
 
 };
+
+#endif
