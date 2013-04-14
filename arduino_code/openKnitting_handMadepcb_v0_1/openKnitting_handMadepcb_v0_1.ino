@@ -27,10 +27,10 @@ void setup()
 { 
   Serial.begin(115200);
   mySoundAlerts.setup();
-  mysolenoids.setup();
   myEncoders.setup();
   myEndlines.setup();
   myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
+  mysolenoids.setup(&myEncoders);
   myCommunicator.setup(&myEncoders,&myEndlines,&mysolenoids);
   myCommunicator._status = "o";
 } 
