@@ -44,7 +44,7 @@ public:
   // send data to processing
 
   void sendSerialToComputer(){
-    if((myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) || (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>200 ){
+    if( (myEncoders->lastEncoder0Pos!=myEncoders->encoder0Pos) || (millis()-lastSendTimeStamp)>500 ){ //(myEncoders->last8segmentEncoder!=myEncoders->_8segmentEncoder) ||
       lastSendTimeStamp = millis();
       Serial.print(",s,");
       Serial.print(myEncoders->segmentPosition);

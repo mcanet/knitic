@@ -87,6 +87,7 @@ public:
       // directionEncoders is OFF for encoder B
       directionEncoders +=5;
     }
+    /*
     last8segmentEncoder = _8segmentEncoder;
     _8segmentEncoder = "";
     if(digitalRead(encoder0PinC)== HIGH){ 
@@ -95,38 +96,42 @@ public:
     else{ 
       _8segmentEncoder += "OFF"; 
     }
+    */
     // head direction
     if(lastDirectionEncoders!=directionEncoders){
       if( 
-      (lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_OFF) || 
+      (lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_OFF)  || 
         (lastDirectionEncoders==OFF_OFF && directionEncoders==ON_OFF) || 
-        (lastDirectionEncoders==ON_OFF && directionEncoders==ON_ON) || 
-        (lastDirectionEncoders==ON_ON && directionEncoders==OFF_ON) || 
+        (lastDirectionEncoders==ON_OFF && directionEncoders==ON_ON)   || 
+        (lastDirectionEncoders==ON_ON && directionEncoders==OFF_ON)   || 
         (lastDirectionEncoders==OFF_ON && directionEncoders==OFF_OFF) 
        
         ){
         headDirectionAverage +=1;
-        //Serial.println(directionEncoders+"-Left");
+        headDirection =+1;
+        //Serial.println(headDirection+"-Left");
         if((encoder0Pos != -1000) && (encoder0Pos/4 > -31)){
           encoder0Pos--;
         }
       }
       else if( 
-      (lastDirectionEncoders==OFF_ON && directionEncoders==ON_ON) || 
-        (lastDirectionEncoders==ON_ON && directionEncoders==ON_ON) || 
-        (lastDirectionEncoders==ON_ON && directionEncoders==ON_OFF) || 
-        (lastDirectionEncoders==ON_OFF && directionEncoders==OFF_OFF) || 
+        (lastDirectionEncoders==OFF_ON && directionEncoders==ON_ON)  || 
+        (lastDirectionEncoders==ON_ON && directionEncoders==ON_ON)   || 
+        (lastDirectionEncoders==ON_ON && directionEncoders==ON_OFF)  || 
+        (lastDirectionEncoders==ON_OFF && directionEncoders==OFF_OFF)|| 
         (lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_ON) 
       
         ){
         headDirectionAverage -=1;
-        //Serial.println(directionEncoders+"-Right");
+        headDirection =-1;
+        //Serial.println(headDirection+"-Right");
         if((encoder0Pos != -1000) && (encoder0Pos/4 < 231)){
           encoder0Pos++;
         }
       }
     }
-
+    lastDirectionEncoders = directionEncoders;
+    /*
     // know when head changer from one 8 knidles segment 
     if(_8segmentEncoder!=last8segmentEncoder ){ 
       //
@@ -145,7 +150,8 @@ public:
       headDirectionAverage = 0;
       segmentPosition +=headDirection;
     }
-    lastDirectionEncoders = directionEncoders;
+    
+    */
   }
 };
 #endif
