@@ -61,6 +61,12 @@ public:
 
   ~solenoids(){
   }
+  
+  boolean isCurrentStich(int i){
+    int stitch = myEncoders->encoder0Pos;
+    int headDirection = myEncoders->headDirection;
+    return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==0 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==0 );
+  }
 
   void setup(encoders* _myEncoders){
     myEncoders = _myEncoders;
@@ -141,15 +147,12 @@ public:
   }
 
 #ifdef arduinoTypeDUE
-  /*
+  
   void setArduinoMegaPins(){
     for(int i=0;i<16;i++){
-      if(myEncoders->encoder0Pos != myEncoders->lastEncoder0Pos && solenoidstateChanged[i]==true){ //){
-        if(solenoidstate[i]==true && ( 
-        (myEncoders->headDirection==1 && ((myEncoders->encoder0Pos-8)%16)== ))  // left
-        ||  (myEncoders->headDirection==-1 &&  ((myEncoders->encoder0Pos-8)%16) ) 
-        )
-        ){                      // right
+      if( solenoidstateChanged[i]==true){ /*myEncoders->encoder0Pos != myEncoders->lastEncoder0Pos &&*/
+        if(isCurrentStich(i) && solenoidstate[i]==true )
+        {                      // right
           digitalWrite(amegaPinsArray[i], HIGH);
           digitalWrite(ledArray[i], HIGH);
         }
@@ -161,7 +164,8 @@ public:
       }
     }
   }
-  */
+  
+  /*
   void setArduinoMegaPins(){
     for(int i=0;i<16;i++){
       if(solenoidstateChanged[i]==true){
@@ -177,6 +181,7 @@ public:
       }
     }
   }
+  */
 #endif
 
 #ifdef arduinoTypeUNO
@@ -337,3 +342,4 @@ public:
 #endif
 };
 #endif
+

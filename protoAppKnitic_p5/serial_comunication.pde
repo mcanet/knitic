@@ -8,6 +8,8 @@ void setupSerialConnection() {
     println("try to connect");
     println(Serial.list()[0]);
     myPort = new Serial(this, Serial.list()[0], BAUD_RATE);
+    delay(2000);
+    myPort.clear();
     lastConnection = millis();
   } 
   catch (Exception e) {
@@ -123,15 +125,15 @@ boolean findOneMessage(String all) {
   }
 
   if ( _start!=-1 && _end!=-1  && _end > _start+5 && (_end-_start)==6 ) {
-    println("Receive Serial_WITH ALL MESSAGE:");
+    //println("Receive Serial_WITH ALL MESSAGE:");
     counterMessagesReceive+=1;
     lastMessageReceivedFromSerial = millis();
-    println(_start);
-    println(_end);
+    //println(_start);
+    //println(_end);
     stitch = Integer.valueOf(values[_start+2]);
-    print(","+Integer.toString(stitch));
+    //print(","+Integer.toString(stitch));
     section = int(stitch/8);
-    print(","+Integer.toString(section));
+    //print(","+Integer.toString(section));
     endLineStarted = !values[_start+3].equals("0");
 
     if (endLineStarted) { 
@@ -140,7 +142,7 @@ boolean findOneMessage(String all) {
     else {
       print(",false");
     }
-
+    
     headDirection = -Integer.valueOf(values[_start+4]);
     print(","+Integer.toString(headDirection));
 
@@ -172,6 +174,8 @@ boolean findOneMessage(String all) {
     return false;
   }
 }
+
+//------------------------------------------------------------------------------------
 
 int hexToInt(String hexValue) {
   return Integer.parseInt(hexValue.substring(2), 16);

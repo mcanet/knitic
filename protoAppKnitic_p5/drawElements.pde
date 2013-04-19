@@ -194,6 +194,7 @@ void drawAndSetSelectedGrid() {
   int totalCub = 16;
   _16Solenoids = "";
   // LEFT visualization
+  
   if (stitch<startStitch && headDirection==1) { 
     stitchViz = 0;
     if (stitch>8) {
@@ -214,7 +215,7 @@ void drawAndSetSelectedGrid() {
     stitchViz = 200;
     if (stitch<192) {
       totalCub = 192-stitch;
-      println("First part :"+Integer.toString(totalCub));
+      //println("First part :"+Integer.toString(totalCub));
     }
     else {
       totalCub =0;
@@ -222,7 +223,7 @@ void drawAndSetSelectedGrid() {
   }
   else if (headDirection==-1) {
     stitchViz = stitch+startStitch;
-    println("Second part");
+    //println("Second part");
     if (stitch<-8) {
       totalCub = 16+(stitch+8);
     }
@@ -314,6 +315,11 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
+      // draw red active knidle
+      if(  isCurrentStich(i) ){
+        fill(255, 0,0);
+        rect(2+((15*10)-(i*10))-1, 3-1, 8, 8);
+      }
       // Define the colors depending if is "1", "0" or "9" (9 this means pin not defined yet )
       if ( _16Solenoids.substring(i, i+1).equals("1") ) {
         stroke(0);
@@ -338,4 +344,8 @@ void draw16selenoids() {
   popMatrix();
 }
 //------------------------------------------------------------------------------------
-
+// this method tell active knidle
+boolean isCurrentStich(int i){
+  return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==0 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==0 );
+}
+//------------------------------------------------------------------------------------

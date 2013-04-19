@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import controlP5.*;
 import processing.serial.*;
+import sojamo.drop.*;
 //------------------------------------------------------------------------------------
 // Global variables
 //------------------------------------------------------------------------------------
@@ -61,6 +62,7 @@ boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
+SDrop drop;
 
 //------------------------------------------------------------------------------------
 void setup() {
@@ -100,6 +102,8 @@ void setup() {
   bitRegister16SolenoidTemp[13] =  4;      // 0000000000000100
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
+
+  drop = new SDrop(this);
 }
 
 //------------------------------------------------------------------------------------
@@ -179,7 +183,7 @@ int getReadPixelsFromPosition(int posXPixel) {
 
 void setOFFSolenoids() {
   for (int i=0;i<16;i++) {
-    _16SolenoidsAr[i] ='0';
+    _16SolenoidsAr[i] ='1';
   }
 }
 
@@ -197,3 +201,11 @@ boolean isPatternOnKnitting() {
 
 //------------------------------------------------------------
 
+void dropEvent(DropEvent theDropEvent) {
+  if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
+      //theDropEvent.file()
+      //theDropEvent.toString()
+  }
+}
+
+//------------------------------------------------------------

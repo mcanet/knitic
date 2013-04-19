@@ -36,7 +36,14 @@ void keyPressed() {
     }
     section = ceil(float(stitch)/8.0f);
   }
-
+  if (key=='z') {
+    stitch=176;
+    headDirection =-1;
+  }
+  if (key=='x') {
+    stitch=24;
+    headDirection =1;
+  }
   if (key=='1') {
     _16Solenoids = "1100000000000000";
     dataToSolenoidHex = hexToInt("0xC000");
