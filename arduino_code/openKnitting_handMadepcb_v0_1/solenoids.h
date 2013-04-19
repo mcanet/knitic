@@ -150,7 +150,7 @@ public:
   
   void setArduinoMegaPins(){
     for(int i=0;i<16;i++){
-      if( solenoidstateChanged[i]==true){ /*myEncoders->encoder0Pos != myEncoders->lastEncoder0Pos &&*/
+      if( solenoidstateChanged[i]==true || myEncoders->encoder0Pos != myEncoders->lastEncoder0Pos){ 
         if(isCurrentStich(i) && solenoidstate[i]==true )
         {                      // right
           digitalWrite(amegaPinsArray[i], HIGH);
