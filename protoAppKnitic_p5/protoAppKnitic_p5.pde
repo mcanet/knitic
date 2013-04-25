@@ -26,6 +26,7 @@ String lastSerialData;
 String lastChangeHead;
 char[] _16SolenoidsAr;
 String _16Solenoids = "9999999999999999";
+String solenoidsFromArduino;
 int lastSolenoidChange;
 boolean headDownSelenoid = false;
 float threshold = 127;
@@ -60,9 +61,14 @@ boolean repedPatternMode = true;
 boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
+boolean waitingMessageFromKnitting;
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
 SDrop drop;
+String myString;
+boolean pixSendAreReceived = true;
+int[] pixelSend;
+int[] pixelReceived;
 
 //------------------------------------------------------------------------------------
 void setup() {
@@ -84,6 +90,7 @@ void setup() {
   _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
+  setupAudio();
 
   bitRegister16SolenoidTemp = new int[16];
   bitRegister16SolenoidTemp[0] =  32768;   // 1000000000000000
@@ -104,6 +111,12 @@ void setup() {
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
   drop = new SDrop(this);
+  pixelSend = new int[200];
+  pixelReceived = int[200];
+  for (int i=0; i<200; i++) {
+    pixelSend[i] = 0;
+    pixelReceived[i] = 0;
+  }
 }
 
 //------------------------------------------------------------------------------------
@@ -121,6 +134,8 @@ void draw() {
   brain();
   showCursorPosition();
   updateEditPixels();
+  // For debug
+  drawReceivedPixelsVsSend();
 }
 
 //------------------------------------------------------------------------------------
@@ -146,8 +161,10 @@ void brain() {
       }
       else {
         setOFFSolenoids();
+        done.trigger();
       }
-      println("endLine left");
+      println("endLine left:"+Integer.toString(stitch));
+      sendtoKnittingMachine();
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
@@ -158,14 +175,16 @@ void brain() {
       }
       else {
         setOFFSolenoids();
+        done.trigger();
       }
-      println("endLine right");
+      println("endLine right:"+Integer.toString(stitch));
+      sendtoKnittingMachine();
     }
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
   //checkNotOnSolenoidsForLongTime();
-  sendSerial16();
+  //sendSerial16();
 }
 
 //------------------------------------------------------------
@@ -174,7 +193,7 @@ int getReadPixelsFromPosition(int posXPixel) {
     return pixelArray[199-posXPixel][(rows-1)-current_row];
   }
   catch(Exception e) {
-    println("ERROR in pixels to solenoids");
+    //println("ERROR in pixels to solenoids");
   }
   return 9;
 }
@@ -203,9 +222,10 @@ boolean isPatternOnKnitting() {
 
 void dropEvent(DropEvent theDropEvent) {
   if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
-      //theDropEvent.file()
-      //theDropEvent.toString()
+    //theDropEvent.file()
+    //theDropEvent.toString()
   }
 }
 
 //------------------------------------------------------------
+

@@ -1,7 +1,9 @@
 import java.io.*;
 import java.util.*;
 
-int BAUD_RATE = 115200;
+int BAUD_RATE = 115200; //--57600;
+byte lf = 0x40;
+byte footer = 126;
 
 void setupSerialConnection() {
   try {
@@ -15,7 +17,6 @@ void setupSerialConnection() {
   catch (Exception e) {
     if (e.getMessage().contains("<init>")) {
       println("port in use, trying again later...");
-      //Timeout retrySerialTimeout = new Timeout(this, "initSerial", 5000);
     }
   }
 }
@@ -26,19 +27,18 @@ void autoConnectAndReceiveSerial() {
   try {
     // knowing if is connected
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
-     
+
       if (abs(lastConnection-millis())>5000) {
         usbConected = false;
         /*
         if ( myPort != null) {
-          myPort.clear();
-          myPort.stop();
-        }
-        myPort = null;
-        //setupSerialConnection();
-        */
+         myPort.clear();
+         myPort.stop();
+         }
+         myPort = null;
+         //setupSerialConnection();
+         */
       }
-     
     }
     else {
       usbConected = true;
@@ -51,6 +51,44 @@ void autoConnectAndReceiveSerial() {
 }
 
 //------------------------------------------------------------------------------------
+
+void sendtoKnittingMachine() {
+  for (int i=0; i<200; i++) {
+    pixelSend[i] = 1;
+  }
+  for (int i=0; i<200; i++) {
+    try {
+      int rightStickOffset = 100-rightStick;
+      int posXPixel = i+rightStickOffset;
+      int pixelId = pixelArray[199-posXPixel][(rows-1)-current_row];
+      if (pixelId==1) {
+        pixelSend[i] = 0;
+      }
+      else {
+        pixelSend[i] = 1;
+      }
+    }
+    catch(Exception e) {
+      //println("Error in pixels:"+Integer.toString(i));
+      pixelSend[i] = 1;
+    }
+  }
+
+  println("send to machine:"+Integer.toString((rows-1)-current_row));
+  String pixToSend ="";
+  for (int i=0; i<200; i++) {
+    pixToSend +=Integer.toString(pixelSend[i]);
+    myPort.write(pixelSend[i]);
+  }
+  pixToSend +=footer;
+  println("send:"+pixToSend);
+  myPort.write(footer);
+  waitingMessageFromKnitting = true;
+  pixSendAreReceived = false;
+}
+
+//------------------------------------------------------------------------------------
+// not used at the moment
 
 void sendSerial16() {
   try {
@@ -82,96 +120,54 @@ void receiveSerial() {
   try {
     int timeStart = millis();
     serialAvailableBuffer = myPort.available();
-    while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<300) ) {
+    while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
       //println("Receive Serial___"+Integer.toString(myPort.available()));
-      String all = "";
-      // read from buffer, but only if there's no end-of-message to be processed
-      boolean findMessage = false;
-      while ( (myPort.available ()>0) ) { //&& !((lastSerialData+all).contains("e") && (lastSerialData+all).contains("s") ) ) {
-        all += myPort.readChar();
-        if (findOneMessage(all) ) {
-          break;
+      myString = myPort.readStringUntil(lf);
+      // PIXELS stored now in Arduino
+      try {
+        if (myString != null && myString.length()>200) {
+          //println("received 1:"+myString);
+          if (myString.length()>201) {
+            myString = myString.substring(myString.length()-201, myString.length()-1);
+          }
+          //println("received clean:"+myString);
+          for (int i=0; i<200; i++) {
+            if (myString.substring(i, i+1).equals("0")) {
+              pixelReceived[i] = 0;
+            }
+            else {
+              pixelReceived[i] = 1;
+            }
+          }
+          //chechBetweenSendAndReceived();
         }
+      }
+      catch(Exception e) {
+      }
+      try {
+        // Data sensors from arduino (encoders, endlines)
+        if (myString != null && myString.length()<200) {
+          String[] args = myString.split(",");
+          if (args.length>=5) {
+            stitch = Integer.valueOf(args[1]);
+            endLineStarted = !args[2].equals("0");
+            headDirection = Integer.valueOf(args[3]);
+            statusMachine = args[4];
+            if(args.length>=6) solenoidsFromArduino = args[5];
+            if(args.length>=7) pixStateArduino = Integer.valueOf(args[6]);
+            if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+            lastMessageReceivedFromSerial = millis();
+            chechBetweenSendAndReceived();
+          }
+        }
+      }
+      catch(Exception e) {
+        println("Error sensors:"+myString);
       }
     }
   }
   catch(Exception e) {
-    println("ERROR in receive serial "+e.getMessage());
-  }
-}
-
-//------------------------------------------------------------------------------------
-
-boolean findOneMessage(String all) {
-  String[] values = split(lastSerialData+all, ',');
-  int _start =-1;
-  int _end =-1;
-  for (int i=(values.length-1);i>0;i--) {
-    if (values[i].equals("e")) {
-      _end =i;
-      break;
-    }
-  }
-
-  // look for end inside string received
-  if (_end!=-1) {
-    // look for start inside string received
-    for (int i=(values.length-1);i>0;i--) {
-      if (values[i].equals("s")) {
-        _start =i;
-        break;
-      }
-    }
-  }
-
-  if ( _start!=-1 && _end!=-1  && _end > _start+5 && (_end-_start)==6 ) {
-    //println("Receive Serial_WITH ALL MESSAGE:");
-    counterMessagesReceive+=1;
-    lastMessageReceivedFromSerial = millis();
-    //println(_start);
-    //println(_end);
-    stitch = Integer.valueOf(values[_start+2]);
-    //print(","+Integer.toString(stitch));
-    section = int(stitch/8);
-    //print(","+Integer.toString(section));
-    endLineStarted = !values[_start+3].equals("0");
-
-    if (endLineStarted) { 
-      print(",true");
-    }
-    else {
-      print(",false");
-    }
-    
-    headDirection = -Integer.valueOf(values[_start+4]);
-    print(","+Integer.toString(headDirection));
-
-    try {
-      statusMachine = values[_start+5];
-    }
-    catch(Exception e) {
-      println("ERROR status "+e.getMessage());
-      print("total values:");
-      println(values.length);
-    }
-
-    println(",end of getting values");
-
-    lastSerialData = "";
-    // get part message to other
-    if (_end+1<values.length) {
-      for (int i=_end+1;i<values.length;i++) {
-        lastSerialData +=","+values[i];
-      }
-    }
-    // calculate with new data
-    brain();
-    //println("call brain");
-    return true;
-  }
-  else {
-    lastSerialData +=all;
-    return false;
+    println("ERROR in receive serial "+e.getMessage()+"|");
   }
 }
 
@@ -191,6 +187,24 @@ void convertSolenoidsToBinary() {
   }
   dataToSolenoidHex  = dataSector;
 } 
+
+//------------------------------------------------------------------------------------
+
+void chechBetweenSendAndReceived() {
+  boolean correct = true;
+  for (int i=0; i<200; i++) {
+    if (pixelSend[i]!=pixelReceived[i] ) {
+      sendtoKnittingMachine();
+      println("find differents");
+      correct = false;
+      break;
+    }
+  }
+  if(correct && !pixSendAreReceived){
+    sent.trigger();
+    pixSendAreReceived = true;
+  }
+}
 
 //------------------------------------------------------------------------------------
 

@@ -44,21 +44,8 @@ void keyPressed() {
     stitch=24;
     headDirection =1;
   }
-  if (key=='1') {
-    _16Solenoids = "1100000000000000";
-    dataToSolenoidHex = hexToInt("0xC000");
-  }
-  if (key=='2') {
-    _16Solenoids = "1010000100000001";
-    dataToSolenoidHex = hexToInt("0xA101");
-  }
-  if (key=='3') {
-    _16Solenoids = "1111111100000000";
-    dataToSolenoidHex = hexToInt("0xFF00");
-  }
-  if (key=='4') {
-    _16Solenoids = "1111111111111111";
-    dataToSolenoidHex = hexToInt("0xFFFF");
+  if (key=='m') {
+    sendtoKnittingMachine();
   }
 }
 //------------------------------------------------------------------------------------

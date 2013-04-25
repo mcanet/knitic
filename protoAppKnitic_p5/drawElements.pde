@@ -194,7 +194,7 @@ void drawAndSetSelectedGrid() {
   int totalCub = 16;
   _16Solenoids = "";
   // LEFT visualization
-  
+
   if (stitch<startStitch && headDirection==1) { 
     stitchViz = 0;
     if (stitch>8) {
@@ -315,9 +315,9 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
-      // draw red active knidle
-      if(  isCurrentStich(i) ){
-        fill(255, 0,0);
+      // draw red active stich 
+      if (  isCurrentStich_1(i) ) {
+        fill(255, 0, 0);
         rect(2+((15*10)-(i*10))-1, 3-1, 8, 8);
       }
       // Define the colors depending if is "1", "0" or "9" (9 this means pin not defined yet )
@@ -344,8 +344,39 @@ void draw16selenoids() {
   popMatrix();
 }
 //------------------------------------------------------------------------------------
-// this method tell active knidle
-boolean isCurrentStich(int i){
+// this method tell active stich
+boolean isCurrentStich(int i) {
   return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==0 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==0 );
 }
 //------------------------------------------------------------------------------------
+// this method tell active stich
+boolean isCurrentStich_1(int i) {
+  return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==1 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==1 );
+}
+//------------------------------------------------------------------------------------
+void drawReceivedPixelsVsSend() {
+  try {
+    for (int i=0;i<200;i++) {
+      if (pixelSend[i]==0) {
+        fill(255, 0, 255);
+      }
+      else {
+        fill(255, 255, 255);
+      }
+      rect(i*5, height-5, 5, 5);
+    }
+    for (int i=0;i<200;i++) {
+      if (pixelReceived[i]==0) {
+        fill(255, 0, 255);
+      }
+      else {
+        fill(255, 255, 255);
+      }
+      rect(i*5, height-10, 5, 5);
+    }
+  }
+  catch(Exception e) {
+  }
+}
+//------------------------------------------------------------------------------------
+

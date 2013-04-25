@@ -28,6 +28,7 @@ void jumpToRow() {
   String new_current_row = JOptionPane.showInputDialog(frame, "To whish row you want to jump ?", Integer.toString(current_row));
   if ( !Integer.toString(current_row).equals(new_current_row) ) {
     current_row = Integer.valueOf(new_current_row);
+    sendtoKnittingMachine();
   }
 }
 
@@ -107,6 +108,7 @@ void fillArrayWithImage(String imgPath) {
       if (cols!=200) {
         howMuchPatternToLeft("");
       }
+      
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
@@ -120,6 +122,8 @@ void fillArrayWithImage(String imgPath) {
         }
       }
       status = "r";
+      // send first line
+      sendtoKnittingMachine();
     }
   }
   catch(Exception e) {
@@ -146,6 +150,7 @@ void howMuchPatternToLeft(String message) {
         rightStick = (cols+(100-leftStick))-100;
       }
     }
+    sendtoKnittingMachine();
   }
   catch(Exception e) {
   }
