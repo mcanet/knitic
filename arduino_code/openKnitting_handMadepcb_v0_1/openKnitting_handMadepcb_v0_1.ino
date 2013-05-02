@@ -11,8 +11,10 @@
 //#define arduinoTypeUNO "uno"
 #define totalArrayFromSelenoids 16
 
+#include "defined_knitic.h"
 #include "knitic.h"
 
+#define attachInterrupEncoders interrupEncoders
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
 // Class declaration
@@ -25,29 +27,40 @@ int patternLine[200];
 
 void setup()
 { 
-  Serial.begin(115200);
+  Serial.begin(115200);//
   mySoundAlerts.setup();
   myEncoders.setup();
   myEndlines.setup();
-  myEndlines.setPosition(&myEncoders.encoder0Pos, &myEncoders.segmentPosition, &mySoundAlerts);
-  mysolenoids.setup(&myEncoders);
+  myEndlines.setPosition(&myEncoders, &mySoundAlerts);
+  mysolenoids.setup(&myEndlines,&myEncoders);
   myCommunicator.setup(&myEncoders,&myEndlines,&mysolenoids);
   myCommunicator._status = "o";
+#ifdef attachInterrupEncoders
+  attachInterrupt(encoder0PinA, encoderChange, CHANGE);
+#endif
 } 
 
 void loop() {
   // Receive solenoids from computer
-  myCommunicator.receiveSerialFromComputer();
-  mysolenoids.loop();
-  // get data from sensors and send to computer
-  myEncoders.loop();
+  //myCommunicator.receiveRealtimeFromComputer();
+  myCommunicator.receiveAllLine();
+  // Get data from sensors and send to computer in case solenoids not move
+#ifndef attachInterrupEncoders
+  myEncoders.loopNormal();
   myEndlines.loop();
+  mysolenoids.loop();
+#endif
   myCommunicator.sendSerialToComputer();
-} 
+}
 
-
-
-
+#ifdef attachInterrupEncoders
+void encoderChange(){
+  myEncoders.loopAttachInterrupt();
+  myEndlines.loop();
+  mysolenoids.loop();
+  myCommunicator.sendSerialToComputer();
+}
+#endif
 
 
 
