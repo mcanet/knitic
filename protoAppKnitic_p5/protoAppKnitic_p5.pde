@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import controlP5.*;
 import processing.serial.*;
+import sojamo.drop.*;
 //------------------------------------------------------------------------------------
 // Global variables
 //------------------------------------------------------------------------------------
@@ -23,8 +24,9 @@ String status = "o";
 String statusMachine = "o"; 
 String lastSerialData;
 String lastChangeHead;
-String[] _16SolenoidsAr;
+char[] _16SolenoidsAr;
 String _16Solenoids = "9999999999999999";
+String solenoidsFromArduino;
 int lastSolenoidChange;
 boolean headDownSelenoid = false;
 float threshold = 127;
@@ -59,11 +61,21 @@ boolean repedPatternMode = true;
 boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
+boolean waitingMessageFromKnitting;
+int dataToSolenoidHex;
+int bitRegister16SolenoidTemp[];
+SDrop drop;
+String myString;
+boolean pixSendAreReceived = true;
+int pixStateArduino;
+int stitchSetupArduino;
+int[] pixelSend;
+int[] pixelReceived;
 
 //------------------------------------------------------------------------------------
 void setup() {
   size(1060, 800);
-  frameRate(35);
+  //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
@@ -77,11 +89,40 @@ void setup() {
   kniticLogo = loadImage("logo_knitic.png");
   laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
-  _16SolenoidsAr = new String[16]; 
+  _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
+  setupAudio();
+
+  bitRegister16SolenoidTemp = new int[16];
+  bitRegister16SolenoidTemp[0] =  32768;   // 1000000000000000
+  bitRegister16SolenoidTemp[1] =  16384;   // 0100000000000000
+  bitRegister16SolenoidTemp[2] =  8192;    // 0010000000000000
+  bitRegister16SolenoidTemp[3] =  4096;    // 0001000000000000
+  bitRegister16SolenoidTemp[4] =  2048;    // 0000100000000000
+  bitRegister16SolenoidTemp[5] =  1024;    // 0000010000000000
+  bitRegister16SolenoidTemp[6] =  512;     // 0000001000000000
+  bitRegister16SolenoidTemp[7] =  256;     // 0000000100000000
+  bitRegister16SolenoidTemp[8] =  128;     // 0000000010000000
+  bitRegister16SolenoidTemp[9] =  64;      // 0000000001000000
+  bitRegister16SolenoidTemp[10] =  32;     // 0000000000100000
+  bitRegister16SolenoidTemp[11] =  16;     // 0000000000010000
+  bitRegister16SolenoidTemp[12] =  8;      // 0000000000001000
+  bitRegister16SolenoidTemp[13] =  4;      // 0000000000000100
+  bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
+  bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
+
+  drop = new SDrop(this);
+  pixelSend = new int[200];
+  pixelReceived = new int[200];
+  for (int i=0; i<200; i++) {
+    pixelSend[i] = 0;
+    pixelReceived[i] = 0;
+  }
 }
+
 //------------------------------------------------------------------------------------
+
 void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
@@ -95,77 +136,12 @@ void draw() {
   brain();
   showCursorPosition();
   updateEditPixels();
+  // For debug
+  drawReceivedPixelsVsSend();
 }
+
 //------------------------------------------------------------------------------------
-void keyPressed() {
-  if (key=='o') {
-    openknittingPattern();
-  }
-  // key for debug program
-  if (key=='w') {
-    startRightSide();
-    section=-4;
-    stitch=-32;
-    headDirection =-1;
-  }
-  if (key=='q') {
-    startLeftSide();
-    section=29;
-    stitch=232;
-    headDirection =1;
-  }
-  if (key=='s' && endLineStarted) {
-    stitch-=1;
-    if (stitch<-32) { 
-      stitch=-32;
-    }
-    else {
-      headDirection =-1;
-    }
-    section = ceil(float(stitch)/8.0f);
-  }
-  if (key=='a' && endLineStarted) {
-    stitch+=1;
-    if (stitch>232) { 
-      stitch=232;
-    }
-    else {
-      headDirection =1;
-    }
-    section = ceil(float(stitch)/8.0f);
-  }
-  /*
-  if (key=='1') {
-   _16Solenoids = "1100000000000000";
-   }
-   if (key=='2') {
-   _16Solenoids = "1010000100000001";
-   }
-   if (key=='3') {
-   _16Solenoids = "1111111100000000";
-   }
-   if (key=='4') {
-   _16Solenoids = "1111111111111111";
-   }
-   */
-}
-//------------------------------------------------------------------------------------
-void startRightSide() {
-  current_row = 0;
-  headDirectionForNewPixels=+1;
-  endLineStarted = true;
-  //lastEndLineStarted = false;
-  lastChangeHead = "left";
-}
-//------------------------------------------------------------------------------------
-void startLeftSide() {
-  current_row = 0;
-  headDirectionForNewPixels=-1;
-  endLineStarted = true;
-  //lastEndLineStarted = false;
-  lastChangeHead = "right";
-}
-//------------------------------------------------------------------------------------
+
 void brain() {
   // start position
   if ( status=="r" && endLineStarted && ( stitch>=200 || stitch<=0) ) {
@@ -187,9 +163,10 @@ void brain() {
       }
       else {
         setOFFSolenoids();
+        done.trigger();
       }
-      //_16SolenoidsNew = "0000000000000000";
-      println("endLine left");
+      println("endLine left:"+Integer.toString(stitch));
+      sendtoKnittingMachine();
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
@@ -200,18 +177,17 @@ void brain() {
       }
       else {
         setOFFSolenoids();
+        done.trigger();
       }
-      //_16SolenoidsNew = "0000000000000000";
-      println("endLine right");
+      println("endLine right:"+Integer.toString(stitch));
+      sendtoKnittingMachine();
     }
   }
   lastEndLineStarted = endLineStarted;
   lastSection = section;
-  checkNotOnSolenoidsForLongTime();
-  sendSerial16();
+  //checkNotOnSolenoidsForLongTime();
+  //sendSerial16();
 }
-
-
 
 //------------------------------------------------------------
 int getReadPixelsFromPosition(int posXPixel) {
@@ -219,7 +195,7 @@ int getReadPixelsFromPosition(int posXPixel) {
     return pixelArray[199-posXPixel][(rows-1)-current_row];
   }
   catch(Exception e) {
-    println("ERROR in pixels to solenoids");
+    //println("ERROR in pixels to solenoids");
   }
   return 9;
 }
@@ -228,19 +204,30 @@ int getReadPixelsFromPosition(int posXPixel) {
 
 void setOFFSolenoids() {
   for (int i=0;i<16;i++) {
-    _16SolenoidsAr[i] ="0";
+    _16SolenoidsAr[i] ='1';
   }
 }
 
 //------------------------------------------------------------
 
-boolean isPatternFinishKnitting(){
+boolean isPatternFinishKnitting() {
   return current_row>=rows;
 }
 
 //------------------------------------------------------------
-boolean isPatternOnKnitting(){
+
+boolean isPatternOnKnitting() {
   return current_row>-1 && current_row<rows;
 }
+
+//------------------------------------------------------------
+
+void dropEvent(DropEvent theDropEvent) {
+  if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
+    //theDropEvent.file()
+    //theDropEvent.toString()
+  }
+}
+
 //------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+//------------------------------------------------------------------------------------
+
 void display() {  
   noStroke();
   fill(73, 202, 250);
@@ -90,6 +92,8 @@ void display() {
   stroke(255);
 }
 
+//------------------------------------------------------------------------------------
+
 void drawDebugVariables() {
   rect(15, 490, 190, 35);
   if (endLineStarted) { 
@@ -131,6 +135,8 @@ void drawDebugVariables() {
   text(_16Solenoids, 840, 310);
 }
 
+//------------------------------------------------------------------------------------
+
 void drawPattern() {
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
@@ -150,6 +156,8 @@ void drawPattern() {
   popMatrix();
 }
 
+//------------------------------------------------------------------------------------
+
 void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
@@ -159,6 +167,8 @@ void drawPatternThumbnail() {
     smooth();
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void drawPatternGrid() {
   try {
@@ -176,12 +186,15 @@ void drawPatternGrid() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void drawAndSetSelectedGrid() {
   int stitchViz = stitch;
   int startStitch  = 24;
   int totalCub = 16;
   _16Solenoids = "";
   // LEFT visualization
+
   if (stitch<startStitch && headDirection==1) { 
     stitchViz = 0;
     if (stitch>8) {
@@ -202,7 +215,7 @@ void drawAndSetSelectedGrid() {
     stitchViz = 200;
     if (stitch<192) {
       totalCub = 192-stitch;
-      println("First part :"+Integer.toString(totalCub));
+      //println("First part :"+Integer.toString(totalCub));
     }
     else {
       totalCub =0;
@@ -210,13 +223,13 @@ void drawAndSetSelectedGrid() {
   }
   else if (headDirection==-1) {
     stitchViz = stitch+startStitch;
-    println("Second part");
+    //println("Second part");
     if (stitch<-8) {
       totalCub = 16+(stitch+8);
     }
   }
   for (int i=0;i<16;i++) {
-    _16SolenoidsAr[i]="9";
+    _16SolenoidsAr[i]='9';
   }
   // Draw 
 
@@ -235,16 +248,16 @@ void drawAndSetSelectedGrid() {
           int solenoidId = ((i)%16);
           int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
           if (pixelId==0 && solenoidId<16 && solenoidId>=0 ) {
-            _16SolenoidsAr[solenoidId] = "1";
+            _16SolenoidsAr[solenoidId] = '1';
           }
           else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
           else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz<(201) ) {
-            _16SolenoidsAr[solenoidId] = "9";
+            _16SolenoidsAr[solenoidId] = '9';
           }
           else if (stitchViz>=201 ) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
         }
       }
@@ -255,16 +268,16 @@ void drawAndSetSelectedGrid() {
           int solenoidId = ((i)%16);
           int pixelId = getReadPixelsFromPosition(i+rightStickOffset);
           if (pixelId==0 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "1";
+            _16SolenoidsAr[solenoidId] = '1';
           }
           else if (pixelId==1 && solenoidId<16 && solenoidId>=0) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
           else if (pixelId==9 && solenoidId<16 && solenoidId>=0 && stitchViz>-1) {
-            _16SolenoidsAr[solenoidId] = "9";
+            _16SolenoidsAr[solenoidId] = '9';
           }
           else if (stitchViz<=-1 ) {
-            _16SolenoidsAr[solenoidId] = "0";
+            _16SolenoidsAr[solenoidId] = '0';
           }
         }
       }
@@ -274,6 +287,8 @@ void drawAndSetSelectedGrid() {
     popMatrix();
   }
   // pass from array to string to send to arduino
+  convertSolenoidsToBinary();
+  // solenoids to string
   try {
     for (int i=0;i<16;i++) {
       if (totalCub>0) {
@@ -288,6 +303,8 @@ void drawAndSetSelectedGrid() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void draw16selenoids() {
   pushMatrix();
   translate(30, 65);
@@ -298,6 +315,11 @@ void draw16selenoids() {
   noStroke();
   try {
     for (int i=0;i<16;i++) {
+      // draw red active stich 
+      if (  isCurrentStich_1(i) ) {
+        fill(255, 0, 0);
+        rect(2+((15*10)-(i*10))-1, 3-1, 8, 8);
+      }
       // Define the colors depending if is "1", "0" or "9" (9 this means pin not defined yet )
       if ( _16Solenoids.substring(i, i+1).equals("1") ) {
         stroke(0);
@@ -321,4 +343,40 @@ void draw16selenoids() {
   }
   popMatrix();
 }
+//------------------------------------------------------------------------------------
+// this method tell active stich
+boolean isCurrentStich(int i) {
+  return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==0 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==0 );
+}
+//------------------------------------------------------------------------------------
+// this method tell active stich
+boolean isCurrentStich_1(int i) {
+  return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch+7+(i*headDirection))%16)==1 ) || ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==1 );
+}
+//------------------------------------------------------------------------------------
+void drawReceivedPixelsVsSend() {
+  try {
+    for (int i=0;i<200;i++) {
+      if (pixelSend[i]==0) {
+        fill(255, 0, 255);
+      }
+      else {
+        fill(255, 255, 255);
+      }
+      rect(i*5, height-5, 5, 5);
+    }
+    for (int i=0;i<200;i++) {
+      if (pixelReceived[i]==0) {
+        fill(255, 0, 255);
+      }
+      else {
+        fill(255, 255, 255);
+      }
+      rect(i*5, height-10, 5, 5);
+    }
+  }
+  catch(Exception e) {
+  }
+}
+//------------------------------------------------------------------------------------
 

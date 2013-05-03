@@ -1,3 +1,5 @@
+//------------------------------------------------------------------------------------
+
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
   controlP5.addButton("Open", 4, 855, 45, 40, 30).setId(3);
@@ -8,6 +10,8 @@ void addButtonsInSetup() {
   controlP5.addButton("Start edit image", 4, 855, 170, 80, 30).setId(7);
 }
 
+//------------------------------------------------------------------------------------
+
 void controlEvent(ControlEvent theEvent) {
   println(theEvent.controller().id());
   if (theEvent.controller().id()==3) openknittingPattern();
@@ -15,18 +19,25 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.controller().id()==5) jumpToRow();
   if (theEvent.controller().id()==6) howMuchPatternToLeft("");
   if (theEvent.controller().id()==7) changeEditPixels();
-  if (theEvent.controller().id()==8) udpLivePatternMode();
+  if (theEvent.controller().id()==8) UDP_LivePatternMode();
 }
+
+//------------------------------------------------------------------------------------
 
 void jumpToRow() {
   String new_current_row = JOptionPane.showInputDialog(frame, "To whish row you want to jump ?", Integer.toString(current_row));
   if ( !Integer.toString(current_row).equals(new_current_row) ) {
     current_row = Integer.valueOf(new_current_row);
+    sendtoKnittingMachine();
   }
 }
 
-void udpLivePatternMode() {
+//------------------------------------------------------------------------------------
+
+void UDP_LivePatternMode() {
 }
+
+//------------------------------------------------------------------------------------
 
 void changeEditPixels() {
   editPixels =! editPixels;
@@ -40,6 +51,8 @@ void changeEditPixels() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void updateEditPixels() {
   if (editPixels) {
   } 
@@ -47,15 +60,21 @@ void updateEditPixels() {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 void openknittingPattern() {  
   selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }
+
+//------------------------------------------------------------------------------------
 
 void fileSelected(File selection) {
   if (selection != null) {
     fillArrayWithImage(selection.getAbsolutePath());
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void fillArrayWithImage(String imgPath) { 
   try {
@@ -78,8 +97,9 @@ void fillArrayWithImage(String imgPath) {
       lastEndLineStarted = false;
       if (cols>0 && rows>0) loadPattern = true;
       pixelArray = new int[cols][rows];
-      int restPixels = 200-cols;
-      leftStick = 100-(restPixels/2);
+
+      int restPixels = (200-cols);
+      leftStick = (100-(restPixels/2));
       rightStick = 100-(restPixels/2);
       if ( (100-leftStick)+cols+(100-rightStick) !=200) {
         rightStick +=1;
@@ -88,6 +108,7 @@ void fillArrayWithImage(String imgPath) {
       if (cols!=200) {
         howMuchPatternToLeft("");
       }
+      
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
@@ -101,11 +122,15 @@ void fillArrayWithImage(String imgPath) {
         }
       }
       status = "r";
+      // send first line
+      sendtoKnittingMachine();
     }
   }
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
 
 void howMuchPatternToLeft(String message) {
   try {
@@ -117,7 +142,7 @@ void howMuchPatternToLeft(String message) {
       userStartStick = JOptionPane.showInputDialog(frame, message, Integer.toString(cols-100));
     }
     if (!userStartStick.equals(Integer.toString(leftStick))) {
-      if ((100-Integer.valueOf(userStartStick))+cols>200 ) {  
+      if ((100-(Integer.valueOf(userStartStick)))+cols>200 ) {  
         howMuchPatternToLeft("Is not possible to put that right. The maxium is "+Integer.toString((cols-100)));
       }
       else {
@@ -125,10 +150,12 @@ void howMuchPatternToLeft(String message) {
         rightStick = (cols+(100-leftStick))-100;
       }
     }
+    sendtoKnittingMachine();
   }
   catch(Exception e) {
   }
 }
 
+//------------------------------------------------------------------------------------
 
 

@@ -1,3 +1,4 @@
+/*
 void checkNotOnSolenoidsForLongTime() {
   // Check if the head did move
   if (stitch !=_lastStitch) {
@@ -19,4 +20,4 @@ void checkNotOnSolenoidsForLongTime() {
     headDownSelenoid = false;
   }
 }
-
+*/
