@@ -43,6 +43,7 @@ public:
   void setup(){
     pinMode(encoder0PinA,INPUT);
     pinMode(encoder0PinB,INPUT);
+    pinMode(encoder0PinC,INPUT);
     headDirection = 0;
     encoder1Pos = -2000;
     lastencoder1Pos = -1;

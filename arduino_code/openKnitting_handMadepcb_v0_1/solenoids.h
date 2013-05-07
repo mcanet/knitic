@@ -46,12 +46,13 @@ public:
   boolean solenoidstate[16];
   boolean solenoidstateOn[16];
   String _16solenoids;
+  boolean sectionPosition;
   solenoids(){
 #ifdef arduinoTypeDUE  
     int ledArrayTemp[totalArrayFromSelenoids] =       {
       38,40,42,44,46,48,50,52,5,6,43,45,47,49,51,7                                                                                                                    };
     int amegaPinsArrayTemp[totalArrayFromSelenoids] = {
-      37,35,33,31,29,27,25,23,22,24,26,28,30,32,34,36                                                                                                                   };
+      22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23                                                                                                               };
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
       ledArray[i] = ledArrayTemp[i];
@@ -65,6 +66,7 @@ public:
   }
 
   void setup(endLines* _myEndlines,encoders* _myEncoders){
+    sectionPosition = false;
     myEndlines = _myEndlines;
     myEncoders = _myEncoders;
     _16solenoids = "0000000000000000";
@@ -85,7 +87,13 @@ public:
         int pos = myEncoders->encoder1Pos;
         if(pos > 15){
           int i = abs(pos-8)%16; 
+          if(sectionPosition){
+            i = abs(pos-8)%16;
+          }else{
+            i = abs(pos)%16;
+          }
           currentStitchSetup = pos-16;
+
           currentSolenoidIDSetup = i;
           if(currentStitchSetup>=0 && currentStitchSetup<254){
             currentPixState = pixelBin[currentStitchSetup];
@@ -101,16 +109,12 @@ public:
       else if(myEncoders->headDirection==1 ){
         int pos = myEncoders->encoder1Pos;
         if(pos < 256-8 ){
-          
-          int i = abs(pos)%16;
-          /*
-          if(myEncoders->_8segmentEncoder==true && myEncoders->headDirection==1 || myEncoders->_8segmentEncoder==false && myEncoders->headDirection==1  ){
-             i = ;
+          int i;
+          if(!sectionPosition){
+            i = abs(pos)%16;
           }else{
-             i = abs(pos-8)%16;
+            i = abs(pos-8)%16;
           }
-          */
-          
           currentStitchSetup = pos-40; 
           currentSolenoidIDSetup = i;
           if(currentStitchSetup>=0 && currentStitchSetup<254){
@@ -130,6 +134,10 @@ public:
           digitalWrite(ledArray[i], LOW);
           solenoidstateOn[i] = false; 
         }
+      }
+      
+      if(myEncoders->encoder1Pos<=1 || myEncoders->encoder1Pos>254  ){
+        sectionPosition = myEncoders->_8segmentEncoder; 
       }
     }
     /*

@@ -67,7 +67,14 @@ public:
       Serial.print(",");
       Serial.print(myEncoders->headDirection);
       Serial.print(",");
-      if(myEncoders->_8segmentEncoder){
+      if(myEndlines->started){
+        Serial.print("1");
+      }else{
+        Serial.print("0");
+      }
+      
+      Serial.print(",");
+      if(mysolenoids->sectionPosition){
         Serial.print("1");
       }else{
         Serial.print("0");
@@ -86,6 +93,7 @@ public:
         }
       }
       */
+      /*
       Serial.print(",");
       Serial.print(myEncoders->encoder1Pos);
       Serial.print(",");
@@ -93,6 +101,7 @@ public:
       Serial.print(",");
       Serial.print(mysolenoids->currentSolenoidIDSetup);
       Serial.print(",");
+      */
       //Serial.print(mysolenoids->currentPixState);
       //Serial.print(",");
       
