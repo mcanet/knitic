@@ -21,12 +21,12 @@ String last16Solenoids;
 String selected;
 String direction = "-";
 String status = "o";
-String statusMachine = "o"; 
+String statusMachine = "o";
 String lastSerialData;
 String lastChangeHead;
 char[] _16SolenoidsAr;
 String _16Solenoids = "9999999999999999";
-String solenoidsFromArduino;
+String solenoidsFromArduino= "9999999999999999";
 int lastSolenoidChange;
 boolean headDownSelenoid = false;
 float threshold = 127;
@@ -69,12 +69,13 @@ String myString;
 boolean pixSendAreReceived = true;
 int pixStateArduino;
 int stitchSetupArduino;
+int currentSolenoidIDSetup;
 int[] pixelSend;
 int[] pixelReceived;
-
+boolean shift;
 //------------------------------------------------------------------------------------
 void setup() {
-  size(1060, 800);
+  size(1060, 700);
   //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");

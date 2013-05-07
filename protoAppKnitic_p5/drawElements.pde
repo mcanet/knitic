@@ -90,6 +90,17 @@ void display() {
   rect(buttonWithBar-9, 26*3+1, 9, 2);
   rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
+  
+  text(solenoidsFromArduino, 10, 500);
+  text("state: "+pixStateArduino, 20, 550);
+  text("stitch: "+stitchSetupArduino, 20, 600);
+  text("solenoid: "+currentSolenoidIDSetup, 20, 650);
+  
+  if(!shift && headDirection==-1 || shift  && headDirection==1){
+    text("shift-A", 20, 680);
+  }else{
+    text("shift-B", 20, 680);
+  }
 }
 
 //------------------------------------------------------------------------------------
@@ -133,6 +144,7 @@ void drawDebugVariables() {
     text("Section: "+Integer.toString(section), 30, 170);
   }
   text(_16Solenoids, 840, 310);
+ 
 }
 
 //------------------------------------------------------------------------------------

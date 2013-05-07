@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-int BAUD_RATE = 115200; //--57600;
+int BAUD_RATE = 115200; //--57600
 byte lf = 0x40;
 byte footer = 126;
 
@@ -53,38 +53,42 @@ void autoConnectAndReceiveSerial() {
 //------------------------------------------------------------------------------------
 
 void sendtoKnittingMachine() {
-  for (int i=0; i<200; i++) {
-    pixelSend[i] = 1;
-  }
-  for (int i=0; i<200; i++) {
-    try {
-      int rightStickOffset = 100-rightStick;
-      int posXPixel = i+rightStickOffset;
-      int pixelId = pixelArray[199-posXPixel][(rows-1)-current_row];
-      if (pixelId==1) {
-        pixelSend[i] = 0;
+  try {
+    for (int i=0; i<200; i++) {
+      pixelSend[i] = 1;
+    }
+    for (int i=0; i<200; i++) {
+      try {
+        int rightStickOffset = 100-rightStick;
+        int posXPixel = i+rightStickOffset;
+        int pixelId = pixelArray[199-posXPixel][(rows-1)-current_row];
+        if (pixelId==1) {
+          pixelSend[i] = 0;
+        }
+        else {
+          pixelSend[i] = 1;
+        }
       }
-      else {
+      catch(Exception e) {
+        //println("Error in pixels:"+Integer.toString(i));
         pixelSend[i] = 1;
       }
     }
-    catch(Exception e) {
-      //println("Error in pixels:"+Integer.toString(i));
-      pixelSend[i] = 1;
-    }
-  }
 
-  println("send to machine:"+Integer.toString((rows-1)-current_row));
-  String pixToSend ="";
-  for (int i=0; i<200; i++) {
-    pixToSend +=Integer.toString(pixelSend[i]);
-    myPort.write(pixelSend[i]);
+    println("send to machine:"+Integer.toString((rows-1)-current_row));
+    String pixToSend ="";
+    for (int i=0; i<200; i++) {
+      pixToSend +=Integer.toString(pixelSend[i]);
+      myPort.write(pixelSend[i]);
+    }
+    pixToSend +=footer;
+    println("send:"+pixToSend);
+    myPort.write(footer);
+    waitingMessageFromKnitting = true;
+    pixSendAreReceived = false;
   }
-  pixToSend +=footer;
-  println("send:"+pixToSend);
-  myPort.write(footer);
-  waitingMessageFromKnitting = true;
-  pixSendAreReceived = false;
+  catch(Exception e) {
+  }
 }
 
 //------------------------------------------------------------------------------------
@@ -130,7 +134,7 @@ void receiveSerial() {
           if (myString.length()>201) {
             myString = myString.substring(myString.length()-201, myString.length()-1);
           }
-          //println("received clean:"+myString);
+          println("received clean:"+myString);
           for (int i=0; i<200; i++) {
             if (myString.substring(i, i+1).equals("0")) {
               pixelReceived[i] = 0;
@@ -148,16 +152,20 @@ void receiveSerial() {
         // Data sensors from arduino (encoders, endlines)
         if (myString != null && myString.length()<200) {
           String[] args = myString.split(",");
-          if (args.length>=5) {
+          if (args.length>=2) {
             stitch = Integer.valueOf(args[1]);
-            endLineStarted = !args[2].equals("0");
-            headDirection = Integer.valueOf(args[3]);
-            statusMachine = args[4];
+            headDirection = Integer.valueOf(args[2]);
+            endLineStarted = !args[3].equals("0");
+            shift = !args[4].equals("0");
+            //statusMachine 
+            /*
             if(args.length>=6) solenoidsFromArduino = args[5];
-            if(args.length>=7) pixStateArduino = Integer.valueOf(args[6]);
-            if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+             if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[6]);
+             if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+             if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
+             */
             lastMessageReceivedFromSerial = millis();
-            chechBetweenSendAndReceived();
+            checkBetweenSendAndReceived();
           }
         }
       }
@@ -190,7 +198,7 @@ void convertSolenoidsToBinary() {
 
 //------------------------------------------------------------------------------------
 
-void chechBetweenSendAndReceived() {
+void checkBetweenSendAndReceived() {
   boolean correct = true;
   for (int i=0; i<200; i++) {
     if (pixelSend[i]!=pixelReceived[i] ) {
@@ -200,9 +208,10 @@ void chechBetweenSendAndReceived() {
       break;
     }
   }
-  if(correct && !pixSendAreReceived){
+  if (correct && !pixSendAreReceived) {
     sent.trigger();
     pixSendAreReceived = true;
+    println("Check and all correct SEND/RECEIVE");
   }
 }
 
