@@ -57,16 +57,16 @@ void display() {
     text("Height: "+Integer.toString(rows), 20, 370);
   }
   if (leftStick<0) {
-    text("Left Stick: -", 20, 420);
+    text("Left Stich: -", 20, 420);
   }
   else {
-    text("Left Stick: "+Integer.toString(leftStick), 20, 420);
+    text("Left Stich: "+Integer.toString(leftStick), 20, 420);
   }
   if (rightStick<0) {
-    text("Right Stick: -", 20, 470);
+    text("Right Stich: -", 20, 470);
   }
   else {
-    text("Right Stick: "+Integer.toString(rightStick), 20, 470);
+    text("Right Stich: "+Integer.toString(rightStick), 20, 470);
   } 
 
   fill(255);

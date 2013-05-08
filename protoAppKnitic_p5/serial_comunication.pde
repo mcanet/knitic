@@ -199,19 +199,23 @@ void convertSolenoidsToBinary() {
 //------------------------------------------------------------------------------------
 
 void checkBetweenSendAndReceived() {
-  boolean correct = true;
-  for (int i=0; i<200; i++) {
-    if (pixelSend[i]!=pixelReceived[i] ) {
-      sendtoKnittingMachine();
-      println("find differents");
-      correct = false;
-      break;
+  try {
+    boolean correct = true;
+    for (int i=0; i<200; i++) {
+      if (pixelSend[i]!=pixelReceived[i] ) {
+        sendtoKnittingMachine();
+        println("find differents");
+        correct = false;
+        break;
+      }
+    }
+    if (correct && !pixSendAreReceived) {
+      sent.trigger();
+      pixSendAreReceived = true;
+      println("Check and all correct SEND/RECEIVE");
     }
   }
-  if (correct && !pixSendAreReceived) {
-    sent.trigger();
-    pixSendAreReceived = true;
-    println("Check and all correct SEND/RECEIVE");
+  catch(Exception e) {
   }
 }
 
