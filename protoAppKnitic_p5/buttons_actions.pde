@@ -108,7 +108,7 @@ void fillArrayWithImage(String imgPath) {
       if (cols!=200) {
         howMuchPatternToLeft("");
       }
-      
+
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
@@ -155,7 +155,5 @@ void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
-
-//------------------------------------------------------------------------------------
 
 

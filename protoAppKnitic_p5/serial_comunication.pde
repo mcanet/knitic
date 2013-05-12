@@ -175,7 +175,7 @@ void receiveSerial() {
     }
   }
   catch(Exception e) {
-    println("ERROR in receive serial "+e.getMessage()+"|");
+    //println("ERROR in receive serial "+e.getMessage()+"|");
   }
 }
 
