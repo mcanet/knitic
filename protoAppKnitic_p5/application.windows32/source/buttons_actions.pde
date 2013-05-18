@@ -69,8 +69,12 @@ void openknittingPattern() {
 //------------------------------------------------------------------------------------
 
 void fileSelected(File selection) {
-  if (selection != null) {
-    fillArrayWithImage(selection.getAbsolutePath());
+  try {
+    if (selection != null) {
+      fillArrayWithImage(selection.getAbsolutePath());
+    }
+  }
+  catch(Exception e) {
   }
 }
 
@@ -108,7 +112,7 @@ void fillArrayWithImage(String imgPath) {
       if (cols!=200) {
         howMuchPatternToLeft("");
       }
-      
+
       img.loadPixels(); 
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
@@ -155,7 +159,4 @@ void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
-
-//------------------------------------------------------------------------------------
-
 

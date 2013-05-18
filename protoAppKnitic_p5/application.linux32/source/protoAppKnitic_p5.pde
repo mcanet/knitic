@@ -37,6 +37,7 @@ int rows = -1;
 int[][] pixelArray; 
 int [] currentPixels;
 int current_row = -1;
+int lastRowCorrect = -1;
 int stitch = -999;
 int _lastStitch;
 int section = -999;
@@ -48,6 +49,7 @@ int headDirectionForNewPixels;
 int lastConnection;
 int lastMessageReceivedFromSerial;
 int lastMessageSendFromSerial;
+int lastSerialPixelSend;
 int laststitch = -1;
 int posYOffSetPattern = 0;
 int patternMouseX;
@@ -61,7 +63,7 @@ boolean repedPatternMode = true;
 boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
-boolean waitingMessageFromKnitting;
+boolean waitingMessageFromKnitting=false;
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
 SDrop drop;
@@ -167,7 +169,10 @@ void brain() {
         done.trigger();
       }
       println("endLine left:"+Integer.toString(stitch));
-      sendtoKnittingMachine();
+      if (lastRowCorrect!=current_row && loadPattern) {
+        sendtoKnittingMachine();
+        lastRowCorrect = current_row;
+      }
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
@@ -181,7 +186,10 @@ void brain() {
         done.trigger();
       }
       println("endLine right:"+Integer.toString(stitch));
-      sendtoKnittingMachine();
+      if (lastRowCorrect!=current_row && loadPattern) {
+        sendtoKnittingMachine();
+        lastRowCorrect = current_row;
+      }
     }
   }
   lastEndLineStarted = endLineStarted;
