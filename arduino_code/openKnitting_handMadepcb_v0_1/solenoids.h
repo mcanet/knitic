@@ -11,8 +11,8 @@
 #include "endLines.h"
 
 int pixelBin[256] = {
-  1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+  1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -87,9 +87,10 @@ public:
         int pos = myEncoders->encoder1Pos;
         if(pos > 15){
           int i = abs(pos-8)%16; 
-          if(sectionPosition){
-            i = abs(pos-8)%16;
+          if(myEndlines->phase==0){
+            i = abs(pos-8)%16; // maybe +8
           }else{
+            // validated
             i = abs(pos)%16;
           }
           currentStitchSetup = pos-16;
@@ -110,10 +111,11 @@ public:
         int pos = myEncoders->encoder1Pos;
         if(pos < 256-8 ){
           int i;
-          if(!sectionPosition){
-            i = abs(pos)%16;
+          if(myEndlines->phase==0){
+            // validated
+            i = abs(pos+8)%16;// was 0, means no +8
           }else{
-            i = abs(pos-8)%16;
+            i = abs(pos)%16;// -8
           }
           currentStitchSetup = pos-40; 
           currentSolenoidIDSetup = i;
@@ -135,10 +137,16 @@ public:
           solenoidstateOn[i] = false; 
         }
       }
-      
+      /*
       if(myEncoders->encoder1Pos<=1 || myEncoders->encoder1Pos>254  ){
-        sectionPosition = myEncoders->_8segmentEncoder; 
+        
+        if(myEncoders->last_8segmentEncoder != myEncoders->_8segmentEncoder){
+          sectionPosition = 0; 
+        }else{
+          sectionPosition = 1;
+        }
       }
+      */
     }
     /*
 #ifdef arduinoTypeDUE

@@ -20,6 +20,7 @@ private:
   char receivedBin[201];
   int dataSize;
   boolean dataReplace;
+  boolean startSend200pix;
   byte footer;
   char lf;    
 public:
@@ -52,34 +53,40 @@ public:
   // send data to processing
 
   void sendSerialToComputer(){
-    if( (myEncoders->lastencoder1Pos!=myEncoders->encoder1Pos)  || (millis()-lastSendTimeStamp)>500  ){ 
+    if( (myEncoders->lastencoder1Pos!=myEncoders->encoder1Pos)  || (millis()-lastSendTimeStamp)>500 ){ 
       lastSendTimeStamp = millis();
       Serial.print(",");
       Serial.print(myEncoders->stitch);
       Serial.print(",");
-      if(myEndlines->started){ 
-        Serial.print('1');
-      }
-      else{ 
-        Serial.print('0'); 
-      }
-      
-      Serial.print(",");
       Serial.print(myEncoders->headDirection);
+      Serial.print(",");
+      if(myEndlines->phase){
+        Serial.print("1");
+      }else{
+        Serial.print("0");
+      }
+      //myEncoders->last_8segmentEncoder
+      //myEncoders->_8segmentEncoder
+      /*
+      if(myEncoders->last_8segmentEncoder){
+        Serial.print("1");
+      }else{
+        Serial.print("0");
+      }
+      if(myEncoders->_8segmentEncoder){
+        Serial.print("1");
+      }else{
+        Serial.print("0");
+      }
+      */
+      /*
       Serial.print(",");
       if(myEndlines->started){
         Serial.print("1");
       }else{
         Serial.print("0");
       }
-      
-      Serial.print(",");
-      if(mysolenoids->sectionPosition){
-        Serial.print("1");
-      }else{
-        Serial.print("0");
-      }
-      
+      */
       /*
       Serial.print(",");
       //Serial.print(_status);
@@ -154,8 +161,8 @@ public:
       }
     }
     if(dataReplace){
-      sendCurrentPixelArray();
-      dataReplace = false;
+        sendCurrentPixelArray();
+        dataReplace = false;
     }
   }
   // send to processing

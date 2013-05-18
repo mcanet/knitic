@@ -96,10 +96,10 @@ void display() {
   text("stitch: "+stitchSetupArduino, 20, 600);
   text("solenoid: "+currentSolenoidIDSetup, 20, 650);
   
-  if(!shift && headDirection==-1 || shift  && headDirection==1){
-    text("shift-A", 20, 680);
-  }else{
+  if(shift==false){ // equal 1
     text("shift-B", 20, 680);
+  }else{// equal 0
+    text("shift-A", 20, 680);
   }
 }
 

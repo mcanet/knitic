@@ -33,7 +33,7 @@ public:
   //boolean lastState8segmentEncoder;
   //boolean state8segmentEncoder;
   boolean _8segmentEncoder;
-  
+  boolean last_8segmentEncoder;
   encoders(){
   }
 
@@ -53,6 +53,7 @@ public:
     lastStitch=0;
     stitch=-1;
     _8segmentEncoder = 0;
+    last_8segmentEncoder = 0;
   }
 
   void calculateDirection(){
@@ -77,7 +78,7 @@ public:
       directionEncoders +=5;
       //Serial.println("B:LOW ENCODER");
     }
-    
+    last_8segmentEncoder = _8segmentEncoder;
     _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
     /*
     Serial.print(lastDirectionEncoders);
