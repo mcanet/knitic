@@ -82,6 +82,7 @@ void fileSelected(File selection) {
 
 void fillArrayWithImage(String imgPath) { 
   try {
+    noLoop();
     img = loadImage(imgPath);
     cols = img.width;
     if (cols>200) {
@@ -126,6 +127,7 @@ void fillArrayWithImage(String imgPath) {
         }
       }
       status = "r";
+      loop();
       // send first line
       sendtoKnittingMachine();
     }
