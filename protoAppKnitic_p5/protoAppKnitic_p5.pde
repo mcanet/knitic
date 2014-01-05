@@ -75,6 +75,8 @@ int currentSolenoidIDSetup;
 int[] pixelSend;
 int[] pixelReceived;
 boolean shift;
+DropdownList usbList;
+DropdownList machineList;
 //------------------------------------------------------------------------------------
 void setup() {
   size(1060, 700);
@@ -122,6 +124,7 @@ void setup() {
     pixelSend[i] = 0;
     pixelReceived[i] = 0;
   }
+ 
 }
 
 //------------------------------------------------------------------------------------
@@ -129,7 +132,7 @@ void setup() {
 void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
-  autoConnectAndReceiveSerial();
+
   display();
   drawPatternGrid();
   if (loadPattern) { 
@@ -141,6 +144,13 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
+}
+
+//------------------------------------------------------------------------------------
+
+void serialEvent(Serial p) { 
+  println("new event");
+  autoConnectAndReceiveSerial(p);
 }
 
 //------------------------------------------------------------------------------------
@@ -239,4 +249,3 @@ void dropEvent(DropEvent theDropEvent) {
 }
 
 //------------------------------------------------------------
-

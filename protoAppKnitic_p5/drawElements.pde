@@ -149,11 +149,14 @@ void drawDebugVariables() {
 
 //------------------------------------------------------------------------------------
 
-void drawPattern() {
+void drawPattern(){
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
   noSmooth();
   scale(-1, 1);
+  fill(250, 250, 250,50);
+  rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
+  fill(250, 250, 250,250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
   smooth();
   // draw grid
@@ -372,8 +375,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelSend[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-5, 5, 5);
     }
@@ -381,8 +386,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelReceived[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-10, 5, 5);
     }
@@ -391,4 +398,3 @@ void drawReceivedPixelsVsSend() {
   }
 }
 //------------------------------------------------------------------------------------
-
