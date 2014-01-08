@@ -29,6 +29,9 @@ void setupSerialConnection() {
 
 //------------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------------
+
 void autoConnectAndReceiveSerial(Serial p) {
   try {
     // knowing if is connected
@@ -42,7 +45,7 @@ void autoConnectAndReceiveSerial(Serial p) {
          myPort.stop();
          }
          myPort = null;
-         //setupSerialConnection();
+         setupSerialConnection();
          */
       }
     }

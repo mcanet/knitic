@@ -152,13 +152,15 @@ void drawDebugVariables() {
 void drawPattern(){
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
-  noSmooth();
+  //
+  //smooth(2);
   scale(-1, 1);
   fill(250, 250, 250,50);
   rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
   fill(250, 250, 250,250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
-  smooth();
+  
+  noSmooth();
   // draw grid
   for (int x=0;x<cols+1;x++) {
     stroke(0);
@@ -169,6 +171,7 @@ void drawPattern(){
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
   popMatrix();
+  
 }
 
 //------------------------------------------------------------------------------------
@@ -176,10 +179,10 @@ void drawPattern(){
 void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
-    noSmooth();
+    
     int h = img.height/4;
     image(img, width-205, 400, img.width/4, h);
-    smooth();
+    
   }
 }
 
