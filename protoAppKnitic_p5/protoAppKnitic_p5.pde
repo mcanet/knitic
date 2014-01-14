@@ -93,7 +93,8 @@ controlP5.Button parametricSweaterButton;
 controlP5.Button saveParametricSweaterButton;
 controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
-
+controlP5.Button startOpenKnit; 
+boolean nowKnitting_openKnit;
 //------------------------------------------------------------------------------------
 void setup() {
   size(1060, 700, P2D);
@@ -146,6 +147,7 @@ void setup() {
   }
   createSweater = false;
   showHideFeaturesOpenKnit();
+  nowKnitting_openKnit = false;
 }
 
 //------------------------------------------------------------------------------------
@@ -165,6 +167,9 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
+  
+  
+  if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
   
   if(createSweater){
     drawSweater();

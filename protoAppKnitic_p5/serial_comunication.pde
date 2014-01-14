@@ -29,9 +29,6 @@ void setupSerialConnection() {
 
 //------------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------------
-
 void autoConnectAndReceiveSerial(Serial p) {
   try {
     // knowing if is connected

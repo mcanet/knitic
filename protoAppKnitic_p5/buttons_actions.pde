@@ -13,7 +13,9 @@ void addButtonsInSetup() {
   machineList = controlP5.addDropdownList("machine", 855, 350, 150, 300).setId(9);
   fillListMachines(machineList);
   parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 150, 30).setId(10);
-  
+  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 80, 30).setId(14);
+  startOpenKnit.setVisible(false); 
+   
   setupGUIParametricSweater();
 } 
 
@@ -88,6 +90,7 @@ void fillListMachines(DropdownList ddl) {
   ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+  
 }
 
 //------------------------------------------------------------------------------------
@@ -119,6 +122,19 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().id()==11)saveImagePattern();
     if (theEvent.controller().id()==12)applyParametricSweater();
     if (theEvent.controller().id()==13)saveSweaterAsInputImage();
+    if (theEvent.controller().id()==14){
+      if(nowKnitting_openKnit){ 
+        startOpenKnit.setLabel("Start knitting");
+        stitch = 0;
+        current_row = 0;
+        status="r";
+        endLineStarted = true;
+        lastChangeHead = "left";
+      }else{
+        startOpenKnit.setLabel("Pause");
+      }
+      nowKnitting_openKnit =!nowKnitting_openKnit;
+    }
   }
 
   if (theEvent.isAssignableFrom(Textfield.class)) {
@@ -126,7 +142,6 @@ void controlEvent(ControlEvent theEvent) {
       +theEvent.getName()+"': "
       +theEvent.getStringValue()
       );
-
     //ns.generateSweater();
   }
 }

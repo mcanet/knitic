@@ -161,6 +161,7 @@ void setupGUIParametricSweater() {
   applyParametricSweaterButton.setVisible(false);
   loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 150, 30).setId(13);
   loadParametricSweaterButton.setVisible(false);
+  
 }
 //------------------------------------------------------------------------------------
 void applyParametricSweater() {
@@ -196,7 +197,7 @@ void createParametricSweater() {
     parametricSweaterButton.setLabel("Open parametric sweater");
     saveParametricSweaterButton.setVisible(false);
     applyParametricSweaterButton.setVisible(false);
-    loadParametricSweaterButton.setVisible(false);
+    loadParametricSweaterButton.setVisible(false); 
   }
 }
 //------------------------------------------------------------------------------------
@@ -211,7 +212,8 @@ void setupSweater() {
 void drawSweater() {
   fill(73, 202, 250);
   rect(230, 0, 600, height);
-
+  fill(255);
+  //text("Set values for create a parametric sweater", 300, 380);
   pushMatrix();
   translate(530, 20);
   shape(ns.s, 0, 0);
@@ -268,10 +270,10 @@ void saveImagePattern() {
 void showHideFeaturesOpenKnit() {
   println(machineList.getCaptionLabel().getText());
   if (machineList.getCaptionLabel().getText().equals("Openknit")) {
-    parametricSweaterButton.setVisible(true);
+    startOpenKnit.setVisible(true); 
   }
   else {
-    parametricSweaterButton.setVisible(false);
+    startOpenKnit.setVisible(false); 
   }
 }
 
