@@ -1,5 +1,5 @@
 {
   "kniticModel": "Openknit",
-  "usbDevice": "",
   "maxNeedles": "200",
+  "usbDevice": ""
 }

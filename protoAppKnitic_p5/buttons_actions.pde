@@ -12,7 +12,9 @@ void addButtonsInSetup() {
   fillListUSB(usbList);
   machineList = controlP5.addDropdownList("machine", 855, 350, 150, 300).setId(9);
   fillListMachines(machineList);
-  controlP5.addButton("Create parametric sweater", 4, 855, 400, 150, 30).setId(10);
+  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 150, 30).setId(10);
+  
+  setupGUIParametricSweater();
 } 
 
 //------------------------------------------------------------------------------------
@@ -68,15 +70,15 @@ void fillListMachines(DropdownList ddl) {
   //usbListName.add("Brother 910");
   //usbListName.add("Brother 950");
 
-  Boolean knticSelected = false;
+  Boolean machineSelected = false;
   for (int i=0;i<machinesListName.size();i++) {
     if (machinesListName.get(i).equals(getMachineMode())) {
       ddl.captionLabel().set(getMachineMode());
-      knticSelected = true;
+      machineSelected = true;
     }
   }
-  if (!knticSelected) ddl.captionLabel().set("Select kind machine");
-
+  
+  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
   ddl.captionLabel().style().marginTop = 3;
   ddl.captionLabel().style().marginLeft = 3;
   ddl.valueLabel().style().marginTop = 3;
@@ -100,26 +102,38 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.getGroup().id()==9) { 
       saveModelSelected();
       setupTypeMachine();
+      showHideFeaturesOpenKnit();
     }
   } 
   else if (theEvent.isController()) {
     println(theEvent.controller().id());
-    
+
     if (theEvent.controller().id()==3) openknittingPattern();
     if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
     if (theEvent.controller().id()==5) jumpToRow();
     if (theEvent.controller().id()==6) howMuchPatternToLeft("");
     if (theEvent.controller().id()==7) changeEditPixels();
-    if (theEvent.controller().id()==10){ 
+    if (theEvent.controller().id()==10) { 
       createParametricSweater();
-      saveSweaterAsInputImage();
     }
+    if (theEvent.controller().id()==11)saveImagePattern();
+    if (theEvent.controller().id()==12)applyParametricSweater();
+    if (theEvent.controller().id()==13)saveSweaterAsInputImage();
+  }
+
+  if (theEvent.isAssignableFrom(Textfield.class)) {
+    println("controlEvent: accessing a string from controller '"
+      +theEvent.getName()+"': "
+      +theEvent.getStringValue()
+      );
+
+    //ns.generateSweater();
   }
 }
 
-//------------------------------------------------------------------------------------
-
-void createParametricSweater() {
+public void input(String theText) {
+  // automatically receives results from controller input
+  println("a textfield event for controller 'input' : "+theText);
 }
 
 //------------------------------------------------------------------------------------

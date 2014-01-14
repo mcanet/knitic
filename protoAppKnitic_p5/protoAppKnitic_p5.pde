@@ -1,9 +1,11 @@
+
 /*
 Prototipe Knitic
  */
 //------------------------------------------------------------------------------------
 // libraries
 //------------------------------------------------------------------------------------
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import controlP5.*;
@@ -79,6 +81,18 @@ DropdownList usbList;
 DropdownList machineList;
 JSONObject json;
 parametricSweater ns;
+controlP5.Textfield alt;
+controlP5.Textfield ample;
+controlP5.Textfield maniga;
+controlP5.Textfield llargM;
+controlP5.Textfield collAmple;
+PFont font;
+Boolean createSweater;
+
+controlP5.Button parametricSweaterButton;
+controlP5.Button saveParametricSweaterButton;
+controlP5.Button applyParametricSweaterButton;
+controlP5.Button loadParametricSweaterButton; 
 
 //------------------------------------------------------------------------------------
 void setup() {
@@ -130,6 +144,8 @@ void setup() {
     pixelSend[i] = 0;
     pixelReceived[i] = 0;
   }
+  createSweater = false;
+  showHideFeaturesOpenKnit();
 }
 
 //------------------------------------------------------------------------------------
@@ -139,6 +155,7 @@ void draw() {
   background(200, 200, 200);
   display();
   drawPatternGrid();
+  
   if (loadPattern) { 
     drawPattern();
     drawAndSetSelectedGrid();
@@ -148,7 +165,10 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
-  drawSweater();
+  
+  if(createSweater){
+    drawSweater();
+  }
 }
 
 //------------------------------------------------------------------------------------

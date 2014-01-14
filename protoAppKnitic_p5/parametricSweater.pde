@@ -1,18 +1,18 @@
 
 class parametricSweater {
-
   PShape s;
   float factor = 1;
   float factorX = 0.8;
   float factorY = 1;
-  float alt =  380;
-  float ample = 260;
-  float maniga = 100;
-  float llargM = 410;
-  float collAmple = 100;
-  float collAlt = 0;
-  float sisa = 160;
-  float sisaMarge = 10;
+  float alt =  160;//160
+  float ample = 80;//80
+  float maniga = 25;//25
+  float llargM = 190 ;//190
+  float collAmple = 39;
+  float collAlt = 70; // no la faig servir
+  float sisa = 0;
+  float sisaMarge =0; 
+
   int dif = 10;
   PImage img;
   float widthSweater;
@@ -21,19 +21,22 @@ class parametricSweater {
   public parametricSweater() {
   }
 
+  void generateSweater() {
+    S();
+  }
+
   void jersei(float alt, float ample, float maniga, float collAmple, float collAlt, float llargM, float sisa) {
-    float marge = 0; 
-    float base = alt;
-    int agulla = 5;
+    float agulla = 5;
     float halfAmple = ample*0.5;
-    sisaMarge = sisa*0.4;
-    fill(#1783BC);
+    sisa = collAlt*0.5;
+    sisaMarge = sisa*0.5;
+    fill(255);
     noStroke();
     s = createShape();
     s.beginShape(); 
     s.vertex((collAmple*0.5)*factorX, 0);
-    s.vertex((halfAmple+maniga)*factorX, sisa-sisaMarge*factorY);
-    s.vertex((halfAmple+maniga)*factorX, llargM*factorY);
+    s.vertex((halfAmple+agulla+maniga)*factorX, (sisa-sisaMarge)*factorY);
+    s.vertex((halfAmple+agulla+maniga)*factorX, llargM*factorY);
     s.vertex((halfAmple+agulla)*factorX, llargM*factorY); 
     s.vertex((halfAmple+agulla)*factorX, sisa*factorY);
     s.vertex(halfAmple*factorX, sisa*factorY);
@@ -42,16 +45,17 @@ class parametricSweater {
     s.vertex(-halfAmple*factorX, sisa*factorY);
     s.vertex((-halfAmple-agulla)*factorX, sisa*factorY);
     s.vertex((-halfAmple-agulla)*factorX, llargM*factorY);
-    s.vertex((-halfAmple-maniga)*factorX, llargM*factorY);
-    s.vertex((-halfAmple-maniga)*factorX, sisa-sisaMarge*factorY);
+    s.vertex((-halfAmple-agulla-maniga)*factorX, llargM*factorY);
+    s.vertex((-halfAmple-agulla-maniga)*factorX, (sisa-sisaMarge)*factorY);
     s.vertex((-collAmple*0.5)*factorX, 0);
     s.endShape(CLOSE);
-    
-    widthSweater = ((halfAmple+maniga)*factorX *2);
-    if((alt*factorY) >(llargM*factorY)){
-      heightSweater = (alt*factorY);
-    }else{
-      heightSweater = (llargM*factorY);
+
+    widthSweater = (ample+(maniga*2));
+    if ((alt) >(llargM)) {
+      heightSweater = alt;
+    }
+    else {
+      heightSweater = llargM;
     }
     // save image
     createPixelPattern();
@@ -92,27 +96,183 @@ class parametricSweater {
   }
 }
 
+//------------------------------------------------------------------------------------
+void setupGUIParametricSweater() {
+
+  font = createFont("arial", 20);
+  alt = controlP5.addTextfield("Height body")
+    .setValue("160" )
+      .setPosition(300, 400)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 0, 0))
+                .setId(20);
+  ;
+  alt.setVisible(false);
+
+  ample = controlP5.addTextfield("Width body")
+    .setValue("80" )
+      .setPosition(600, 400)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 0, 0))
+                .setId(21);
+  ;
+  ample.setVisible(false);
+
+  maniga = controlP5.addTextfield("Width sleeve")
+    .setValue("25" )
+      .setPosition(300, 480)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 0, 0))
+                .setId(22);
+  ;
+  maniga.setVisible(false);
+
+  llargM = controlP5.addTextfield("Height sleeve")
+    .setValue("190" )
+      .setPosition(600, 480)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 0, 0))
+                .setId(23);
+  ;
+  llargM.setVisible(false);
+
+  collAmple = controlP5.addTextfield("Width neck")
+    .setValue("39" )
+      .setPosition(300, 560)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 0, 0))
+                .setId(24);
+  ;
+
+  collAmple.setVisible(false);
+  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 150, 30).setId(11);
+  saveParametricSweaterButton.setVisible(false);
+  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 150, 30).setId(12);
+  applyParametricSweaterButton.setVisible(false);
+  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 150, 30).setId(13);
+  loadParametricSweaterButton.setVisible(false);
+}
+//------------------------------------------------------------------------------------
+void applyParametricSweater() {
+  ns.alt = Integer.parseInt(alt.getText());
+  ns.ample = Integer.parseInt(ample.getText());
+  ns.maniga = Integer.parseInt(maniga.getText());
+  ns.llargM = Integer.parseInt(llargM.getText());
+  ns.collAmple = Integer.parseInt(collAmple.getText());
+  ns.generateSweater();
+}
+//------------------------------------------------------------------------------------
+
+void createParametricSweater() {
+  if (!createSweater) {
+    ample.setVisible(true);
+    alt.setVisible(true);
+    maniga.setVisible(true);
+    llargM.setVisible(true);
+    collAmple.setVisible(true);
+    createSweater = true;
+    parametricSweaterButton.setLabel("Close parametric sweater");
+    saveParametricSweaterButton.setVisible(true);
+    applyParametricSweaterButton.setVisible(true);
+    loadParametricSweaterButton.setVisible(true);
+  }
+  else {
+    ample.setVisible(false);
+    alt.setVisible(false);
+    maniga.setVisible(false);
+    llargM.setVisible(false);
+    collAmple.setVisible(false);
+    createSweater = false;
+    parametricSweaterButton.setLabel("Open parametric sweater");
+    saveParametricSweaterButton.setVisible(false);
+    applyParametricSweaterButton.setVisible(false);
+    loadParametricSweaterButton.setVisible(false);
+  }
+}
+//------------------------------------------------------------------------------------
+
 void setupSweater() {
   ns = new parametricSweater();
-  ns.S();
+  ns.generateSweater();
 }
 
+//------------------------------------------------------------------------------------
+
 void drawSweater() {
+  fill(73, 202, 250);
+  rect(230, 0, 600, height);
+
   pushMatrix();
-  translate(530, 0);
-  //shape(ns.s, 0, 0);
+  translate(530, 20);
+  shape(ns.s, 0, 0);
   noFill();
-  stroke(255,0,0);
-  rect(-ns.widthSweater/2,0,ns.widthSweater,ns.heightSweater);
-  image(ns.img,-ns.widthSweater/2,0);
-  fill(0);
-  //
-  line(-300,0,300,0);
-  line(0,0,0,400);
+  //stroke(255, 0, 0);
+  rect((-ns.widthSweater/2), 0, ns.widthSweater-1, ns.heightSweater);
+  image(ns.img, -ns.widthSweater/2, 0);
+  //fill(0);
+  //line(-300, 0, 300, 0);
+  //line(0, 0, 0, 400);
   popMatrix();
 }
+//------------------------------------------------------------------------------------
 
 void saveSweaterAsInputImage() {
   fillArrayWithImage(ns.img);
   println(ns.img.height);
 }
+//------------------------------------------------------------------------------------
+
+class MyFilter extends javax.swing.filechooser.FileFilter {
+  public boolean accept(File file) {
+    String filename = file.getName();
+    return filename.endsWith(".png");
+  }
+
+  public String getDescription() {
+    return "*.png";
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+void saveImagePattern() {
+  JFileChooser fileChooser = new JFileChooser();
+  fileChooser.setDialogTitle("Save As");
+  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+  int userSelection = fileChooser.showSaveDialog(this);
+
+  MyFilter wordExtDesc = new MyFilter();
+  fileChooser.setAcceptAllFileFilterUsed(false);
+  fileChooser.setMultiSelectionEnabled(false);
+  //fileChooser.setFileFilter(new FileNameExtensionFilter(wordExtDesc, ".png"));
+
+  if (userSelection == JFileChooser.APPROVE_OPTION) {
+    File fileToSave = fileChooser.getSelectedFile();
+    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+    ns.img.save(fileToSave.getAbsolutePath());
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+void showHideFeaturesOpenKnit() {
+  println(machineList.getCaptionLabel().getText());
+  if (machineList.getCaptionLabel().getText().equals("Openknit")) {
+    parametricSweaterButton.setVisible(true);
+  }
+  else {
+    parametricSweaterButton.setVisible(false);
+  }
+}
+
+//------------------------------------------------------------------------------------
