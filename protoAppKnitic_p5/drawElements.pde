@@ -90,7 +90,13 @@ void display() {
   rect(buttonWithBar-9, 26*3+1, 9, 2);
   rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
-  
+  /*
+  debugVariables();
+  */
+}
+
+//------------------------------------------------------------------------------------
+void debugVariables(){
   text(solenoidsFromArduino, 10, 500);
   text("state: "+pixStateArduino, 20, 550);
   text("stitch: "+stitchSetupArduino, 20, 600);
