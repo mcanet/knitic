@@ -157,11 +157,11 @@ void setupGUIParametricSweater() {
   ;
 
   collAmple.setVisible(false);
-  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 150, 30).setId(11);
+  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 200, 30).setId(11);
   saveParametricSweaterButton.setVisible(false);
-  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 150, 30).setId(12);
+  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 200, 30).setId(12);
   applyParametricSweaterButton.setVisible(false);
-  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 150, 30).setId(13);
+  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 200, 30).setId(13);
   loadParametricSweaterButton.setVisible(false);
   
 }
