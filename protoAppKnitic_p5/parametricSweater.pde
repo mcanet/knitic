@@ -98,9 +98,10 @@ class parametricSweater {
 
 //------------------------------------------------------------------------------------
 void setupGUIParametricSweater() {
-
+  
   font = createFont("arial", 20);
-  alt = controlP5.addTextfield("Height body")
+  //Height body
+  alt = controlP5.addTextfield("Height body").setLabel("")
     .setValue("160" )
       .setPosition(300, 400)
         .setSize(200, 40)
@@ -110,8 +111,8 @@ void setupGUIParametricSweater() {
                 .setId(20);
   ;
   alt.setVisible(false);
-
-  ample = controlP5.addTextfield("Width body")
+  //Width body
+  ample = controlP5.addTextfield("Width body").setLabel("")
     .setValue("80" )
       .setPosition(600, 400)
         .setSize(200, 40)
@@ -121,8 +122,8 @@ void setupGUIParametricSweater() {
                 .setId(21);
   ;
   ample.setVisible(false);
-
-  maniga = controlP5.addTextfield("Width sleeve")
+  //Width sleeve
+  maniga = controlP5.addTextfield("Width sleeve").setLabel("")
     .setValue("25" )
       .setPosition(300, 480)
         .setSize(200, 40)
@@ -132,19 +133,20 @@ void setupGUIParametricSweater() {
                 .setId(22);
   ;
   maniga.setVisible(false);
-
-  llargM = controlP5.addTextfield("Height sleeve")
+  //Height sleeve
+  llargM = controlP5.addTextfield("Height sleeve").setLabel("")
     .setValue("190" )
       .setPosition(600, 480)
         .setSize(200, 40)
           .setFont(font)
             .setFocus(true)
               .setColor(color(255, 0, 0))
-                .setId(23);
+                .setId(23)
+                ;
   ;
   llargM.setVisible(false);
 
-  collAmple = controlP5.addTextfield("Width neck")
+  collAmple = controlP5.addTextfield("Width neck").setLabel("")
     .setValue("39" )
       .setPosition(300, 560)
         .setSize(200, 40)
@@ -225,6 +227,12 @@ void drawSweater() {
   //line(-300, 0, 300, 0);
   //line(0, 0, 0, 400);
   popMatrix();
+  
+  text("Height body:", 300, 390);
+  text("Width body:", 600, 390);
+  text("Width sleeve:", 300, 470);
+  text("Height sleeve:", 600, 470);
+  text("Width neck:", 300, 550);
 }
 //------------------------------------------------------------------------------------
 
