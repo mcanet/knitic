@@ -1,9 +1,11 @@
+
 /*
 Prototipe Knitic
  */
 //------------------------------------------------------------------------------------
 // libraries
 //------------------------------------------------------------------------------------
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import controlP5.*;
@@ -75,9 +77,28 @@ int currentSolenoidIDSetup;
 int[] pixelSend;
 int[] pixelReceived;
 boolean shift;
+DropdownList usbList;
+DropdownList machineList;
+JSONObject json;
+parametricSweater ns;
+controlP5.Textfield alt;
+controlP5.Textfield ample;
+controlP5.Textfield maniga;
+controlP5.Textfield llargM;
+controlP5.Textfield collAmple;
+PFont font;
+Boolean createSweater;
+
+controlP5.Button parametricSweaterButton;
+controlP5.Button saveParametricSweaterButton;
+controlP5.Button applyParametricSweaterButton;
+controlP5.Button loadParametricSweaterButton; 
+controlP5.Button startOpenKnit; 
+boolean nowKnitting_openKnit;
 //------------------------------------------------------------------------------------
 void setup() {
-  size(1060, 700);
+  size(1060, 700, P2D);
+  noSmooth();
   //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
@@ -85,10 +106,12 @@ void setup() {
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
+
+  setupSweater();
   // List all the available serial ports:
-  println(Serial.list());
-  setupSerialConnection();
+  setupSettings();
   addButtonsInSetup();
+  setupSerialConnection();
   kniticLogo = loadImage("logo_knitic.png");
   laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
@@ -115,13 +138,16 @@ void setup() {
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
-  drop = new SDrop(this);
+    drop = new SDrop(this);
   pixelSend = new int[200];
   pixelReceived = new int[200];
   for (int i=0; i<200; i++) {
     pixelSend[i] = 0;
     pixelReceived[i] = 0;
   }
+  createSweater = false;
+  showHideFeaturesOpenKnit();
+  nowKnitting_openKnit = false;
 }
 
 //------------------------------------------------------------------------------------
@@ -129,9 +155,9 @@ void setup() {
 void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
-  autoConnectAndReceiveSerial();
   display();
   drawPatternGrid();
+  
   if (loadPattern) { 
     drawPattern();
     drawAndSetSelectedGrid();
@@ -141,6 +167,20 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
+  
+  
+  if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
+  
+  if(createSweater){
+    drawSweater();
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+void serialEvent(Serial p) { 
+  println("new event");
+  autoConnectAndReceiveSerial(p);
 }
 
 //------------------------------------------------------------------------------------
@@ -233,10 +273,12 @@ boolean isPatternOnKnitting() {
 
 void dropEvent(DropEvent theDropEvent) {
   if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
-    //theDropEvent.file()
-    //theDropEvent.toString()
+    try {
+      fillArrayWithImagePath(theDropEvent.toString());
+    }
+    catch(Exception e) {
+    }
   }
 }
 
 //------------------------------------------------------------
-

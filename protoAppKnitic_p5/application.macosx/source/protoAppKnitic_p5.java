@@ -3,6 +3,7 @@ import processing.data.*;
 import processing.event.*; 
 import processing.opengl.*; 
 
+import javax.swing.JFileChooser; 
 import javax.swing.JOptionPane; 
 import javax.swing.ImageIcon; 
 import controlP5.*; 
@@ -23,12 +24,14 @@ import java.io.IOException;
 
 public class protoAppKnitic_p5 extends PApplet {
 
+
 /*
 Prototipe Knitic
  */
 //------------------------------------------------------------------------------------
 // libraries
 //------------------------------------------------------------------------------------
+
 
 
 
@@ -100,9 +103,28 @@ int currentSolenoidIDSetup;
 int[] pixelSend;
 int[] pixelReceived;
 boolean shift;
+DropdownList usbList;
+DropdownList machineList;
+JSONObject json;
+parametricSweater ns;
+controlP5.Textfield alt;
+controlP5.Textfield ample;
+controlP5.Textfield maniga;
+controlP5.Textfield llargM;
+controlP5.Textfield collAmple;
+PFont font;
+Boolean createSweater;
+
+controlP5.Button parametricSweaterButton;
+controlP5.Button saveParametricSweaterButton;
+controlP5.Button applyParametricSweaterButton;
+controlP5.Button loadParametricSweaterButton; 
+controlP5.Button startOpenKnit; 
+boolean nowKnitting_openKnit;
 //------------------------------------------------------------------------------------
 public void setup() {
-  size(1060, 700);
+  size(1060, 700, P2D);
+  noSmooth();
   //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
@@ -110,10 +132,12 @@ public void setup() {
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
+
+  setupSweater();
   // List all the available serial ports:
-  println(Serial.list());
-  setupSerialConnection();
+  setupSettings();
   addButtonsInSetup();
+  setupSerialConnection();
   kniticLogo = loadImage("logo_knitic.png");
   laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
@@ -140,13 +164,16 @@ public void setup() {
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
-  drop = new SDrop(this);
+    drop = new SDrop(this);
   pixelSend = new int[200];
   pixelReceived = new int[200];
   for (int i=0; i<200; i++) {
     pixelSend[i] = 0;
     pixelReceived[i] = 0;
   }
+  createSweater = false;
+  showHideFeaturesOpenKnit();
+  nowKnitting_openKnit = false;
 }
 
 //------------------------------------------------------------------------------------
@@ -154,9 +181,9 @@ public void setup() {
 public void draw() {
   frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
-  autoConnectAndReceiveSerial();
   display();
   drawPatternGrid();
+  
   if (loadPattern) { 
     drawPattern();
     drawAndSetSelectedGrid();
@@ -166,6 +193,20 @@ public void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
+  
+  
+  if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
+  
+  if(createSweater){
+    drawSweater();
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+public void serialEvent(Serial p) { 
+  println("new event");
+  autoConnectAndReceiveSerial(p);
 }
 
 //------------------------------------------------------------------------------------
@@ -258,13 +299,15 @@ public boolean isPatternOnKnitting() {
 
 public void dropEvent(DropEvent theDropEvent) {
   if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
-    //theDropEvent.file()
-    //theDropEvent.toString()
+    try {
+      fillArrayWithImagePath(theDropEvent.toString());
+    }
+    catch(Exception e) {
+    }
   }
 }
 
 //------------------------------------------------------------
-
 
 
 Minim minim;
@@ -282,6 +325,7 @@ public void setupAudio(){
   reset = minim.loadSample("reset.aif", 1024);  
   error = minim.loadSample("error.aif", 512);
 }
+
 //------------------------------------------------------------------------------------
 
 public void addButtonsInSetup() {
@@ -292,18 +336,152 @@ public void addButtonsInSetup() {
   controlP5.addButton("Go to row", 4, 855, 90, 80, 30).setId(5);
   controlP5.addButton("Move pattern", 4, 855, 130, 80, 30).setId(6);
   controlP5.addButton("Start edit image", 4, 855, 170, 80, 30).setId(7);
+  usbList = controlP5.addDropdownList("usbList", 855, 300, 150, 300).setId(8);
+  fillListUSB(usbList);
+  machineList = controlP5.addDropdownList("machine", 855, 350, 150, 300).setId(9);
+  fillListMachines(machineList);
+  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 150, 30).setId(10);
+  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 80, 30).setId(14);
+  startOpenKnit.setVisible(false); 
+   
+  setupGUIParametricSweater();
+} 
+
+//------------------------------------------------------------------------------------
+
+public void fillListUSB(DropdownList ddl) {
+  ddl.setBackgroundColor(color(190));
+  ddl.setItemHeight(20);
+  ddl.setBarHeight(15);
+  ArrayList<String> usbListName = new ArrayList<String>();
+  for (int i=0;i<Serial.list().length;i++) {
+    if (Serial.list()[i].toLowerCase().lastIndexOf("bluetooth")==-1 && Serial.list()[i].toLowerCase().lastIndexOf("tty")!=-1) {
+      usbListName.add(Serial.list()[i]);
+    }
+  }
+  if (usbListName.size()==0) {
+
+    ddl.captionLabel().set("No devices connected");
+  }
+  else  if (usbListName.size()==1) {
+    ddl.captionLabel().set(usbListName.get(0));
+  }
+  else  if (usbListName.size()>1) {
+    // try to found in list one usb selected
+    Boolean usbSelected = false;
+    for (int i=0;i<usbListName.size();i++) {
+      if (usbListName.get(i).equals(getUSBSelected())) {
+        ddl.captionLabel().set(getUSBSelected());
+        usbSelected = true;
+      }
+    }
+    if (!usbSelected) ddl.captionLabel().set("Select usb port");
+  }
+  ddl.captionLabel().style().marginTop = 3;
+  ddl.captionLabel().style().marginLeft = 3;
+  ddl.valueLabel().style().marginTop = 3;
+  for (int i=0;i<usbListName.size();i++) {
+    ddl.addItem(usbListName.get(i), i);
+  }
+  ddl.scroll(0);
+  ddl.setColorBackground(color(60));
+  ddl.setColorActive(color(255, 128));
 }
 
 //------------------------------------------------------------------------------------
 
+public void fillListMachines(DropdownList ddl) {
+  ddl.setBackgroundColor(color(190));
+  ddl.setItemHeight(20);
+  ddl.setBarHeight(15);
+  ArrayList<String> machinesListName = new ArrayList<String>();
+  machinesListName.add("Brother 930 / 940");
+  machinesListName.add("Openknit");
+  //usbListName.add("Brother 910");
+  //usbListName.add("Brother 950");
+
+  Boolean machineSelected = false;
+  for (int i=0;i<machinesListName.size();i++) {
+    if (machinesListName.get(i).equals(getMachineMode())) {
+      ddl.captionLabel().set(getMachineMode());
+      machineSelected = true;
+    }
+  }
+  
+  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
+  ddl.captionLabel().style().marginTop = 3;
+  ddl.captionLabel().style().marginLeft = 3;
+  ddl.valueLabel().style().marginTop = 3;
+  for (int i=0;i<machinesListName.size();i++) {
+    ddl.addItem(machinesListName.get(i), i);
+  }
+  ddl.scroll(0);
+  ddl.setColorBackground(color(60));
+  ddl.setColorActive(color(255, 128));
+  
+}
+
+//------------------------------------------------------------------------------------
 public void controlEvent(ControlEvent theEvent) {
-  println(theEvent.controller().id());
-  if (theEvent.controller().id()==3) openknittingPattern();
-  if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
-  if (theEvent.controller().id()==5) jumpToRow();
-  if (theEvent.controller().id()==6) howMuchPatternToLeft("");
-  if (theEvent.controller().id()==7) changeEditPixels();
-  if (theEvent.controller().id()==8) UDP_LivePatternMode();
+  if (theEvent.isGroup()) {
+    // check if the Event was triggered from a ControlGroup
+    println("event from group : "+theEvent.getGroup().id()+" from "+theEvent.getGroup());
+    if (theEvent.getGroup().id()==8) { 
+      saveUSBSelected();
+      setupSerialConnection();
+    }
+    if (theEvent.getGroup().id()==9) { 
+      saveModelSelected();
+      setupTypeMachine();
+      showHideFeaturesOpenKnit();
+    }
+  } 
+  else if (theEvent.isController()) {
+    println(theEvent.controller().id());
+
+    if (theEvent.controller().id()==3) openknittingPattern();
+    if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
+    if (theEvent.controller().id()==5) jumpToRow();
+    if (theEvent.controller().id()==6) howMuchPatternToLeft("");
+    if (theEvent.controller().id()==7) changeEditPixels();
+    if (theEvent.controller().id()==10) { 
+      createParametricSweater();
+    }
+    if (theEvent.controller().id()==11)saveImagePattern();
+    if (theEvent.controller().id()==12)applyParametricSweater();
+    if (theEvent.controller().id()==13)saveSweaterAsInputImage();
+    if (theEvent.controller().id()==14){
+      if(nowKnitting_openKnit){ 
+        startOpenKnit.setLabel("Start knitting");
+        stitch = 0;
+        current_row = 0;
+        status="r";
+        endLineStarted = true;
+        lastChangeHead = "left";
+      }else{
+        startOpenKnit.setLabel("Pause");
+      }
+      nowKnitting_openKnit =!nowKnitting_openKnit;
+    }
+  }
+
+  if (theEvent.isAssignableFrom(Textfield.class)) {
+    println("controlEvent: accessing a string from controller '"
+      +theEvent.getName()+"': "
+      +theEvent.getStringValue()
+      );
+    //ns.generateSweater();
+  }
+}
+
+public void input(String theText) {
+  // automatically receives results from controller input
+  println("a textfield event for controller 'input' : "+theText);
+}
+
+//------------------------------------------------------------------------------------
+
+public void setupTypeMachine() {
 }
 
 //------------------------------------------------------------------------------------
@@ -314,11 +492,6 @@ public void jumpToRow() {
     current_row = Integer.valueOf(new_current_row);
     sendtoKnittingMachine();
   }
-}
-
-//------------------------------------------------------------------------------------
-
-public void UDP_LivePatternMode() {
 }
 
 //------------------------------------------------------------------------------------
@@ -355,7 +528,7 @@ public void openknittingPattern() {
 public void fileSelected(File selection) {
   try {
     if (selection != null) {
-      fillArrayWithImage(selection.getAbsolutePath());
+      fillArrayWithImagePath(selection.getAbsolutePath());
     }
   }
   catch(Exception e) {
@@ -364,9 +537,23 @@ public void fileSelected(File selection) {
 
 //------------------------------------------------------------------------------------
 
-public void fillArrayWithImage(String imgPath) { 
+public void fillArrayWithImagePath(String imgPath) {
+  noLoop(); 
   try {
-    img = loadImage(imgPath);
+    PImage imgTemp = loadImage(imgPath);
+    fillArrayWithImage(imgTemp);
+  }
+  catch(Exception e) {
+  }
+  loop();
+}
+
+//------------------------------------------------------------------------------------
+
+public void fillArrayWithImage(PImage imgTemp) {
+  noLoop(); 
+  try {
+    img = imgTemp;
     cols = img.width;
     if (cols>200) {
       JOptionPane.showMessageDialog(frame, "The image have more than 200 pixels", "Alert from Knitic", 2);
@@ -401,11 +588,14 @@ public void fillArrayWithImage(String imgPath) {
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
           int loc = (cols-1)-x + y*cols;
-          if (brightness(img.pixels[loc]) > threshold) {
+          if (brightness(img.pixels[loc]) > threshold && alpha(img.pixels[loc])==1) {
             pixelArray[x][y] = 0;
           }
-          else {
+          else if (alpha(img.pixels[loc])==1) {
             pixelArray[x][y] = 1;
+          }
+          else {
+            pixelArray[x][y] = 2;
           }
         }
       }
@@ -416,6 +606,7 @@ public void fillArrayWithImage(String imgPath) {
   }
   catch(Exception e) {
   }
+  loop();
 }
 
 //------------------------------------------------------------------------------------
@@ -443,7 +634,6 @@ public void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
-
 //------------------------------------------------------------------------------------
 
 public void display() {  
@@ -536,7 +726,13 @@ public void display() {
   rect(buttonWithBar-9, 26*3+1, 9, 2);
   rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
-  
+  /*
+  debugVariables();
+  */
+}
+
+//------------------------------------------------------------------------------------
+public void debugVariables(){
   text(solenoidsFromArduino, 10, 500);
   text("state: "+pixStateArduino, 20, 550);
   text("stitch: "+stitchSetupArduino, 20, 600);
@@ -595,13 +791,18 @@ public void drawDebugVariables() {
 
 //------------------------------------------------------------------------------------
 
-public void drawPattern() {
+public void drawPattern(){
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
-  noSmooth();
+  //
+  //smooth(2);
   scale(-1, 1);
+  fill(250, 250, 250,50);
+  rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
+  fill(250, 250, 250,250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
-  smooth();
+  
+  noSmooth();
   // draw grid
   for (int x=0;x<cols+1;x++) {
     stroke(0);
@@ -612,6 +813,7 @@ public void drawPattern() {
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
   popMatrix();
+  
 }
 
 //------------------------------------------------------------------------------------
@@ -619,10 +821,10 @@ public void drawPattern() {
 public void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
-    noSmooth();
+    
     int h = img.height/4;
     image(img, width-205, 400, img.width/4, h);
-    smooth();
+    
   }
 }
 
@@ -818,8 +1020,10 @@ public void drawReceivedPixelsVsSend() {
       if (pixelSend[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-5, 5, 5);
     }
@@ -827,8 +1031,10 @@ public void drawReceivedPixelsVsSend() {
       if (pixelReceived[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-10, 5, 5);
     }
@@ -837,7 +1043,6 @@ public void drawReceivedPixelsVsSend() {
   }
 }
 //------------------------------------------------------------------------------------
-
 public void showCursorPosition() {
   if ( mouseX>buttonWithBar && mouseX<(width-buttonWithBar) ) {
     patternMouseX = cols -(((mouseX-buttonWithBar)/sizePixel)-(100-leftStick))-1 ;
@@ -870,7 +1075,6 @@ public void mouseReleased() {
   catch(Exception e) {
   }
 }
-
 //------------------------------------------------------------------------------------
 public void keyPressed() {
   if (key=='o') {
@@ -939,9 +1143,344 @@ public void startLeftSide() {
 }
 //------------------------------------------------------------------------------------
 
+int lastTimeMove_openKnit;
+int direction_openKnit=1;
+
+public void drawOpenKnit(){
+  if(millis()-lastTimeMove_openKnit>100){
+    stitch += direction_openKnit;
+    if(stitch>200){
+      direction_openKnit = direction_openKnit*-1;
+    }
+    if(stitch<0){
+      direction_openKnit = direction_openKnit*-1;
+    }
+    lastTimeMove_openKnit = millis();
+  }
+}
+
+class parametricSweater {
+  PShape s;
+  float factor = 1;
+  float factorX = 0.8f;
+  float factorY = 1;
+  float alt =  160;//160
+  float ample = 80;//80
+  float maniga = 25;//25
+  float llargM = 190 ;//190
+  float collAmple = 39;
+  float collAlt = 70; // no la faig servir
+  float sisa = 0;
+  float sisaMarge =0; 
+
+  int dif = 10;
+  PImage img;
+  float widthSweater;
+  float heightSweater;
+
+  public parametricSweater() {
+  }
+
+  public void generateSweater() {
+    S();
+  }
+
+  public void jersei(float alt, float ample, float maniga, float collAmple, float collAlt, float llargM, float sisa) {
+    float agulla = 5;
+    float halfAmple = ample*0.5f;
+    sisa = collAlt*0.5f;
+    sisaMarge = sisa*0.5f;
+    fill(255);
+    noStroke();
+    s = createShape();
+    s.beginShape(); 
+    s.vertex((collAmple*0.5f)*factorX, 0);
+    s.vertex((halfAmple+agulla+maniga)*factorX, (sisa-sisaMarge)*factorY);
+    s.vertex((halfAmple+agulla+maniga)*factorX, llargM*factorY);
+    s.vertex((halfAmple+agulla)*factorX, llargM*factorY); 
+    s.vertex((halfAmple+agulla)*factorX, sisa*factorY);
+    s.vertex(halfAmple*factorX, sisa*factorY);
+    s.vertex(halfAmple*factorX, alt*factorY);
+    s.vertex(-halfAmple*factorX, alt*factorY);
+    s.vertex(-halfAmple*factorX, sisa*factorY);
+    s.vertex((-halfAmple-agulla)*factorX, sisa*factorY);
+    s.vertex((-halfAmple-agulla)*factorX, llargM*factorY);
+    s.vertex((-halfAmple-agulla-maniga)*factorX, llargM*factorY);
+    s.vertex((-halfAmple-agulla-maniga)*factorX, (sisa-sisaMarge)*factorY);
+    s.vertex((-collAmple*0.5f)*factorX, 0);
+    s.endShape(CLOSE);
+
+    widthSweater = (ample+(maniga*2));
+    if ((alt) >(llargM)) {
+      heightSweater = alt;
+    }
+    else {
+      heightSweater = llargM;
+    }
+    // save image
+    createPixelPattern();
+  }
+
+  public void L() {
+    jersei(alt, ample, maniga, collAmple, collAlt, llargM, sisa);
+  }
+
+  public void ML() {
+    jersei(alt-dif, ample-dif, maniga-dif, collAmple-dif, collAlt-dif, llargM-dif, sisa-dif);
+  }
+
+  public void M() {
+    dif= dif*2;
+    jersei(alt-dif, ample-dif, maniga-dif/2, collAmple-dif, collAlt-dif, llargM-dif, sisa-dif);
+    dif = 10;
+  }
+
+  public void SM() {
+    dif= dif*3;
+    jersei(alt-dif, ample-dif, maniga-dif/2, collAmple-dif, collAlt-dif, llargM-dif, sisa-dif);
+    dif = 10;
+  }
+
+  public void S() {
+    dif= dif*4;
+    jersei(alt-dif, ample-dif, maniga-dif/2, collAmple-dif, collAlt-dif, llargM-dif, sisa-dif);
+    dif = 10;
+  }
+
+  public void createPixelPattern() {
+    PGraphics buffer = createGraphics(PApplet.parseInt(widthSweater), PApplet.parseInt(heightSweater), JAVA2D);
+    img = new PImage(PApplet.parseInt(widthSweater), PApplet.parseInt(heightSweater));
+    buffer.shape(s, (widthSweater/2), 0);
+    img = buffer.get(0, 0, buffer.width, buffer.height);
+    img.updatePixels();
+  }
+}
+
+//------------------------------------------------------------------------------------
+public void setupGUIParametricSweater() {
+  
+  font = createFont("arial", 20);
+  //Height body
+  alt = controlP5.addTextfield("Height body").setLabel("")
+    .setValue("160" )
+      .setPosition(300, 400)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 255, 255))
+                .setId(20);
+  ;
+  alt.setVisible(false);
+  //Width body
+  ample = controlP5.addTextfield("Width body").setLabel("")
+    .setValue("80" )
+      .setPosition(600, 400)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 255, 255))
+                .setId(21);
+  ;
+  ample.setVisible(false);
+  //Width sleeve
+  maniga = controlP5.addTextfield("Width sleeve").setLabel("")
+    .setValue("25" )
+      .setPosition(300, 480)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 255, 255))
+                .setId(22);
+  ;
+  maniga.setVisible(false);
+  //Height sleeve
+  llargM = controlP5.addTextfield("Height sleeve").setLabel("")
+    .setValue("190" )
+      .setPosition(600, 480)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 255, 255))
+                .setId(23)
+                ;
+  ;
+  llargM.setVisible(false);
+
+  collAmple = controlP5.addTextfield("Width neck").setLabel("")
+    .setValue("39" )
+      .setPosition(300, 560)
+        .setSize(200, 40)
+          .setFont(font)
+            .setFocus(true)
+              .setColor(color(255, 255, 255))
+                .setId(24);
+  ;
+
+  collAmple.setVisible(false);
+  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 150, 30).setId(11);
+  saveParametricSweaterButton.setVisible(false);
+  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 150, 30).setId(12);
+  applyParametricSweaterButton.setVisible(false);
+  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 150, 30).setId(13);
+  loadParametricSweaterButton.setVisible(false);
+  
+}
+//------------------------------------------------------------------------------------
+public void applyParametricSweater() {
+  ns.alt = Integer.parseInt(alt.getText());
+  ns.ample = Integer.parseInt(ample.getText());
+  ns.maniga = Integer.parseInt(maniga.getText());
+  ns.llargM = Integer.parseInt(llargM.getText());
+  ns.collAmple = Integer.parseInt(collAmple.getText());
+  ns.generateSweater();
+}
+//------------------------------------------------------------------------------------
+
+public void createParametricSweater() {
+  if (!createSweater) {
+    ample.setVisible(true);
+    alt.setVisible(true);
+    maniga.setVisible(true);
+    llargM.setVisible(true);
+    collAmple.setVisible(true);
+    createSweater = true;
+    parametricSweaterButton.setLabel("Close parametric sweater");
+    saveParametricSweaterButton.setVisible(true);
+    applyParametricSweaterButton.setVisible(true);
+    loadParametricSweaterButton.setVisible(true);
+  }
+  else {
+    ample.setVisible(false);
+    alt.setVisible(false);
+    maniga.setVisible(false);
+    llargM.setVisible(false);
+    collAmple.setVisible(false);
+    createSweater = false;
+    parametricSweaterButton.setLabel("Open parametric sweater");
+    saveParametricSweaterButton.setVisible(false);
+    applyParametricSweaterButton.setVisible(false);
+    loadParametricSweaterButton.setVisible(false); 
+  }
+}
+//------------------------------------------------------------------------------------
+
+public void setupSweater() {
+  ns = new parametricSweater();
+  ns.generateSweater();
+}
+
+//------------------------------------------------------------------------------------
+
+public void drawSweater() {
+  fill(73, 202, 250);
+  rect(230, 0, 600, height);
+  fill(255);
+  //text("Set values for create a parametric sweater", 300, 380);
+  pushMatrix();
+  translate(530, 20);
+  shape(ns.s, 0, 0);
+  noFill();
+  //stroke(255, 0, 0);
+  rect((-ns.widthSweater/2), 0, ns.widthSweater-1, ns.heightSweater);
+  image(ns.img, -ns.widthSweater/2, 0);
+  //fill(0);
+  //line(-300, 0, 300, 0);
+  //line(0, 0, 0, 400);
+  popMatrix();
+  
+  text("Height body:", 300, 390);
+  text("Width body:", 600, 390);
+  text("Width sleeve:", 300, 470);
+  text("Height sleeve:", 600, 470);
+  text("Width neck:", 300, 550);
+}
+//------------------------------------------------------------------------------------
+
+public void saveSweaterAsInputImage() {
+  fillArrayWithImage(ns.img);
+  println(ns.img.height);
+}
+//------------------------------------------------------------------------------------
+
+class MyFilter extends javax.swing.filechooser.FileFilter {
+  public boolean accept(File file) {
+    String filename = file.getName();
+    return filename.endsWith(".png");
+  }
+
+  public String getDescription() {
+    return "*.png";
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+public void saveImagePattern() {
+  JFileChooser fileChooser = new JFileChooser();
+  fileChooser.setDialogTitle("Save As");
+  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+  int userSelection = fileChooser.showSaveDialog(this);
+
+  MyFilter wordExtDesc = new MyFilter();
+  fileChooser.setAcceptAllFileFilterUsed(false);
+  fileChooser.setMultiSelectionEnabled(false);
+  //fileChooser.setFileFilter(new FileNameExtensionFilter(wordExtDesc, ".png"));
+
+  if (userSelection == JFileChooser.APPROVE_OPTION) {
+    File fileToSave = fileChooser.getSelectedFile();
+    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+    ns.img.save(fileToSave.getAbsolutePath());
+  }
+}
+
+//------------------------------------------------------------------------------------
+
+public void showHideFeaturesOpenKnit() {
+  println(machineList.getCaptionLabel().getText());
+  if (machineList.getCaptionLabel().getText().equals("Openknit")) {
+    startOpenKnit.setVisible(true); 
+  }
+  else {
+    startOpenKnit.setVisible(false); 
+  }
+}
+
+//------------------------------------------------------------------------------------
+class scrollBar {
+  int posYDragScroll;
+  int posYscrollBar;
+  int heightYScrollBar;
+  boolean notDragScroll;
+
+  scrollBar() {
+    posYscrollBar = 0;
+    heightYScrollBar = 0;
+    posYDragScroll = 0;
+  }
+
+  public void setupScrollBar() {
+    posYscrollBar = 0;
+    heightYScrollBar = height*((rows*3)/height);
+    notDragScroll = false;
+  }
+
+  public void mouseMoveScroll() {
+    if (mouseX > (width-buttonWithBar) && mouseX < ((width-buttonWithBar)+15) && mouseY> posYscrollBar && mouseY<(posYscrollBar+heightYScrollBar) && mousePressed && notDragScroll ) {
+      notDragScroll = false;
+      posYDragScroll = posYscrollBar-mouseY;
+    }
+    if (notDragScroll && mousePressed) {
+      posYscrollBar = mouseY + posYDragScroll;
+    }
+    else {
+      notDragScroll = false;
+    }
+  }
+}
 
 
-int BAUD_RATE = 115200;//
+
+int BAUD_RATE = 115200;
 byte lf = 0x40;
 byte footer = 126;
 
@@ -950,22 +1489,26 @@ byte footer = 126;
 public void setupSerialConnection() {
   try {
     println("try to connect");
-    println(Serial.list()[0]);
-    myPort = new Serial(this, Serial.list()[0], BAUD_RATE);
+    String devicePath = usbList.getCaptionLabel().getText();
+    println("Device path:"+devicePath);
+    myPort = new Serial(this, devicePath, BAUD_RATE);
+    myPort.bufferUntil(lf);
     delay(2000);
     myPort.clear();
     lastConnection = millis();
   } 
   catch (Exception e) {
+    /*
     if (e.getMessage().contains("<init>")) {
       println("port in use, trying again later...");
     }
+    */
   }
 }
 
 //------------------------------------------------------------------------------------
 
-public void autoConnectAndReceiveSerial() {
+public void autoConnectAndReceiveSerial(Serial p) {
   try {
     // knowing if is connected
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
@@ -978,14 +1521,14 @@ public void autoConnectAndReceiveSerial() {
          myPort.stop();
          }
          myPort = null;
-         //setupSerialConnection();
+         setupSerialConnection();
          */
       }
     }
     else {
       usbConected = true;
     }
-    receiveSerial();
+    receiveSerial(p);
   }
   catch(Exception e) {
   }
@@ -1064,13 +1607,13 @@ void sendSerial16() {
 */
 //------------------------------------------------------------------------------------
 
-public void receiveSerial() {
+public void receiveSerial(Serial p) {
   try {
     int timeStart = millis();
     serialAvailableBuffer = myPort.available();
-    while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
+    //while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
       //println("Receive Serial___"+Integer.toString(myPort.available()));
-      myString = myPort.readStringUntil(lf);
+      myString = p.readString();
       // PIXELS stored now in Arduino
       try {
         if (myString != null && myString.length()>200) {
@@ -1121,7 +1664,7 @@ public void receiveSerial() {
       catch(Exception e) {
         println("Error Sensors:"+myString);
       }
-    }
+    //}
   }
   catch(Exception e) {
     println("ERROR in Receive serial "+e.getMessage()+"|");
@@ -1174,6 +1717,31 @@ public void checkBetweenSendAndReceived() {
 
 //------------------------------------------------------------------------------------
 
+public void setupSettings() {
+  json = loadJSONObject("data/settings.json");
+  String usb = json.getString("usbDevice");
+  String machine = json.getString("kniticModel");
+}
+
+public void saveUSBSelected() {
+  println("save:"+usbList.getCaptionLabel().getText());
+  json.setString("usbDevice", usbList.getCaptionLabel().getText());
+  saveJSONObject(json, "data/settings.json");
+}
+
+public void saveModelSelected() {
+  println("save:"+machineList.getCaptionLabel().getText());
+  json.setString("kniticModel", machineList.getCaptionLabel().getText());
+  saveJSONObject(json, "data/settings.json");
+}
+
+public String getUSBSelected() {
+  return json.getString("usbDevice");
+}
+
+public String getMachineMode() {
+  return json.getString("kniticModel");
+}
 /*
 void checkNotOnSolenoidsForLongTime() {
   // Check if the head did move

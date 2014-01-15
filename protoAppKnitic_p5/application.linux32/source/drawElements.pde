@@ -90,7 +90,13 @@ void display() {
   rect(buttonWithBar-9, 26*3+1, 9, 2);
   rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
-  
+  /*
+  debugVariables();
+  */
+}
+
+//------------------------------------------------------------------------------------
+void debugVariables(){
   text(solenoidsFromArduino, 10, 500);
   text("state: "+pixStateArduino, 20, 550);
   text("stitch: "+stitchSetupArduino, 20, 600);
@@ -149,13 +155,18 @@ void drawDebugVariables() {
 
 //------------------------------------------------------------------------------------
 
-void drawPattern() {
+void drawPattern(){
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
-  noSmooth();
+  //
+  //smooth(2);
   scale(-1, 1);
+  fill(250, 250, 250,50);
+  rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
+  fill(250, 250, 250,250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
-  smooth();
+  
+  noSmooth();
   // draw grid
   for (int x=0;x<cols+1;x++) {
     stroke(0);
@@ -166,6 +177,7 @@ void drawPattern() {
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
   popMatrix();
+  
 }
 
 //------------------------------------------------------------------------------------
@@ -173,10 +185,10 @@ void drawPattern() {
 void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
-    noSmooth();
+    
     int h = img.height/4;
     image(img, width-205, 400, img.width/4, h);
-    smooth();
+    
   }
 }
 
@@ -372,8 +384,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelSend[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-5, 5, 5);
     }
@@ -381,8 +395,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelReceived[i]==0) {
         fill(255, 0, 255);
       }
-      else {
+      else if(pixelSend[i]==1){
         fill(255, 255, 255);
+      }else{
+        fill(73, 202, 250);
       }
       rect(i*5, height-10, 5, 5);
     }
@@ -391,4 +407,3 @@ void drawReceivedPixelsVsSend() {
   }
 }
 //------------------------------------------------------------------------------------
-

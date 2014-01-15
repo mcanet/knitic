@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-int BAUD_RATE = 115200;//
+int BAUD_RATE = 115200;
 byte lf = 0x40;
 byte footer = 126;
 
@@ -10,22 +10,26 @@ byte footer = 126;
 void setupSerialConnection() {
   try {
     println("try to connect");
-    println(Serial.list()[0]);
-    myPort = new Serial(this, Serial.list()[0], BAUD_RATE);
+    String devicePath = usbList.getCaptionLabel().getText();
+    println("Device path:"+devicePath);
+    myPort = new Serial(this, devicePath, BAUD_RATE);
+    myPort.bufferUntil(lf);
     delay(2000);
     myPort.clear();
     lastConnection = millis();
   } 
   catch (Exception e) {
+    /*
     if (e.getMessage().contains("<init>")) {
       println("port in use, trying again later...");
     }
+    */
   }
 }
 
 //------------------------------------------------------------------------------------
 
-void autoConnectAndReceiveSerial() {
+void autoConnectAndReceiveSerial(Serial p) {
   try {
     // knowing if is connected
     if (abs(millis()-lastMessageReceivedFromSerial)>2000) {
@@ -38,14 +42,14 @@ void autoConnectAndReceiveSerial() {
          myPort.stop();
          }
          myPort = null;
-         //setupSerialConnection();
+         setupSerialConnection();
          */
       }
     }
     else {
       usbConected = true;
     }
-    receiveSerial();
+    receiveSerial(p);
   }
   catch(Exception e) {
   }
@@ -124,13 +128,13 @@ void sendSerial16() {
 */
 //------------------------------------------------------------------------------------
 
-void receiveSerial() {
+void receiveSerial(Serial p) {
   try {
     int timeStart = millis();
     serialAvailableBuffer = myPort.available();
-    while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
+    //while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
       //println("Receive Serial___"+Integer.toString(myPort.available()));
-      myString = myPort.readStringUntil(lf);
+      myString = p.readString();
       // PIXELS stored now in Arduino
       try {
         if (myString != null && myString.length()>200) {
@@ -181,7 +185,7 @@ void receiveSerial() {
       catch(Exception e) {
         println("Error Sensors:"+myString);
       }
-    }
+    //}
   }
   catch(Exception e) {
     println("ERROR in Receive serial "+e.getMessage()+"|");
@@ -233,4 +237,3 @@ void checkBetweenSendAndReceived() {
 }
 
 //------------------------------------------------------------------------------------
-
