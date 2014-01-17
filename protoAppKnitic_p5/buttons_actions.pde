@@ -4,7 +4,7 @@ void addButtonsInSetup() {
   PFont p = createFont("Verdana",13); 
   
   controlP5 = new ControlP5(this);
-  controlP5.setControlFont(p);
+  controlP5.setControlFont(laurentFont13);
   controlP5.addButton("Open", 4, 855, 45, 70, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
   //controlP5.addToggle("UDP live pattern mode", true, 855, 255, 20, 20).setId(8);

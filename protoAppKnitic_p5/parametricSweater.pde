@@ -98,14 +98,12 @@ class parametricSweater {
 
 //------------------------------------------------------------------------------------
 void setupGUIParametricSweater() {
-  
-  font = createFont("arial", 20);
   //Height body
   alt = controlP5.addTextfield("Height body").setLabel("")
     .setValue("160" )
       .setPosition(300, 400)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(20);
@@ -116,7 +114,7 @@ void setupGUIParametricSweater() {
     .setValue("80" )
       .setPosition(600, 400)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(21);
@@ -127,7 +125,7 @@ void setupGUIParametricSweater() {
     .setValue("25" )
       .setPosition(300, 480)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(22);
@@ -138,7 +136,7 @@ void setupGUIParametricSweater() {
     .setValue("190" )
       .setPosition(600, 480)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(23)
@@ -150,7 +148,7 @@ void setupGUIParametricSweater() {
     .setValue("39" )
       .setPosition(300, 560)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(24);

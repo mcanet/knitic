@@ -19,6 +19,7 @@ Serial myPort = null;
 PImage kniticLogo;
 PImage img;
 PFont laurentFont;
+PFont laurentFont14;
 String last16Solenoids;
 String selected;
 String direction = "-";
@@ -99,13 +100,15 @@ boolean nowKnitting_openKnit;
 void setup() {
   size(1060, 700, P2D);
   noSmooth();
-  //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
+  // load fonts
+  laurentFont = loadFont("Quantico-Regular-20.vlw");
+  laurentFont14 = loadFont("Quantico-Regular-14.vlw");
 
   setupSweater();
   // List all the available serial ports:
@@ -113,7 +116,6 @@ void setup() {
   addButtonsInSetup();
   setupSerialConnection();
   kniticLogo = loadImage("logo_knitic.png");
-  laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
   _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
