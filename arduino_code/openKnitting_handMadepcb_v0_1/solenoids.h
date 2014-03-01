@@ -113,9 +113,9 @@ public:
           int i;
           if(myEndlines->phase==0){
             // validated
-            i = abs(pos+8)%16;// was 0, means no +8
+            i = abs(pos)%16;// was 0, means no +8
           }else{
-            i = abs(pos)%16;// -8
+            i = abs(pos-8)%16;// -8
           }
           currentStitchSetup = pos-40; 
           currentSolenoidIDSetup = i;

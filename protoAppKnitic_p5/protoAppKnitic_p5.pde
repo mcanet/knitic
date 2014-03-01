@@ -59,7 +59,6 @@ int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
 int offsetKeedles = 24;
-int serialAvailableBuffer;
 boolean usbConected = false;
 boolean loadPattern = false;
 boolean repedPatternMode = true;
@@ -170,7 +169,6 @@ void draw() {
   // For debug
   drawReceivedPixelsVsSend();
   
-  
   if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
   
   if(createSweater){
@@ -181,7 +179,6 @@ void draw() {
 //------------------------------------------------------------------------------------
 
 void serialEvent(Serial p) { 
-  println("new event");
   autoConnectAndReceiveSerial(p);
 }
 

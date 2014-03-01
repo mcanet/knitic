@@ -92,19 +92,20 @@ void display() {
   stroke(255);
   /*
   debugVariables();
-  */
+   */
 }
 
 //------------------------------------------------------------------------------------
-void debugVariables(){
+void debugVariables() {
   text(solenoidsFromArduino, 10, 500);
   text("state: "+pixStateArduino, 20, 550);
   text("stitch: "+stitchSetupArduino, 20, 600);
   text("solenoid: "+currentSolenoidIDSetup, 20, 650);
-  
-  if(shift==false){ // equal 1
+
+  if (shift==false) { // equal 1
     text("shift-B", 20, 680);
-  }else{// equal 0
+  }
+  else {// equal 0
     text("shift-A", 20, 680);
   }
 }
@@ -131,8 +132,6 @@ void drawDebugVariables() {
 
   text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
   text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
-  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
-
   if (repedPatternMode) {
     text("Repeat: true", 30, 500);
   }
@@ -150,22 +149,21 @@ void drawDebugVariables() {
     text("Section: "+Integer.toString(section), 30, 170);
   }
   text(_16Solenoids, 840, 310);
- 
 }
 
 //------------------------------------------------------------------------------------
 
-void drawPattern(){
+void drawPattern() {
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
   //
   //smooth(2);
   scale(-1, 1);
-  fill(250, 250, 250,50);
+  fill(250, 250, 250, 50);
   rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
-  fill(250, 250, 250,250);
+  fill(250, 250, 250, 250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
-  
+
   noSmooth();
   // draw grid
   for (int x=0;x<cols+1;x++) {
@@ -177,7 +175,6 @@ void drawPattern(){
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
   popMatrix();
-  
 }
 
 //------------------------------------------------------------------------------------
@@ -185,10 +182,8 @@ void drawPattern(){
 void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
-    
     int h = img.height/4;
     image(img, width-205, 400, img.width/4, h);
-    
   }
 }
 
@@ -384,9 +379,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelSend[i]==0) {
         fill(255, 0, 255);
       }
-      else if(pixelSend[i]==1){
+      else if (pixelSend[i]==1) {
         fill(255, 255, 255);
-      }else{
+      }
+      else {
         fill(73, 202, 250);
       }
       rect(i*5, height-5, 5, 5);
@@ -395,9 +391,10 @@ void drawReceivedPixelsVsSend() {
       if (pixelReceived[i]==0) {
         fill(255, 0, 255);
       }
-      else if(pixelSend[i]==1){
+      else if (pixelSend[i]==1) {
         fill(255, 255, 255);
-      }else{
+      }
+      else {
         fill(73, 202, 250);
       }
       rect(i*5, height-10, 5, 5);
