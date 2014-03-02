@@ -69,13 +69,50 @@ void sendtoKnittingMachine() {
         int posXPixel = 199-(i+rightStickOffset);
         int posYPixel = (rows-1)-current_row;
         try {
-          
           int pixelId = pixelArray[posXPixel][posYPixel];
           if (pixelId==1) {
-            pixelSend[i] = 0;
+            // pixels black
+            if (my_brother.getIDKnittingTypeSelected()==0) {
+              pixelSend[i] = 0;
+            }
+            if (my_brother.getIDKnittingTypeSelected()==1) {
+              switch(my_brother.getPassDoubleBed()) {
+              case 0:
+                pixelSend[i] = 1;
+                break;
+              case 1:
+                pixelSend[i] = 0;
+                break;
+              case 2:
+                pixelSend[i] = 0;
+                break;
+              case 3:
+                pixelSend[i] = 1;
+                break;
+              }
+            }
           }
           else {
-            pixelSend[i] = 1;
+            // pixels white
+            if (my_brother.getIDKnittingTypeSelected()==0) {
+              pixelSend[i] = 1;
+            }
+            if (my_brother.getIDKnittingTypeSelected()==1) {
+              switch(my_brother.getPassDoubleBed()) {
+              case 0:
+                pixelSend[i] = 0;
+                break;
+              case 1:
+                pixelSend[i] = 1;
+                break;
+              case 2:
+                pixelSend[i] = 1;
+                break;
+              case 3:
+                pixelSend[i] = 0;
+                break;
+              }
+            }
           }
         }
         catch(Exception e) {

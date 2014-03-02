@@ -1,78 +1,76 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
-<plist version="0.9">
+<?xml version="1.0" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
   <dict>
-    <key>CFBundleName</key>
-    <string>protoAppKnitic_p5</string>
-    <key>CFBundleVersion</key>
-    <string>1.0</string>
-    <key>CFBundleAllowMixedLocalizations</key>
-    <string>true</string>
-    <key>CFBundleExecutable</key>
-    <string>JavaApplicationStub</string>
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
+    <key>CFBundleExecutable</key>
+    <string>protoAppKnitic_p5</string>
     <key>CFBundleIconFile</key>
     <string>sketch.icns</string>
-    <key>CFBundleIdentifier</key> 
+    <key>CFBundleIdentifier</key>
+    <string>protoAppKnitic_p5</string>
+    <key>CFBundleDisplayName</key>
+    <string>protoAppKnitic_p5</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>protoAppKnitic_p5</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <!-- Customize this set as you wish -->
+    <key>CFBundleShortVersionString</key>
+    <string>1</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Your copyright here</string>
+    <key>CFBundleGetInfoString</key>
+    <string>Created with Processing</string>
+    <!-- End of the set that can be customized -->
+
+    
+
+    <key>JVMMainClassName</key>
     <string>protoAppKnitic_p5</string>
 
-    <!-- http://developer.apple.com/documentation/MacOSX/Conceptual/BPRuntimeConfig/Articles/PListKeys.html#//apple_ref/doc/uid/20001431-113616 -->
-    <key>LSUIPresentationMode</key>
-    <integer>0</integer>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.7.3</string>
+
+    <key>NSHighResolutionCapable</key>
+    <true/>
 
     <key>LSArchitecturePriority</key>
     <array>
       <string>x86_64</string>
-      <string>i386</string>
     </array>
 
-    <key>Java</key>
+    <key>LSEnvironment</key>
     <dict>
-      <key>VMOptions</key>
-      <string> -Xms64m -Xmx500m</string>
-
-      <key>MainClass</key>
-      <string>protoAppKnitic_p5</string>
-
-      <!-- We don't support Java 7 on OS X. 
-	   Using it will break lots of things. -->
-      <key>JVMVersion</key>
-      <string>1.6*</string>
-
-      <key>ClassPath</key>
-      <string>$JAVAROOT/protoAppKnitic_p5.jar:$JAVAROOT/core.jar:$JAVAROOT/jogl-all.jar:$JAVAROOT/gluegen-rt.jar:$JAVAROOT/jogl-all-natives-macosx-universal.jar:$JAVAROOT/gluegen-rt-natives-macosx-universal.jar:$JAVAROOT/controlP5.jar:$JAVAROOT/RXTXcomm.jar:$JAVAROOT/serial.jar:$JAVAROOT/sDrop.jar:$JAVAROOT/jl1.0.jar:$JAVAROOT/jsminim.jar:$JAVAROOT/minim.jar:$JAVAROOT/mp3spi1.9.4.jar:$JAVAROOT/tritonus_aos.jar:$JAVAROOT/tritonus_share.jar</string>
-
-      <!-- http://developer.apple.com/releasenotes/Java/java141/system_properties/chapter_4_section_1.html#//apple_ref/doc/uid/TP30000285 -->
-      <key>Properties</key>
-      <dict>
-	<key>apple.laf.useScreenMenuBar</key>
-	<string>true</string>
-	<key>apple.awt.showGrowBox</key>
-	<string>false</string>
-	<key>com.apple.smallTabs</key>
-	<string>true</string>
-	<key>apple.awt.Antialiasing</key>
-	<string>false</string>
-	<key>apple.awt.TextAntialiasing</key>
-	<string>true</string>
-	<key>com.apple.hwaccel</key>
-	<string>true</string>
-	<!-- 
-	     As of 2.0.1, this was set to 'false', but not sure why. 
-	     Now changed to 'true', otherwise it shows .app packages 
-	     as folders when using selectInput() and others. 
-	     https://github.com/processing/processing/issues/1959
-	-->
-	<key>apple.awt.use-file-dialog-packages</key>
-	<string>true</string>
-      </dict>
+      <key>LC_CTYPE</key>
+      <string>UTF-8</string>
     </dict>
+
+    <key>LSUIPresentationMode</key>
+    <integer>0</integer>
+
+    <key>JVMOptions</key>
+    <array>
+            <string>-Xms64m</string>
+      <string>-Xmx500m</string>
+
+      <string>-Xdock:icon=Contents/Resources/sketch.icns</string>
+      <string>-Dapple.laf.useScreenMenuBar=true</string>
+      <string>-Dcom.apple.macos.use-file-dialog-packages=true</string>
+      <string>-Dcom.apple.macos.useScreenMenuBar=true</string>
+      <string>-Dcom.apple.mrj.application.apple.menu.about.name=protoAppKnitic_p5</string>
+      <string>-Dcom.apple.smallTabs=true</string>
+    </array>
+    <key>JVMArguments</key>
+    <array>
+    </array>
   </dict>
 </plist>

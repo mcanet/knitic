@@ -5,6 +5,7 @@ void addButtonsInSetup() {
   controlP5.setControlFont(laurentFont14);
   controlP5.addButton("Open", 4, 855, 45, 70, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
+
   //controlP5.addToggle("UDP live pattern mode", true, 855, 255, 20, 20).setId(8);
   controlP5.addButton("Go to row", 4, 855, 90, 110, 30).setId(5);
   controlP5.addButton("Move pattern", 4, 855, 130, 130, 30).setId(6);
@@ -15,6 +16,8 @@ void addButtonsInSetup() {
   machineList.setBackgroundHeight(50 );
   fillListMachines(machineList);
   machineList.update();
+  knittingTypeList = controlP5.addDropdownList("knittingType", 855, 550, 200, 300).setId(16);
+  fillListKnittingType(knittingTypeList);
 
   parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 205, 30).setId(10);
   startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 120, 30).setId(14);
@@ -103,6 +106,34 @@ void fillListMachines(DropdownList ddl) {
 }
 
 //------------------------------------------------------------------------------------
+
+void fillListKnittingType(DropdownList ddl) {
+  ddl.setBackgroundColor(color(190));
+  ddl.setItemHeight(20);
+  ddl.setBarHeight(30);
+  
+
+  Boolean machineSelected = false;
+  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
+    if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
+      ddl.captionLabel().set(getKnittingType());
+      machineSelected = true;
+    }
+  }
+
+  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
+  ddl.captionLabel().style().marginTop = 3;
+  ddl.captionLabel().style().marginLeft = 3;
+  ddl.valueLabel().style().marginTop = 3;
+  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
+    ddl.addItem( my_brother.knittingTypeListName.get(i), i);
+  }
+  ddl.scroll(0);
+  ddl.setColorBackground(color(60));
+  ddl.setColorActive(color(255, 128));
+}
+
+//------------------------------------------------------------------------------------
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
@@ -115,6 +146,9 @@ void controlEvent(ControlEvent theEvent) {
       saveModelSelected();
       setupTypeMachine();
       showHideFeaturesOpenKnit();
+    }
+    if (theEvent.getGroup().id()==16) { 
+      saveKnittingType();
     }
   } 
   else if (theEvent.isController()) {
@@ -156,6 +190,8 @@ void controlEvent(ControlEvent theEvent) {
   }
 }
 
+//------------------------------------------------------------------------------------
+
 public void input(String theText) {
   // automatically receives results from controller input
   println("a textfield event for controller 'input' : "+theText);
@@ -174,6 +210,8 @@ void jumpToRow() {
     current_row = Integer.valueOf(new_current_row);
     sendtoKnittingMachine();
   }
+  
+  my_brother.jumpToRow();
 }
 
 //------------------------------------------------------------------------------------
@@ -273,19 +311,20 @@ void fillArrayWithImage(PImage imgTemp) {
           if (brightness(img.pixels[loc]) > threshold ) { //&& alpha(img.pixels[loc])==1
             pixelArray[x][y] = 0;
           }
-          else  {//if (alpha(img.pixels[loc])==1)
+          else {//if (alpha(img.pixels[loc])==1)
             pixelArray[x][y] = 1;
           }
           /*
           else {
-            pixelArray[x][y] = 2;
-          }
-          */
+           pixelArray[x][y] = 2;
+           }
+           */
         }
       }
       status = "r";
       // send first line
       sendtoKnittingMachine();
+      my_brother.resetPassDoubleBed();
     }
   }
   catch(Exception e) {
@@ -319,3 +358,7 @@ void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
+
+//void (){}

@@ -45,6 +45,7 @@ Serial myPort = null;
 PImage kniticLogo;
 PImage img;
 PFont laurentFont;
+PFont laurentFont14;
 String last16Solenoids;
 String selected;
 String direction = "-";
@@ -84,7 +85,6 @@ int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
 int offsetKeedles = 24;
-int serialAvailableBuffer;
 boolean usbConected = false;
 boolean loadPattern = false;
 boolean repedPatternMode = true;
@@ -92,6 +92,7 @@ boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 boolean waitingMessageFromKnitting=false;
+
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
 SDrop drop;
@@ -105,6 +106,8 @@ int[] pixelReceived;
 boolean shift;
 DropdownList usbList;
 DropdownList machineList;
+DropdownList knittingTypeList;
+int knittingType = 0;
 JSONObject json;
 parametricSweater ns;
 controlP5.Textfield alt;
@@ -121,25 +124,30 @@ controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
 controlP5.Button startOpenKnit; 
 boolean nowKnitting_openKnit;
+
+m_brother my_brother;
+
 //------------------------------------------------------------------------------------
 public void setup() {
   size(1060, 700, P2D);
   noSmooth();
-  //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
+  // load fonts
+  laurentFont = loadFont("Quantico-Regular-20.vlw");
+  laurentFont14 = loadFont("Quantico-Regular-14.vlw");
 
+  my_brother = new m_brother();
   setupSweater();
   // List all the available serial ports:
   setupSettings();
   addButtonsInSetup();
   setupSerialConnection();
   kniticLogo = loadImage("logo_knitic.png");
-  laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
   _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
@@ -183,7 +191,7 @@ public void draw() {
   background(200, 200, 200);
   display();
   drawPatternGrid();
-  
+
   if (loadPattern) { 
     drawPattern();
     drawAndSetSelectedGrid();
@@ -193,11 +201,10 @@ public void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
-  
-  
-  if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
-  
-  if(createSweater){
+
+  if ( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
+
+  if (createSweater) {
     drawSweater();
   }
 }
@@ -205,7 +212,6 @@ public void draw() {
 //------------------------------------------------------------------------------------
 
 public void serialEvent(Serial p) { 
-  println("new event");
   autoConnectAndReceiveSerial(p);
 }
 
@@ -225,7 +231,18 @@ public void brain() {
     // END of LINE
     if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && lastChangeHead != "left") ) ) {
       headDirectionForNewPixels=+1;
-      current_row += 1;
+      if (my_brother.getIDKnittingTypeSelected()==0) {
+        current_row += 1;
+      }
+      if (my_brother.getIDKnittingTypeSelected()==1) {
+        my_brother.nextPassDoubleBed();
+        if (my_brother.getPassDoubleBed()==0 || my_brother.getPassDoubleBed()==2) { 
+          current_row += 1;
+          println("add row double bed");
+        }
+      }
+      if (my_brother.getIDKnittingTypeSelected()==2) {
+      }
       lastChangeHead = "left";
       if (isPatternFinishKnitting() && repedPatternMode==true) { 
         current_row=0;
@@ -235,14 +252,25 @@ public void brain() {
         done.trigger();
       }
       println("endLine left:"+Integer.toString(stitch));
-      if (lastRowCorrect!=current_row && loadPattern) {
-        sendtoKnittingMachine();
-        lastRowCorrect = current_row;
-      }
+      //if (lastRowCorrect!=current_row && loadPattern) {
+      sendtoKnittingMachine();
+      //lastRowCorrect = current_row;
+      //}
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
-      current_row += 1;
+      if (my_brother.getIDKnittingTypeSelected()==0) {
+        current_row += 1;
+      }
+      if (my_brother.getIDKnittingTypeSelected()==1) {
+        my_brother.nextPassDoubleBed();
+        if (my_brother.getPassDoubleBed()==0 || my_brother.getPassDoubleBed()==2) { 
+          current_row += 1;
+          println("add row double bed");
+        }
+      }
+      if (my_brother.getIDKnittingTypeSelected()==2) {
+      }
       lastChangeHead = "right";
       if (isPatternFinishKnitting() && repedPatternMode==true) { 
         current_row=0;
@@ -252,10 +280,10 @@ public void brain() {
         done.trigger();
       }
       println("endLine right:"+Integer.toString(stitch));
-      if (lastRowCorrect!=current_row && loadPattern) {
-        sendtoKnittingMachine();
-        lastRowCorrect = current_row;
-      }
+      //if (lastRowCorrect!=current_row && loadPattern) {
+      sendtoKnittingMachine();
+      //lastRowCorrect = current_row;
+      //}
     }
   }
   lastEndLineStarted = endLineStarted;
@@ -325,25 +353,30 @@ public void setupAudio(){
   reset = minim.loadSample("reset.aif", 1024);  
   error = minim.loadSample("error.aif", 512);
 }
-
 //------------------------------------------------------------------------------------
 
 public void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
-  controlP5.addButton("Open", 4, 855, 45, 40, 30).setId(3);
+  controlP5.setControlFont(laurentFont14);
+  controlP5.addButton("Open", 4, 855, 45, 70, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
+
   //controlP5.addToggle("UDP live pattern mode", true, 855, 255, 20, 20).setId(8);
-  controlP5.addButton("Go to row", 4, 855, 90, 80, 30).setId(5);
-  controlP5.addButton("Move pattern", 4, 855, 130, 80, 30).setId(6);
-  controlP5.addButton("Start edit image", 4, 855, 170, 80, 30).setId(7);
-  usbList = controlP5.addDropdownList("usbList", 855, 300, 150, 300).setId(8);
+  controlP5.addButton("Go to row", 4, 855, 90, 110, 30).setId(5);
+  controlP5.addButton("Move pattern", 4, 855, 130, 130, 30).setId(6);
+  controlP5.addButton("Start edit image", 4, 855, 170, 160, 30).setId(7);
+  usbList = controlP5.addDropdownList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
-  machineList = controlP5.addDropdownList("machine", 855, 350, 150, 300).setId(9);
+  machineList = controlP5.addDropdownList("machine", 855, 350, 200, 300).setId(9);
+  machineList.setBackgroundHeight(50 );
   fillListMachines(machineList);
-  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 150, 30).setId(10);
-  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 80, 30).setId(14);
+  machineList.update();
+  knittingTypeList = controlP5.addDropdownList("knittingType", 855, 550, 200, 300).setId(16);
+  fillListKnittingType(knittingTypeList);
+
+  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 205, 30).setId(10);
+  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 120, 30).setId(14);
   startOpenKnit.setVisible(false); 
-   
   setupGUIParametricSweater();
 } 
 
@@ -352,7 +385,7 @@ public void addButtonsInSetup() {
 public void fillListUSB(DropdownList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
-  ddl.setBarHeight(15);
+  ddl.setBarHeight(30);
   ArrayList<String> usbListName = new ArrayList<String>();
   for (int i=0;i<Serial.list().length;i++) {
     if (Serial.list()[i].toLowerCase().lastIndexOf("bluetooth")==-1 && Serial.list()[i].toLowerCase().lastIndexOf("tty")!=-1) {
@@ -360,7 +393,6 @@ public void fillListUSB(DropdownList ddl) {
     }
   }
   if (usbListName.size()==0) {
-
     ddl.captionLabel().set("No devices connected");
   }
   else  if (usbListName.size()==1) {
@@ -377,6 +409,13 @@ public void fillListUSB(DropdownList ddl) {
     }
     if (!usbSelected) ddl.captionLabel().set("Select usb port");
   }
+  ddl.captionLabel().setPadding(10, 30);  
+  /*
+  ddl.captionLabel().setHeight(30 );
+   ddl.captionLabel().setLineHeight(30 );
+   ddl.captionLabel().setFixedSize(false );
+   ddl.captionLabel().setControlFontSize(10 );
+   */
   ddl.captionLabel().style().marginTop = 3;
   ddl.captionLabel().style().marginLeft = 3;
   ddl.valueLabel().style().marginTop = 3;
@@ -386,6 +425,7 @@ public void fillListUSB(DropdownList ddl) {
   ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+  ddl.setHeight(400 );
 }
 
 //------------------------------------------------------------------------------------
@@ -393,7 +433,7 @@ public void fillListUSB(DropdownList ddl) {
 public void fillListMachines(DropdownList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
-  ddl.setBarHeight(15);
+  ddl.setBarHeight(30);
   ArrayList<String> machinesListName = new ArrayList<String>();
   machinesListName.add("Brother 930 / 940");
   machinesListName.add("Openknit");
@@ -407,7 +447,7 @@ public void fillListMachines(DropdownList ddl) {
       machineSelected = true;
     }
   }
-  
+
   if (!machineSelected) ddl.captionLabel().set("Select kind machine");
   ddl.captionLabel().style().marginTop = 3;
   ddl.captionLabel().style().marginLeft = 3;
@@ -418,7 +458,34 @@ public void fillListMachines(DropdownList ddl) {
   ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+}
+
+//------------------------------------------------------------------------------------
+
+public void fillListKnittingType(DropdownList ddl) {
+  ddl.setBackgroundColor(color(190));
+  ddl.setItemHeight(20);
+  ddl.setBarHeight(30);
   
+
+  Boolean machineSelected = false;
+  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
+    if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
+      ddl.captionLabel().set(getKnittingType());
+      machineSelected = true;
+    }
+  }
+
+  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
+  ddl.captionLabel().style().marginTop = 3;
+  ddl.captionLabel().style().marginLeft = 3;
+  ddl.valueLabel().style().marginTop = 3;
+  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
+    ddl.addItem( my_brother.knittingTypeListName.get(i), i);
+  }
+  ddl.scroll(0);
+  ddl.setColorBackground(color(60));
+  ddl.setColorActive(color(255, 128));
 }
 
 //------------------------------------------------------------------------------------
@@ -435,6 +502,9 @@ public void controlEvent(ControlEvent theEvent) {
       setupTypeMachine();
       showHideFeaturesOpenKnit();
     }
+    if (theEvent.getGroup().id()==16) { 
+      saveKnittingType();
+    }
   } 
   else if (theEvent.isController()) {
     println(theEvent.controller().id());
@@ -450,15 +520,16 @@ public void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().id()==11)saveImagePattern();
     if (theEvent.controller().id()==12)applyParametricSweater();
     if (theEvent.controller().id()==13)saveSweaterAsInputImage();
-    if (theEvent.controller().id()==14){
-      if(nowKnitting_openKnit){ 
+    if (theEvent.controller().id()==14) {
+      if (nowKnitting_openKnit) { 
         startOpenKnit.setLabel("Start knitting");
         stitch = 0;
         current_row = 0;
         status="r";
         endLineStarted = true;
         lastChangeHead = "left";
-      }else{
+      }
+      else {
         startOpenKnit.setLabel("Pause");
       }
       nowKnitting_openKnit =!nowKnitting_openKnit;
@@ -473,6 +544,8 @@ public void controlEvent(ControlEvent theEvent) {
     //ns.generateSweater();
   }
 }
+
+//------------------------------------------------------------------------------------
 
 public void input(String theText) {
   // automatically receives results from controller input
@@ -492,6 +565,8 @@ public void jumpToRow() {
     current_row = Integer.valueOf(new_current_row);
     sendtoKnittingMachine();
   }
+  
+  my_brother.jumpToRow();
 }
 
 //------------------------------------------------------------------------------------
@@ -588,23 +663,27 @@ public void fillArrayWithImage(PImage imgTemp) {
       for (int y = 0; y <rows; y++) {
         for (int x = 0; x <  cols; x++) {
           int loc = (cols-1)-x + y*cols;
-          if (brightness(img.pixels[loc]) > threshold && alpha(img.pixels[loc])==1) {
+          if (brightness(img.pixels[loc]) > threshold ) { //&& alpha(img.pixels[loc])==1
             pixelArray[x][y] = 0;
           }
-          else if (alpha(img.pixels[loc])==1) {
+          else {//if (alpha(img.pixels[loc])==1)
             pixelArray[x][y] = 1;
           }
+          /*
           else {
-            pixelArray[x][y] = 2;
-          }
+           pixelArray[x][y] = 2;
+           }
+           */
         }
       }
       status = "r";
       // send first line
       sendtoKnittingMachine();
+      my_brother.resetPassDoubleBed();
     }
   }
   catch(Exception e) {
+    println("error filling array");
   }
   loop();
 }
@@ -634,6 +713,10 @@ public void howMuchPatternToLeft(String message) {
   catch(Exception e) {
   }
 }
+
+//------------------------------------------------------------------------------------
+
+//void (){}
 //------------------------------------------------------------------------------------
 
 public void display() {  
@@ -728,19 +811,20 @@ public void display() {
   stroke(255);
   /*
   debugVariables();
-  */
+   */
 }
 
 //------------------------------------------------------------------------------------
-public void debugVariables(){
+public void debugVariables() {
   text(solenoidsFromArduino, 10, 500);
   text("state: "+pixStateArduino, 20, 550);
   text("stitch: "+stitchSetupArduino, 20, 600);
   text("solenoid: "+currentSolenoidIDSetup, 20, 650);
-  
-  if(shift==false){ // equal 1
+
+  if (shift==false) { // equal 1
     text("shift-B", 20, 680);
-  }else{// equal 0
+  }
+  else {// equal 0
     text("shift-A", 20, 680);
   }
 }
@@ -767,8 +851,6 @@ public void drawDebugVariables() {
 
   text("MouseX:"+Integer.toString(patternMouseX), 855, 510);
   text("MouseY:"+Integer.toString(patternMouseY), 855, 550); 
-  text("Available buffer:"+Integer.toString(serialAvailableBuffer), 855, 600);
-
   if (repedPatternMode) {
     text("Repeat: true", 30, 500);
   }
@@ -786,22 +868,21 @@ public void drawDebugVariables() {
     text("Section: "+Integer.toString(section), 30, 170);
   }
   text(_16Solenoids, 840, 310);
- 
 }
 
 //------------------------------------------------------------------------------------
 
-public void drawPattern(){
+public void drawPattern() {
   pushMatrix();
   translate(buttonWithBar+((100-leftStick)*sizePixel)+(cols*sizePixel), ((27-rows)+current_row)*sizePixel);
   //
   //smooth(2);
   scale(-1, 1);
-  fill(250, 250, 250,50);
+  fill(250, 250, 250, 50);
   rect( 0, 0, img.width*sizePixel, img.height*sizePixel);
-  fill(250, 250, 250,250);
+  fill(250, 250, 250, 250);
   image(img, 0, 0, img.width*sizePixel, img.height*sizePixel);
-  
+
   noSmooth();
   // draw grid
   for (int x=0;x<cols+1;x++) {
@@ -813,7 +894,6 @@ public void drawPattern(){
     line(0, y*sizePixel, cols*sizePixel, y*sizePixel);
   }
   popMatrix();
-  
 }
 
 //------------------------------------------------------------------------------------
@@ -821,10 +901,8 @@ public void drawPattern(){
 public void drawPatternThumbnail() {
   text("Thumbnail:", 855, 370);
   if (loadPattern) {
-    
     int h = img.height/4;
     image(img, width-205, 400, img.width/4, h);
-    
   }
 }
 
@@ -1020,9 +1098,10 @@ public void drawReceivedPixelsVsSend() {
       if (pixelSend[i]==0) {
         fill(255, 0, 255);
       }
-      else if(pixelSend[i]==1){
+      else if (pixelSend[i]==1) {
         fill(255, 255, 255);
-      }else{
+      }
+      else {
         fill(73, 202, 250);
       }
       rect(i*5, height-5, 5, 5);
@@ -1031,9 +1110,10 @@ public void drawReceivedPixelsVsSend() {
       if (pixelReceived[i]==0) {
         fill(255, 0, 255);
       }
-      else if(pixelSend[i]==1){
+      else if (pixelSend[i]==1) {
         fill(255, 255, 255);
-      }else{
+      }
+      else {
         fill(73, 202, 250);
       }
       rect(i*5, height-10, 5, 5);
@@ -1075,6 +1155,7 @@ public void mouseReleased() {
   catch(Exception e) {
   }
 }
+
 //------------------------------------------------------------------------------------
 public void keyPressed() {
   if (key=='o') {
@@ -1142,6 +1223,50 @@ public void startLeftSide() {
   lastChangeHead = "right";
 }
 //------------------------------------------------------------------------------------
+class m_brother{
+ArrayList<String> knittingTypeListName;
+int passDoubleBed;
+m_brother(){
+  setupKnittingType();
+  passDoubleBed = 0;
+}
+
+ 
+public void setupKnittingType(){
+  knittingTypeListName = new ArrayList<String>();
+  knittingTypeListName.add("Single bed");
+  knittingTypeListName.add("Double bed - 2 colors");
+  knittingTypeListName.add("Double bed - 3 colors");
+}
+
+public int getIDKnittingTypeSelected(){
+  int out = 0;
+  for(int i=0;i<knittingTypeListName.size();i++){
+    if(knittingTypeListName.get(i).equals(knittingTypeList.getCaptionLabel().getText())){
+      out = i;
+    }
+  }
+  return out;
+}
+
+public void resetPassDoubleBed(){
+  passDoubleBed = 0;
+}
+
+public void nextPassDoubleBed(){
+  passDoubleBed+=1;
+  if(passDoubleBed==4) passDoubleBed=0;
+}
+
+public int getPassDoubleBed(){
+  return passDoubleBed;
+}
+
+public void jumpToRow(){
+  resetPassDoubleBed();
+}
+
+}
 
 int lastTimeMove_openKnit;
 int direction_openKnit=1;
@@ -1258,14 +1383,12 @@ class parametricSweater {
 
 //------------------------------------------------------------------------------------
 public void setupGUIParametricSweater() {
-  
-  font = createFont("arial", 20);
   //Height body
   alt = controlP5.addTextfield("Height body").setLabel("")
     .setValue("160" )
       .setPosition(300, 400)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(20);
@@ -1276,7 +1399,7 @@ public void setupGUIParametricSweater() {
     .setValue("80" )
       .setPosition(600, 400)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(21);
@@ -1287,7 +1410,7 @@ public void setupGUIParametricSweater() {
     .setValue("25" )
       .setPosition(300, 480)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(22);
@@ -1298,7 +1421,7 @@ public void setupGUIParametricSweater() {
     .setValue("190" )
       .setPosition(600, 480)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(23)
@@ -1310,18 +1433,18 @@ public void setupGUIParametricSweater() {
     .setValue("39" )
       .setPosition(300, 560)
         .setSize(200, 40)
-          .setFont(font)
+          .setFont(laurentFont14)
             .setFocus(true)
               .setColor(color(255, 255, 255))
                 .setId(24);
   ;
 
   collAmple.setVisible(false);
-  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 150, 30).setId(11);
+  saveParametricSweaterButton = controlP5.addButton("Save as image pattern", 4, 600, 640, 200, 30).setId(11);
   saveParametricSweaterButton.setVisible(false);
-  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 150, 30).setId(12);
+  applyParametricSweaterButton = controlP5.addButton("Apply changes", 4, 600, 560, 200, 30).setId(12);
   applyParametricSweaterButton.setVisible(false);
-  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 150, 30).setId(13);
+  loadParametricSweaterButton = controlP5.addButton("Load as pattern to knit", 4, 600, 600, 200, 30).setId(13);
   loadParametricSweaterButton.setVisible(false);
   
 }
@@ -1480,6 +1603,7 @@ class scrollBar {
 
 
 
+
 int BAUD_RATE = 115200;
 byte lf = 0x40;
 byte footer = 126;
@@ -1500,9 +1624,9 @@ public void setupSerialConnection() {
   catch (Exception e) {
     /*
     if (e.getMessage().contains("<init>")) {
-      println("port in use, trying again later...");
-    }
-    */
+     println("port in use, trying again later...");
+     }
+     */
   }
 }
 
@@ -1544,19 +1668,58 @@ public void sendtoKnittingMachine() {
         pixelSend[i] = 1;
       }
       for (int i=0; i<200; i++) {
+        int rightStickOffset = 100-rightStick;
+        int posXPixel = 199-(i+rightStickOffset);
+        int posYPixel = (rows-1)-current_row;
         try {
-          int rightStickOffset = 100-rightStick;
-          int posXPixel = i+rightStickOffset;
-          int pixelId = pixelArray[199-posXPixel][(rows-1)-current_row];
+          int pixelId = pixelArray[posXPixel][posYPixel];
           if (pixelId==1) {
-            pixelSend[i] = 0;
+            // pixels black
+            if (my_brother.getIDKnittingTypeSelected()==0) {
+              pixelSend[i] = 0;
+            }
+            if (my_brother.getIDKnittingTypeSelected()==1) {
+              switch(my_brother.getPassDoubleBed()) {
+              case 0:
+                pixelSend[i] = 1;
+                break;
+              case 1:
+                pixelSend[i] = 0;
+                break;
+              case 2:
+                pixelSend[i] = 0;
+                break;
+              case 3:
+                pixelSend[i] = 1;
+                break;
+              }
+            }
           }
           else {
-            pixelSend[i] = 1;
+            // pixels white
+            if (my_brother.getIDKnittingTypeSelected()==0) {
+              pixelSend[i] = 1;
+            }
+            if (my_brother.getIDKnittingTypeSelected()==1) {
+              switch(my_brother.getPassDoubleBed()) {
+              case 0:
+                pixelSend[i] = 0;
+                break;
+              case 1:
+                pixelSend[i] = 1;
+                break;
+              case 2:
+                pixelSend[i] = 1;
+                break;
+              case 3:
+                pixelSend[i] = 0;
+                break;
+              }
+            }
           }
         }
         catch(Exception e) {
-          //println("Error in pixels:"+Integer.toString(i));
+          println("Error in pixels => x:"+posXPixel+" y:"+posYPixel);
           pixelSend[i] = 1;
         }
       }
@@ -1582,95 +1745,106 @@ public void sendtoKnittingMachine() {
 // not used at the moment
 /*
 void sendSerial16() {
-  try {
-    if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
-      String _16SolenoidsNew = _16Solenoids.replace('9', '1');
-      if (headDownSelenoid || isPatternFinishKnitting() ) {
-        _16SolenoidsNew ="00000000000000";
-        dataToSolenoidHex = 0;
-      }
-      // new method send data
-      char c1 = char(dataToSolenoidHex >> 8);
-      char c2 = char(dataToSolenoidHex & 0xFF);
-      myPort.write(c1);
-      // lower 8 bits
-      myPort.write(c2);
-      myPort.write(',');
-      lastMessageSendFromSerial = millis();
-    }
-    last16Solenoids = _16Solenoids;
-  }
-  catch(Exception e) {
-    println("Error in send serial");
-  }
-}
-*/
+ try {
+ if ( (millis()-lastMessageSendFromSerial)>500  || !last16Solenoids.equals(_16Solenoids) ) {
+ String _16SolenoidsNew = _16Solenoids.replace('9', '1');
+ if (headDownSelenoid || isPatternFinishKnitting() ) {
+ _16SolenoidsNew ="00000000000000";
+ dataToSolenoidHex = 0;
+ }
+ // new method send data
+ char c1 = char(dataToSolenoidHex >> 8);
+ char c2 = char(dataToSolenoidHex & 0xFF);
+ myPort.write(c1);
+ // lower 8 bits
+ myPort.write(c2);
+ myPort.write(',');
+ lastMessageSendFromSerial = millis();
+ }
+ last16Solenoids = _16Solenoids;
+ }
+ catch(Exception e) {
+ println("Error in send serial");
+ }
+ }
+ */
 //------------------------------------------------------------------------------------
 
+// From arduino we receive two type messages
+// A: sensors
+// B: pixels
 public void receiveSerial(Serial p) {
   try {
     int timeStart = millis();
-    serialAvailableBuffer = myPort.available();
-    //while (myPort!=null && myPort.available ()>0  && (millis()-timeStart<5 )) {
-      //println("Receive Serial___"+Integer.toString(myPort.available()));
-      myString = p.readString();
-      // PIXELS stored now in Arduino
-      try {
-        if (myString != null && myString.length()>200) {
-          println("received 1:"+myString);
-          println(myString.length());
-          if (myString.length()>201) {
-            println("substring to receive");
-            myString = myString.substring(myString.length()-201, myString.length()-1);
-          }
-          println("received clean:"+myString);
-          for (int i=0; i<200; i++) {
-            if (myString.substring(i, i+1).equals("0")) {
-              pixelReceived[i] = 0;
-            }
-            else {
-              pixelReceived[i] = 1;
-            }
-          }
-          //checkBetweenSendAndReceived();
-          waitingMessageFromKnitting = false;
-        }
+    myString = p.readString();
+    // PIXELS stored now in Arduino
+    try {
+      if (myString != null && myString.length()>200) {
+        println("Recieved new pixels:"+myString);
+        receiveMessageTypeB(myString);
       }
-      catch(Exception e) {
-        println("Error receiving pixels:"+myString);
+    }
+    catch(Exception e) {
+      println("Error receiving pixels:"+myString);
+    }
+    // Data sensors from arduino (encoders, endlines)
+    try {
+      if (myString != null && myString.length()<200) {
+        //println("Recieved new sensors:"+myString);
+        receiveMessageTypeA(myString);
       }
-      try {
-        // Data sensors from arduino (encoders, endlines)
-        if (myString != null && myString.length()<200) {
-          String[] args = myString.split(",");
-          if (args.length>=2) {
-            stitch = Integer.valueOf(args[1]);
-            headDirection = Integer.valueOf(args[2]);
-            //endLineStarted = !args[3].equals("0");
-            endLineStarted = true;
-            shift = !args[3].equals("0");
-            //statusMachine 
-            /*
-             if(args.length>=6) solenoidsFromArduino = args[5];
-             if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[6]);
-             if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
-             if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
-             */
-            lastMessageReceivedFromSerial = millis();
-            checkBetweenSendAndReceived();
-          }
-        }
-      }
-      catch(Exception e) {
-        println("Error Sensors:"+myString);
-      }
-    //}
+    }
+    catch(Exception e) {
+      println("Error Sensors:"+myString);
+    }
   }
   catch(Exception e) {
     println("ERROR in Receive serial "+e.getMessage()+"|");
   }
 }
 
+//------------------------------------------------------------------------------------
+// Data sensors from arduino (encoders, endlines)
+public void receiveMessageTypeA(String myString) {
+  String[] args = myString.split(",");
+  if (args.length>=2) {
+    stitch = Integer.valueOf(args[1]);
+    headDirection = Integer.valueOf(args[2]);
+    //endLineStarted = !args[3].equals("0");
+    endLineStarted = true;
+    shift = !args[3].equals("0");
+    //statusMachine 
+    /*
+             if(args.length>=6) solenoidsFromArduino = args[5];
+     if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[6]);
+     if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+     if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
+     */
+    lastMessageReceivedFromSerial = millis();
+    checkBetweenSendAndReceived();
+  }
+}
+//------------------------------------------------------------------------------------
+//
+public void receiveMessageTypeB(String myString) {
+  println("received 1:"+myString);
+  println(myString.length());
+  if (myString.length()>201) {
+    println("substring to receive");
+    myString = myString.substring(myString.length()-201, myString.length()-1);
+  }
+  println("received clean:"+myString);
+  for (int i=0; i<200; i++) {
+    if (myString.substring(i, i+1).equals("0")) {
+      pixelReceived[i] = 0;
+    }
+    else {
+      pixelReceived[i] = 1;
+    }
+  }
+  //checkBetweenSendAndReceived();
+  waitingMessageFromKnitting = false;
+}
 //------------------------------------------------------------------------------------
 
 public int hexToInt(String hexValue) {
@@ -1693,10 +1867,10 @@ public void convertSolenoidsToBinary() {
 public void checkBetweenSendAndReceived() {
   try {
     boolean correct = true;
-    
+
     for (int i=0; i<200; i++) {
       if (pixelSend[i]!=pixelReceived[i] ) {
-        if(!waitingMessageFromKnitting || (millis()-lastSerialPixelSend)>100 ){
+        if (!waitingMessageFromKnitting || (millis()-lastSerialPixelSend)>100 ) {
           println("Find differents");
           sendtoKnittingMachine();
         }
@@ -1719,8 +1893,6 @@ public void checkBetweenSendAndReceived() {
 
 public void setupSettings() {
   json = loadJSONObject("data/settings.json");
-  String usb = json.getString("usbDevice");
-  String machine = json.getString("kniticModel");
 }
 
 public void saveUSBSelected() {
@@ -1733,6 +1905,16 @@ public void saveModelSelected() {
   println("save:"+machineList.getCaptionLabel().getText());
   json.setString("kniticModel", machineList.getCaptionLabel().getText());
   saveJSONObject(json, "data/settings.json");
+}
+
+public void saveKnittingType() {
+  println("save:"+knittingTypeList.getCaptionLabel().getText());
+  json.setString("knittingType", knittingTypeList.getCaptionLabel().getText());
+  saveJSONObject(json, "data/settings.json");
+}
+
+public String getKnittingType(){
+  return json.getString("knittingType");
 }
 
 public String getUSBSelected() {
