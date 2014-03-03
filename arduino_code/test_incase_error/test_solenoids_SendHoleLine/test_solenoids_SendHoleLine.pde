@@ -64,8 +64,8 @@ int[] pixelLine2 = {
   1,1,1,1,1,1,1,1
 };
 
-byte lf = 0x0A;
-byte footer = 7;
+byte lf = 0x40;
+byte footer = 126;
 byte startChar = 4;
 Serial myPort;
 String myString;
