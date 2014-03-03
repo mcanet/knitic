@@ -79,7 +79,7 @@ void setup(){
   size(1200,200);
   String portName = Serial.list()[0];
   println(portName);
-  myPort = new Serial(this, portName,57600);
+  myPort = new Serial(this, portName,115200);
   myPort.clear();
 }
 
@@ -189,4 +189,3 @@ void sendtoKnittingMachine() {
   }
   myPort.write(footer);
 }
-
