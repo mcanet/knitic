@@ -47,7 +47,7 @@ void loop() {
   
   //Serial.println(lastEndLine);
   if(leftEndLine && lastEndLine!=0 && carDirection == 2 ){
-    beltShift = digitalRead(enc3) ? 0 : 1; // regular = 0 , shifted=1
+    beltShift = digitalRead(enc3) ? 1 : 0; // regular = 0 , shifted=1
     Serial.print("left ");
     lastPos = pos;
     debugEndOfLine();
@@ -55,7 +55,7 @@ void loop() {
   }
    
   if(rightEndLine && lastEndLine!=1 && carDirection == 1 ){
-    beltShift = digitalRead(enc3) ? 1 : 0; // regular = 0 , shifted=1
+    beltShift = digitalRead(enc3) ? 0 : 1; // regular = 0 , shifted=1
     Serial.print("right ");
     lastPos = pos;
     debugEndOfLine();
