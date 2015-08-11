@@ -47,5 +47,6 @@ void loop() {
       lastDirectionEncoders = directionEncoders;
       Serial.println(directionEncoders);
     }
+    
    
 }
