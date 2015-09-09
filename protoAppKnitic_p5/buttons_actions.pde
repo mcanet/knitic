@@ -2,7 +2,7 @@
 
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
-  controlP5.setControlFont(laurentFont14);
+  controlP5.setFont(createFont("Quantico-Regular",12));
   controlP5.addButton("Open", 4, 855, 45, 70, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
 
@@ -13,7 +13,7 @@ void addButtonsInSetup() {
   usbList = controlP5.addDropdownList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
   machineList = controlP5.addDropdownList("machine", 855, 350, 200, 300).setId(9);
-  machineList.setBackgroundHeight(50 );
+  machineList.setHeight(50 );
   fillListMachines(machineList);
   machineList.update();
   knittingTypeList = controlP5.addDropdownList("knittingType", 855, 550, 200, 300).setId(16);
@@ -33,41 +33,41 @@ void fillListUSB(DropdownList ddl) {
   ddl.setBarHeight(30);
   ArrayList<String> usbListName = new ArrayList<String>();
   for (int i=0;i<Serial.list().length;i++) {
-    if (Serial.list()[i].toLowerCase().lastIndexOf("bluetooth")==-1 && Serial.list()[i].toLowerCase().lastIndexOf("tty")!=-1) {
+    //if (Serial.list()[i].toLowerCase().lastIndexOf("bluetooth")==-1 && Serial.list()[i].toLowerCase().lastIndexOf("tty")!=-1) {
       usbListName.add(Serial.list()[i]);
-    }
+    //}
   }
   if (usbListName.size()==0) {
-    ddl.captionLabel().set("No devices connected");
+    ddl.setCaptionLabel("No devices connected");
   }
   else  if (usbListName.size()==1) {
-    ddl.captionLabel().set(usbListName.get(0));
+    ddl.setCaptionLabel(usbListName.get(0));
   }
   else  if (usbListName.size()>1) {
     // try to found in list one usb selected
     Boolean usbSelected = false;
     for (int i=0;i<usbListName.size();i++) {
       if (usbListName.get(i).equals(getUSBSelected())) {
-        ddl.captionLabel().set(getUSBSelected());
+        ddl.setCaptionLabel(getUSBSelected());
         usbSelected = true;
       }
     }
-    if (!usbSelected) ddl.captionLabel().set("Select usb port");
+    if (!usbSelected) ddl.setCaptionLabel("Select usb port");
   }
-  ddl.captionLabel().setPadding(10, 30);  
+  ddl.getCaptionLabel().getStyle().setPadding(10, 30, 10, 30);  
   /*
   ddl.captionLabel().setHeight(30 );
    ddl.captionLabel().setLineHeight(30 );
    ddl.captionLabel().setFixedSize(false );
    ddl.captionLabel().setControlFontSize(10 );
    */
-  ddl.captionLabel().style().marginTop = 3;
-  ddl.captionLabel().style().marginLeft = 3;
-  ddl.valueLabel().style().marginTop = 3;
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
+  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   for (int i=0;i<usbListName.size();i++) {
     ddl.addItem(usbListName.get(i), i);
   }
-  ddl.scroll(0);
+  //ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
   ddl.setHeight(400 );
@@ -80,27 +80,27 @@ void fillListMachines(DropdownList ddl) {
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
   ArrayList<String> machinesListName = new ArrayList<String>();
-  machinesListName.add("Brother 930 / 940");
   machinesListName.add("Openknit");
+  machinesListName.add("Brother 930 / 940");
   //usbListName.add("Brother 910");
   //usbListName.add("Brother 950");
 
   Boolean machineSelected = false;
   for (int i=0;i<machinesListName.size();i++) {
     if (machinesListName.get(i).equals(getMachineMode())) {
-      ddl.captionLabel().set(getMachineMode());
+      ddl.setCaptionLabel(getMachineMode());
       machineSelected = true;
     }
   }
 
-  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
-  ddl.captionLabel().style().marginTop = 3;
-  ddl.captionLabel().style().marginLeft = 3;
-  ddl.valueLabel().style().marginTop = 3;
+  if (!machineSelected) ddl.setCaptionLabel("Select kind machine");
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
+  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   for (int i=0;i<machinesListName.size();i++) {
     ddl.addItem(machinesListName.get(i), i);
   }
-  ddl.scroll(0);
+  //ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
 }
@@ -116,19 +116,19 @@ void fillListKnittingType(DropdownList ddl) {
   Boolean machineSelected = false;
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
-      ddl.captionLabel().set(getKnittingType());
+      ddl.setCaptionLabel(getKnittingType());
       machineSelected = true;
     }
   }
 
-  if (!machineSelected) ddl.captionLabel().set("Select kind machine");
-  ddl.captionLabel().style().marginTop = 3;
-  ddl.captionLabel().style().marginLeft = 3;
-  ddl.valueLabel().style().marginTop = 3;
+  if (!machineSelected) ddl.setCaptionLabel("Select kind machine");
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
+  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     ddl.addItem( my_brother.knittingTypeListName.get(i), i);
   }
-  ddl.scroll(0);
+  //ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
 }
@@ -137,35 +137,35 @@ void fillListKnittingType(DropdownList ddl) {
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
-    println("event from group : "+theEvent.getGroup().id()+" from "+theEvent.getGroup());
-    if (theEvent.getGroup().id()==8) { 
+    println("event from group : "+theEvent.getGroup().getId()+" from "+theEvent.getGroup());
+    if (theEvent.getGroup().getId()==8) { 
       saveUSBSelected();
       setupSerialConnection();
     }
-    if (theEvent.getGroup().id()==9) { 
+    if (theEvent.getGroup().getId()==9) { 
       saveModelSelected();
       setupTypeMachine();
       showHideFeaturesOpenKnit();
     }
-    if (theEvent.getGroup().id()==16) { 
+    if (theEvent.getGroup().getId()==16) { 
       saveKnittingType();
     }
   } 
   else if (theEvent.isController()) {
-    println(theEvent.controller().id());
+    println(theEvent.controller().getId());
 
-    if (theEvent.controller().id()==3) openknittingPattern();
-    if (theEvent.controller().id()==4) repedPatternMode = !repedPatternMode;
-    if (theEvent.controller().id()==5) jumpToRow();
-    if (theEvent.controller().id()==6) howMuchPatternToLeft("");
-    if (theEvent.controller().id()==7) changeEditPixels();
-    if (theEvent.controller().id()==10) { 
+    if (theEvent.controller().getId()==3) openknittingPattern();
+    if (theEvent.controller().getId()==4) repedPatternMode = !repedPatternMode;
+    if (theEvent.controller().getId()==5) jumpToRow();
+    if (theEvent.controller().getId()==6) howMuchPatternToLeft("");
+    if (theEvent.controller().getId()==7) changeEditPixels();
+    if (theEvent.controller().getId()==10) { 
       createParametricSweater();
     }
-    if (theEvent.controller().id()==11)saveImagePattern();
-    if (theEvent.controller().id()==12)applyParametricSweater();
-    if (theEvent.controller().id()==13)saveSweaterAsInputImage();
-    if (theEvent.controller().id()==14) {
+    if (theEvent.controller().getId()==11)saveImagePattern();
+    if (theEvent.controller().getId()==12)applyParametricSweater();
+    if (theEvent.controller().getId()==13)saveSweaterAsInputImage();
+    if (theEvent.controller().getId()==14) {
       if (nowKnitting_openKnit) { 
         startOpenKnit.setLabel("Start knitting");
         stitch = 0;
@@ -220,10 +220,10 @@ void changeEditPixels() {
   editPixels =! editPixels;
   if (editPixels) {
     cursor(CROSS);
-    controlP5.controller("Start edit image").captionLabel().set("Stop edit image");
+    controlP5.getController("Start edit image").setCaptionLabel("Stop edit image");
   } 
   else {
-    controlP5.controller("Start edit image").captionLabel().set("Start edit image");
+    controlP5.getController("Start edit image").setCaptionLabel("Start edit image");
     cursor(ARROW);
   }
 }
