@@ -12,15 +12,14 @@ void addButtonsInSetup() {
   controlP5.addButton("Start edit image", 4, 855, 170, 160, 30).setId(7);
   usbList = controlP5.addDropdownList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
-  machineList = controlP5.addDropdownList("machine", 855, 350, 200, 300).setId(9);
-  machineList.setHeight(50 );
+  machineList = controlP5.addDropdownList("machine", 855, 380, 200, 300).setId(9);
   fillListMachines(machineList);
   machineList.update();
   knittingTypeList = controlP5.addDropdownList("knittingType", 855, 550, 200, 300).setId(16);
   fillListKnittingType(knittingTypeList);
 
-  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 400, 205, 30).setId(10);
-  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 440, 120, 30).setId(14);
+  parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 460, 205, 30).setId(10);
+  startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 500, 120, 30).setId(14);
   startOpenKnit.setVisible(false); 
   setupGUIParametricSweater();
 } 
@@ -54,7 +53,7 @@ void fillListUSB(DropdownList ddl) {
     }
     if (!usbSelected) ddl.setCaptionLabel("Select usb port");
   }
-  ddl.getCaptionLabel().getStyle().setPadding(10, 30, 10, 30);  
+  //ddl.getCaptionLabel().getStyle().setPadding(10, 30, 10, 30);  
   /*
   ddl.captionLabel().setHeight(30 );
    ddl.captionLabel().setLineHeight(30 );
@@ -67,7 +66,7 @@ void fillListUSB(DropdownList ddl) {
   for (int i=0;i<usbListName.size();i++) {
     ddl.addItem(usbListName.get(i), i);
   }
-  //ddl.scroll(0);
+  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
   ddl.setHeight(400 );
@@ -100,9 +99,10 @@ void fillListMachines(DropdownList ddl) {
   for (int i=0;i<machinesListName.size();i++) {
     ddl.addItem(machinesListName.get(i), i);
   }
-  //ddl.scroll(0);
+  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+  ddl.setHeight(400 );
 }
 
 //------------------------------------------------------------------------------------
@@ -128,9 +128,10 @@ void fillListKnittingType(DropdownList ddl) {
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     ddl.addItem( my_brother.knittingTypeListName.get(i), i);
   }
-  //ddl.scroll(0);
+  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+  ddl.setHeight(400 );
 }
 
 //------------------------------------------------------------------------------------
