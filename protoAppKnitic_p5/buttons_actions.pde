@@ -10,11 +10,14 @@ void addButtonsInSetup() {
   controlP5.addButton("Go to row", 4, 855, 90, 110, 30).setId(5);
   controlP5.addButton("Move pattern", 4, 855, 130, 130, 30).setId(6);
   controlP5.addButton("Start edit image", 4, 855, 170, 160, 30).setId(7);
+  controlP5.addTextlabel("selectUsbPort","Select Usb Port",855, 280);
   usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
+  controlP5.addTextlabel("selectMachine","Select Machine",855, 360);
   machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
   fillListMachines(machineList);
   machineList.update();
+  controlP5.addTextlabel("selectKnittingType","Select Knitting Type",855, 530);
   knittingTypeList = controlP5.addScrollableList("knittingType", 855, 550, 200, 300).setId(16);
   fillListKnittingType(knittingTypeList);
 
@@ -32,17 +35,15 @@ void fillListUSB(ScrollableList ddl) {
   ddl.setBarHeight(30);
   ArrayList<String> usbListName = new ArrayList<String>();
   for (int i=0;i<Serial.list().length;i++) {
-    //if (Serial.list()[i].toLowerCase().lastIndexOf("bluetooth")==-1 && Serial.list()[i].toLowerCase().lastIndexOf("tty")!=-1) {
       usbListName.add(Serial.list()[i]);
-    //}
   }
   if (usbListName.size()==0) {
     ddl.setCaptionLabel("No devices connected");
   }
-  //else  if (usbListName.size()==1) {
+  else if (usbListName.size()==1) {
     //ddl.setCaptionLabel(usbListName.get(0));
-  //}
-  else  {//if (usbListName.size()>1) {
+  }
+  else if (usbListName.size()>1) {
     // try to found in list one usb selected
     Boolean usbSelected = false;
     /*for (int i=0;i<usbListName.size();i++) {      ///////////// to preselect usb uncomment that block
@@ -51,15 +52,8 @@ void fillListUSB(ScrollableList ddl) {
         usbSelected = true;
       }
     }*/
-    if (!usbSelected) ddl.setCaptionLabel("Select usb port");
+    //if (!usbSelected) ddl.setCaptionLabel("Select usb port");
   }
-  //ddl.getCaptionLabel().getStyle().setPadding(10, 30, 10, 30);  
-  /*
-  ddl.captionLabel().setHeight(30 );
-   ddl.captionLabel().setLineHeight(30 );
-   ddl.captionLabel().setFixedSize(false );
-   ddl.captionLabel().setControlFontSize(10 );
-   */
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
@@ -85,14 +79,13 @@ void fillListMachines(ScrollableList ddl) {
   //usbListName.add("Brother 950");
 
   Boolean machineSelected = false;
-  for (int i=0;i<machinesListName.size();i++) {
+  /*for (int i=0;i<machinesListName.size();i++) {        ///////////// to preselect machine uncomment that block
     if (machinesListName.get(i).equals(getMachineMode())) {
       ddl.setCaptionLabel(getMachineMode());
       machineSelected = true;
     }
-  }
+  }*/
 
-  if (!machineSelected) ddl.setCaptionLabel("Select kind machine");
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
@@ -112,7 +105,6 @@ void fillListKnittingType(ScrollableList ddl) {
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
   
-
   Boolean machineSelected = false;
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
@@ -149,6 +141,7 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==6) howMuchPatternToLeft("");
     if (theEvent.controller().getId()==7) changeEditPixels();
     if (theEvent.controller().getId()==8) { 
+      println(usbList.getItem((int)theEvent.getValue()));
       saveUSBSelected();
       setupSerialConnection();
     }
