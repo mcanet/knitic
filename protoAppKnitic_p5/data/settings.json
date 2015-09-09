@@ -1,6 +1,6 @@
 {
-  "kniticModel": "Brother 930 / 940",
+  "kniticModel": "Openknit",
   "maxNeedles": "200",
   "knittingType": "Double bed - 2 colors",
-  "usbDevice": "/dev/tty.usbmodem641"
+  "usbDevice": "COM3"
 }

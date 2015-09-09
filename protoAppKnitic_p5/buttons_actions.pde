@@ -45,12 +45,12 @@ void fillListUSB(ScrollableList ddl) {
   else  {//if (usbListName.size()>1) {
     // try to found in list one usb selected
     Boolean usbSelected = false;
-    for (int i=0;i<usbListName.size();i++) {
+    /*for (int i=0;i<usbListName.size();i++) {      ///////////// to preselect usb uncomment that block
       if (usbListName.get(i).equals(getUSBSelected())) {
         ddl.setCaptionLabel(getUSBSelected());
         usbSelected = true;
       }
-    }
+    }*/
     if (!usbSelected) ddl.setCaptionLabel("Select usb port");
   }
   //ddl.getCaptionLabel().getStyle().setPadding(10, 30, 10, 30);  
@@ -79,8 +79,8 @@ void fillListMachines(ScrollableList ddl) {
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
   ArrayList<String> machinesListName = new ArrayList<String>();
-  machinesListName.add("Openknit");
   machinesListName.add("Brother 930 / 940");
+  machinesListName.add("Openknit");
   //usbListName.add("Brother 910");
   //usbListName.add("Brother 950");
 
@@ -139,18 +139,6 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
     println("event from group : "+theEvent.getGroup().getId()+" from "+theEvent.getGroup());
-    if (theEvent.getGroup().getId()==8) { 
-      saveUSBSelected();
-      setupSerialConnection();
-    }
-    if (theEvent.getGroup().getId()==9) { 
-      saveModelSelected();
-      setupTypeMachine();
-      showHideFeaturesOpenKnit();
-    }
-    if (theEvent.getGroup().getId()==16) { 
-      saveKnittingType();
-    }
   } 
   else if (theEvent.isController()) {
     println(theEvent.controller().getId());
@@ -160,6 +148,15 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==5) jumpToRow();
     if (theEvent.controller().getId()==6) howMuchPatternToLeft("");
     if (theEvent.controller().getId()==7) changeEditPixels();
+    if (theEvent.controller().getId()==8) { 
+      saveUSBSelected();
+      setupSerialConnection();
+    }
+    if (theEvent.controller().getId()==9) { 
+      saveModelSelected();
+      setupTypeMachine();
+      showHideFeaturesOpenKnit();
+    }
     if (theEvent.controller().getId()==10) { 
       createParametricSweater();
     }
@@ -179,6 +176,9 @@ void controlEvent(ControlEvent theEvent) {
         startOpenKnit.setLabel("Pause");
       }
       nowKnitting_openKnit =!nowKnitting_openKnit;
+    }
+    if (theEvent.controller().getId()==16) { 
+      saveKnittingType();
     }
   }
 
