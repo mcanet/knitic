@@ -10,12 +10,12 @@ void addButtonsInSetup() {
   controlP5.addButton("Go to row", 4, 855, 90, 110, 30).setId(5);
   controlP5.addButton("Move pattern", 4, 855, 130, 130, 30).setId(6);
   controlP5.addButton("Start edit image", 4, 855, 170, 160, 30).setId(7);
-  usbList = controlP5.addDropdownList("usbList", 855, 300, 200, 300).setId(8);
+  usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
-  machineList = controlP5.addDropdownList("machine", 855, 380, 200, 300).setId(9);
+  machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
   fillListMachines(machineList);
   machineList.update();
-  knittingTypeList = controlP5.addDropdownList("knittingType", 855, 550, 200, 300).setId(16);
+  knittingTypeList = controlP5.addScrollableList("knittingType", 855, 550, 200, 300).setId(16);
   fillListKnittingType(knittingTypeList);
 
   parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 460, 205, 30).setId(10);
@@ -26,7 +26,7 @@ void addButtonsInSetup() {
 
 //------------------------------------------------------------------------------------
 
-void fillListUSB(DropdownList ddl) {
+void fillListUSB(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
@@ -74,7 +74,7 @@ void fillListUSB(DropdownList ddl) {
 
 //------------------------------------------------------------------------------------
 
-void fillListMachines(DropdownList ddl) {
+void fillListMachines(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
@@ -107,7 +107,7 @@ void fillListMachines(DropdownList ddl) {
 
 //------------------------------------------------------------------------------------
 
-void fillListKnittingType(DropdownList ddl) {
+void fillListKnittingType(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
