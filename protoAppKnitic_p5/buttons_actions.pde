@@ -39,10 +39,10 @@ void fillListUSB(ScrollableList ddl) {
   if (usbListName.size()==0) {
     ddl.setCaptionLabel("No devices connected");
   }
-  else  if (usbListName.size()==1) {
-    ddl.setCaptionLabel(usbListName.get(0));
-  }
-  else  if (usbListName.size()>1) {
+  //else  if (usbListName.size()==1) {
+    //ddl.setCaptionLabel(usbListName.get(0));
+  //}
+  else  {//if (usbListName.size()>1) {
     // try to found in list one usb selected
     Boolean usbSelected = false;
     for (int i=0;i<usbListName.size();i++) {

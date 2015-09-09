@@ -8,22 +8,28 @@ byte footer = 126;
 //------------------------------------------------------------------------------------
 
 void setupSerialConnection() {
-  try {
-    println("try to connect");
-    String devicePath = usbList.getCaptionLabel().getText();
-    println("Device path:"+devicePath);
-    myPort = new Serial(this, devicePath, BAUD_RATE);
-    myPort.bufferUntil(lf);
-    delay(2000);
-    myPort.clear();
-    lastConnection = millis();
-  } 
-  catch (Exception e) {
-    /*
-    if (e.getMessage().contains("<init>")) {
-     println("port in use, trying again later...");
-     }
-     */
+  String devicePath = usbList.getCaptionLabel().getText();
+  if(devicePath!="Select usb port"){
+    try {
+      println("try to connect");
+      
+      println("Device path:"+devicePath);
+      myPort = new Serial(this, devicePath, BAUD_RATE);
+      myPort.bufferUntil(lf);
+      delay(2000);
+      myPort.clear();
+      lastConnection = millis();
+    } 
+    catch (Exception e) {
+      /*
+      if (e.getMessage().contains("<init>")) {
+       println("port in use, trying again later...");
+       }
+       */
+    }
+  }
+  else{
+    println("setup the port");
   }
 }
 
