@@ -36,7 +36,7 @@ void setup()
   myCommunicator.setup(&myEncoders,&myEndlines,&mysolenoids);
   myCommunicator._status = "o";
 #ifdef attachInterrupEncoders
-  attachInterrupt(encoder0PinA, encoderChange, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoderChange, CHANGE);
 #endif
 } 
 
