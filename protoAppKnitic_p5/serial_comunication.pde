@@ -7,8 +7,7 @@ byte footer = 126;
 
 //------------------------------------------------------------------------------------
 
-void setupSerialConnection() {
-  String devicePath = usbList.getCaptionLabel().getText();
+void setupSerialConnection(String devicePath) {
   if(devicePath!="Select usb port"){
     try {
       println("try to connect");

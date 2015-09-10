@@ -1,6 +1,6 @@
 {
-  "kniticModel": "machine",
+  "kniticModel": "Select Machine",
   "maxNeedles": "200",
   "knittingType": "Single bed",
-  "usbDevice": "usbList"
+  "usbDevice": "COM3"
 }

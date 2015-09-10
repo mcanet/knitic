@@ -69,7 +69,7 @@ boolean waitingMessageFromKnitting=false;
 
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
-SDrop drop;
+//SDrop drop;
 String myString;
 boolean pixSendAreReceived = true;
 int pixStateArduino;
@@ -120,7 +120,7 @@ void setup() {
   // List all the available serial ports:
   setupSettings();
   addButtonsInSetup();
-  setupSerialConnection();
+  //setupSerialConnection("0");
   kniticLogo = loadImage("logo_knitic.png");
   currentPixels = new int[200];
   _16SolenoidsAr = new char[16]; 

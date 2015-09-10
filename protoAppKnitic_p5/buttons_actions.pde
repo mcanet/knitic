@@ -33,33 +33,32 @@ void fillListUSB(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
-  ArrayList<String> usbListName = new ArrayList<String>();
-  for (int i=0;i<Serial.list().length;i++) {
-      usbListName.add(Serial.list()[i]);
-  }
-  if (usbListName.size()==0) {
+
+  if (Serial.list().length==0) {
     ddl.setCaptionLabel("No devices connected");
   }
-  else if (usbListName.size()==1) {
-    //ddl.setCaptionLabel(usbListName.get(0));
+  else if (Serial.list().length==1) {
+    ddl.addItem(Serial.list()[0], 0);
+    ddl.setValue(0);
   }
-  else if (usbListName.size()>1) {
+  else if (Serial.list().length>1) {
+    for (int i=0;i<Serial.list().length;i++) {
+      ddl.addItem(Serial.list()[i], i);
+    }
     // try to found in list one usb selected
     Boolean usbSelected = false;
-    /*for (int i=0;i<usbListName.size();i++) {      ///////////// to preselect usb uncomment that block
-      if (usbListName.get(i).equals(getUSBSelected())) {
-        ddl.setCaptionLabel(getUSBSelected());
+    for (int i=0;i<Serial.list().length;i++) {      ///////////// to preselect usb uncomment that block
+      if (Serial.list()[i].equals(getUSBSelected())) {
+        ddl.setValue(i);
         usbSelected = true;
       }
-    }*/
-    //if (!usbSelected) ddl.setCaptionLabel("Select usb port");
+    }
+    if (!usbSelected) ddl.setCaptionLabel("Select usb port");
   }
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  for (int i=0;i<usbListName.size();i++) {
-    ddl.addItem(usbListName.get(i), i);
-  }
+  
   ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
@@ -141,9 +140,9 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==6) howMuchPatternToLeft("");
     if (theEvent.controller().getId()==7) changeEditPixels();
     if (theEvent.controller().getId()==8) { 
-      println(usbList.getItem((int)theEvent.getValue()));
-      saveUSBSelected();
-      setupSerialConnection();
+      String devicePath = Serial.list()[(int)theEvent.getValue()];
+      saveUSBSelected(devicePath);
+      setupSerialConnection(devicePath);
     }
     if (theEvent.controller().getId()==9) { 
       saveModelSelected();

@@ -3,9 +3,9 @@ void setupSettings() {
   json = loadJSONObject("data/settings.json");
 }
 
-void saveUSBSelected() {
-  println("save:"+usbList.getCaptionLabel().getText());
-  json.setString("usbDevice", usbList.getCaptionLabel().getText());
+void saveUSBSelected(String devicePath) {
+  println("save:"+devicePath);
+  json.setString("usbDevice", devicePath);
   saveJSONObject(json, "data/settings.json");
 }
 
