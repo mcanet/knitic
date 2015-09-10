@@ -273,9 +273,9 @@ void saveImagePattern() {
 
 //------------------------------------------------------------------------------------
 
-void showHideFeaturesOpenKnit() {
-  println(machineList.getCaptionLabel().getText());
-  if (machineList.getCaptionLabel().getText().equals("Openknit")) {
+void showHideFeaturesOpenKnit(String machineType) {
+  println(machineType);
+  if (machineType.equals("Openknit") == true) {
     startOpenKnit.setVisible(true); 
   }
   else {

@@ -9,15 +9,15 @@ void saveUSBSelected(String devicePath) {
   saveJSONObject(json, "data/settings.json");
 }
 
-void saveModelSelected() {
-  println("save:"+machineList.getCaptionLabel().getText());
-  json.setString("kniticModel", machineList.getCaptionLabel().getText());
+void saveModelSelected(String machineType) {
+  println("save:"+machineType);
+  json.setString("kniticModel", machineType);
   saveJSONObject(json, "data/settings.json");
 }
 
-void saveKnittingType() {
-  println("save:"+knittingTypeList.getCaptionLabel().getText());
-  json.setString("knittingType", knittingTypeList.getCaptionLabel().getText());
+void saveKnittingType(String knittingType) {
+  println("save:"+knittingType);
+  json.setString("knittingType", knittingType);
   saveJSONObject(json, "data/settings.json");
 }
 

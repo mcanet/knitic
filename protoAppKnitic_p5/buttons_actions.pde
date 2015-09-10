@@ -10,21 +10,19 @@ void addButtonsInSetup() {
   controlP5.addButton("Go to row", 4, 855, 90, 110, 30).setId(5);
   controlP5.addButton("Move pattern", 4, 855, 130, 130, 30).setId(6);
   controlP5.addButton("Start edit image", 4, 855, 170, 160, 30).setId(7);
-  controlP5.addTextlabel("selectUsbPort","Select Usb Port",855, 280);
-  usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
-  fillListUSB(usbList);
-  controlP5.addTextlabel("selectMachine","Select Machine",855, 360);
-  machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
-  fillListMachines(machineList);
-  machineList.update();
-  controlP5.addTextlabel("selectKnittingType","Select Knitting Type",855, 530);
-  knittingTypeList = controlP5.addScrollableList("knittingType", 855, 550, 200, 300).setId(16);
-  fillListKnittingType(knittingTypeList);
-
+  
   parametricSweaterButton = controlP5.addButton("Open parametric sweater", 4, 855, 460, 205, 30).setId(10);
   startOpenKnit = controlP5.addButton("Start knitting", 4, 855, 500, 120, 30).setId(14);
   startOpenKnit.setVisible(false); 
   setupGUIParametricSweater();
+  
+  usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
+  fillListUSB(usbList);
+  machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
+  fillListMachines(machineList);
+  machineList.update();
+  knittingTypeList = controlP5.addScrollableList("knittingType", 855, 550, 200, 300).setId(16);
+  fillListKnittingType(knittingTypeList);
 } 
 
 //------------------------------------------------------------------------------------
@@ -71,26 +69,26 @@ void fillListMachines(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
-  ArrayList<String> machinesListName = new ArrayList<String>();
   machinesListName.add("Brother 930 / 940");
   machinesListName.add("Openknit");
   //usbListName.add("Brother 910");
   //usbListName.add("Brother 950");
-
-  Boolean machineSelected = false;
-  /*for (int i=0;i<machinesListName.size();i++) {        ///////////// to preselect machine uncomment that block
-    if (machinesListName.get(i).equals(getMachineMode())) {
-      ddl.setCaptionLabel(getMachineMode());
-      machineSelected = true;
-    }
-  }*/
-
-  ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
-  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   for (int i=0;i<machinesListName.size();i++) {
     ddl.addItem(machinesListName.get(i), i);
   }
+  
+  Boolean machineSelected = false;
+  for (int i=0;i<machinesListName.size();i++) {        ///////////// to preselect machine uncomment that block
+    if (machinesListName.get(i).equals(getMachineMode())) {
+      ddl.setValue(i);
+      machineSelected = true;
+    }
+  }
+  if (!machineSelected) ddl.setCaptionLabel("Select Machine");
+  
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
+  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
@@ -103,22 +101,23 @@ void fillListKnittingType(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
-  
-  Boolean machineSelected = false;
-  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
-    if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
-      ddl.setCaptionLabel(getKnittingType());
-      machineSelected = true;
-    }
-  }
 
-  if (!machineSelected) ddl.setCaptionLabel("Select kind machine");
-  ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
-  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     ddl.addItem( my_brother.knittingTypeListName.get(i), i);
   }
+  
+  Boolean knittingTypeSelected = false;
+  for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
+    if ( my_brother.knittingTypeListName.get(i).equals(getKnittingType())) {
+      ddl.setValue(i);
+      knittingTypeSelected = true;
+    }
+  }
+
+  if (!knittingTypeSelected) ddl.setCaptionLabel("Select kind machine");
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
+  ddl.getCaptionLabel().getStyle().setMarginLeft(3);
+  ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
@@ -145,9 +144,10 @@ void controlEvent(ControlEvent theEvent) {
       setupSerialConnection(devicePath);
     }
     if (theEvent.controller().getId()==9) { 
-      saveModelSelected();
-      setupTypeMachine();
-      showHideFeaturesOpenKnit();
+      String machineType=machinesListName.get((int)theEvent.getValue());
+      saveModelSelected(machineType);
+      setupTypeMachine(machineType);
+      showHideFeaturesOpenKnit(machineType);
     }
     if (theEvent.controller().getId()==10) { 
       createParametricSweater();
@@ -170,7 +170,7 @@ void controlEvent(ControlEvent theEvent) {
       nowKnitting_openKnit =!nowKnitting_openKnit;
     }
     if (theEvent.controller().getId()==16) { 
-      saveKnittingType();
+      saveKnittingType((String)my_brother.knittingTypeListName.get((int)theEvent.getValue()));
     }
   }
 
@@ -192,7 +192,7 @@ public void input(String theText) {
 
 //------------------------------------------------------------------------------------
 
-void setupTypeMachine() {
+void setupTypeMachine(String machineType) {
 }
 
 //------------------------------------------------------------------------------------

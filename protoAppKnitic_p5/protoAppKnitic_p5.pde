@@ -79,6 +79,7 @@ int[] pixelSend;
 int[] pixelReceived;
 boolean shift;
 ScrollableList usbList;
+ArrayList<String> machinesListName = new ArrayList<String>();
 ScrollableList machineList;
 ScrollableList knittingTypeList;
 int knittingType = 0;
@@ -154,7 +155,7 @@ void setup() {
     pixelReceived[i] = 0;
   }
   createSweater = false;
-  showHideFeaturesOpenKnit();
+  //showHideFeaturesOpenKnit();
   nowKnitting_openKnit = false;
 }
 
