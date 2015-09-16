@@ -1,3 +1,0 @@
- -Xms64m -Xmx500m
-protoAppKnitic_p5
-protoAppKnitic_p5.jar,core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-windows-i586.jar,gluegen-rt-natives-windows-i586.jar,controlP5.jar,RXTXcomm.jar,serial.jar,sDrop.jar,jl1.0.jar,jsminim.jar,minim.jar,mp3spi1.9.4.jar,tritonus_aos.jar,tritonus_share.jar

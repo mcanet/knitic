@@ -1,20 +1,28 @@
 
 void setupSettings() {
   json = loadJSONObject("data/settings.json");
-  String usb = json.getString("usbDevice");
-  String machine = json.getString("kniticModel");
 }
 
-void saveUSBSelected() {
-  println("save:"+usbList.getCaptionLabel().getText());
-  json.setString("usbDevice", usbList.getCaptionLabel().getText());
+void saveUSBSelected(String devicePath) {
+  println("save:"+devicePath);
+  json.setString("usbDevice", devicePath);
   saveJSONObject(json, "data/settings.json");
 }
 
-void saveModelSelected() {
-  println("save:"+machineList.getCaptionLabel().getText());
-  json.setString("kniticModel", machineList.getCaptionLabel().getText());
+void saveModelSelected(String machineType) {
+  println("save:"+machineType);
+  json.setString("kniticModel", machineType);
   saveJSONObject(json, "data/settings.json");
+}
+
+void saveKnittingType(String knittingType) {
+  println("save:"+knittingType);
+  json.setString("knittingType", knittingType);
+  saveJSONObject(json, "data/settings.json");
+}
+
+String getKnittingType(){
+  return json.getString("knittingType");
 }
 
 String getUSBSelected() {

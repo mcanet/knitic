@@ -19,6 +19,7 @@ Serial myPort = null;
 PImage kniticLogo;
 PImage img;
 PFont laurentFont;
+PFont laurentFont14;
 String last16Solenoids;
 String selected;
 String direction = "-";
@@ -58,7 +59,6 @@ int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
 int offsetKeedles = 24;
-int serialAvailableBuffer;
 boolean usbConected = false;
 boolean loadPattern = false;
 boolean repedPatternMode = true;
@@ -66,9 +66,10 @@ boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 boolean waitingMessageFromKnitting=false;
+
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
-SDrop drop;
+//SDrop drop;
 String myString;
 boolean pixSendAreReceived = true;
 int pixStateArduino;
@@ -77,8 +78,11 @@ int currentSolenoidIDSetup;
 int[] pixelSend;
 int[] pixelReceived;
 boolean shift;
-DropdownList usbList;
-DropdownList machineList;
+ScrollableList usbList;
+ArrayList<String> machinesListName = new ArrayList<String>();
+ScrollableList machineList;
+ScrollableList knittingTypeList;
+int knittingType = 0;
 JSONObject json;
 parametricSweater ns;
 controlP5.Textfield alt;
@@ -95,25 +99,30 @@ controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
 controlP5.Button startOpenKnit; 
 boolean nowKnitting_openKnit;
+
+m_brother my_brother;
+
 //------------------------------------------------------------------------------------
 void setup() {
   size(1060, 700, P2D);
   noSmooth();
-  //frameRate(35);
   if (frame != null) {
     frame.setTitle("Knitic pattern manager v.01");
     frame.setResizable(false);
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
+  // load fonts
+  laurentFont = loadFont("Quantico-Regular-20.vlw");
+  laurentFont14 = loadFont("Quantico-Regular-14.vlw");
 
+  my_brother = new m_brother();
   setupSweater();
   // List all the available serial ports:
   setupSettings();
   addButtonsInSetup();
-  setupSerialConnection();
+  //setupSerialConnection("0");
   kniticLogo = loadImage("logo_knitic.png");
-  laurentFont = loadFont("Quantico-Regular-20.vlw");
   currentPixels = new int[200];
   _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
@@ -138,7 +147,7 @@ void setup() {
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
-    drop = new SDrop(this);
+  //drop = new SDrop(this);
   pixelSend = new int[200];
   pixelReceived = new int[200];
   for (int i=0; i<200; i++) {
@@ -146,7 +155,7 @@ void setup() {
     pixelReceived[i] = 0;
   }
   createSweater = false;
-  showHideFeaturesOpenKnit();
+  //showHideFeaturesOpenKnit();
   nowKnitting_openKnit = false;
 }
 
@@ -157,7 +166,7 @@ void draw() {
   background(200, 200, 200);
   display();
   drawPatternGrid();
-  
+
   if (loadPattern) { 
     drawPattern();
     drawAndSetSelectedGrid();
@@ -167,11 +176,10 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
-  
-  
-  if( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
-  
-  if(createSweater){
+
+  if ( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
+
+  if (createSweater) {
     drawSweater();
   }
 }
@@ -179,7 +187,6 @@ void draw() {
 //------------------------------------------------------------------------------------
 
 void serialEvent(Serial p) { 
-  println("new event");
   autoConnectAndReceiveSerial(p);
 }
 
@@ -199,7 +206,18 @@ void brain() {
     // END of LINE
     if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && lastChangeHead != "left") ) ) {
       headDirectionForNewPixels=+1;
-      current_row += 1;
+      if (my_brother.getIDKnittingTypeSelected()==0) {
+        current_row += 1;
+      }
+      if (my_brother.getIDKnittingTypeSelected()==1) {
+        my_brother.nextPassDoubleBed();
+        if (my_brother.getPassDoubleBed()==0 || my_brother.getPassDoubleBed()==2) { 
+          current_row += 1;
+          println("add row double bed");
+        }
+      }
+      if (my_brother.getIDKnittingTypeSelected()==2) {
+      }
       lastChangeHead = "left";
       if (isPatternFinishKnitting() && repedPatternMode==true) { 
         current_row=0;
@@ -209,14 +227,25 @@ void brain() {
         done.trigger();
       }
       println("endLine left:"+Integer.toString(stitch));
-      if (lastRowCorrect!=current_row && loadPattern) {
-        sendtoKnittingMachine();
-        lastRowCorrect = current_row;
-      }
+      //if (lastRowCorrect!=current_row && loadPattern) {
+      sendtoKnittingMachine();
+      //lastRowCorrect = current_row;
+      //}
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
       headDirectionForNewPixels=-1;
-      current_row += 1;
+      if (my_brother.getIDKnittingTypeSelected()==0) {
+        current_row += 1;
+      }
+      if (my_brother.getIDKnittingTypeSelected()==1) {
+        my_brother.nextPassDoubleBed();
+        if (my_brother.getPassDoubleBed()==0 || my_brother.getPassDoubleBed()==2) { 
+          current_row += 1;
+          println("add row double bed");
+        }
+      }
+      if (my_brother.getIDKnittingTypeSelected()==2) {
+      }
       lastChangeHead = "right";
       if (isPatternFinishKnitting() && repedPatternMode==true) { 
         current_row=0;
@@ -226,10 +255,10 @@ void brain() {
         done.trigger();
       }
       println("endLine right:"+Integer.toString(stitch));
-      if (lastRowCorrect!=current_row && loadPattern) {
-        sendtoKnittingMachine();
-        lastRowCorrect = current_row;
-      }
+      //if (lastRowCorrect!=current_row && loadPattern) {
+      sendtoKnittingMachine();
+      //lastRowCorrect = current_row;
+      //}
     }
   }
   lastEndLineStarted = endLineStarted;

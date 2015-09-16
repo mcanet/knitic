@@ -32,8 +32,8 @@ public:
     maxRight= 0;
     endLineLeftAPin = 1;
     endLineRightAPin = 0;
-    filterValueLeftMin = 10;
-    filterValueRightMin = 10;
+    filterValueLeftMin = 40;
+    filterValueRightMin = 40;
     filterValueLeftMax = 460;
     filterValueRightMax = 460;
   }
