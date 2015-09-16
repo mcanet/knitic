@@ -170,9 +170,9 @@ public:
         headDirection =-1;
         //Serial.print(encoder1Pos);
         //Serial.println("-Left");
-        if( encoder1Pos==-2000){ 
+        /*if( encoder1Pos==-2000){ 
           encoder1Pos = 255;
-        }
+        }*/
         encoder1Pos-=1;
         if(encoder1Pos<0){
           encoder1Pos=0;
@@ -184,9 +184,9 @@ public:
         headDirection =1;
         //Serial.print(headDirection);
         //Serial.println("-Right");
-        if( encoder1Pos==-2000){ 
+        /*if( encoder1Pos==-2000){ 
           encoder1Pos = 0;
-        }
+        }*/
         encoder1Pos+=1;
         if(encoder1Pos>255){
           encoder1Pos = 255;
@@ -196,12 +196,13 @@ public:
     lastDirectionEncoders = directionEncoders;
     // encoder position had changed
     if(encoder1Pos!=lastencoder1Pos){
-      if( encoder1Pos !=0 ){ 
+      stitch = (encoder1Pos)-28;
+      /*if( encoder1Pos !=0 ){ 
         stitch = (encoder1Pos)-28; 
       }
       else{
         stitch = -28;
-      }
+      }*/
     }
   }
 

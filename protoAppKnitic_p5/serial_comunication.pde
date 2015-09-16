@@ -211,6 +211,7 @@ void receiveMessageTypeA(String myString) {
   String[] args = myString.split(",");
   if (args.length>=2) {
     stitch = Integer.valueOf(args[1]);
+    println(stitch);
     headDirection = Integer.valueOf(args[2]);
     //endLineStarted = !args[3].equals("0");
     endLineStarted = true;
