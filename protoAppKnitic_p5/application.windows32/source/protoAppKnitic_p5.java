@@ -123,7 +123,9 @@ controlP5.Button parametricSweaterButton;
 controlP5.Button saveParametricSweaterButton;
 controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
-controlP5.Button startOpenKnit; 
+controlP5.Button startOpenKnit;
+//controlP5.Button refreshUsb;
+
 boolean nowKnitting_openKnit;
 
 m_brother my_brother;
@@ -372,6 +374,7 @@ public void addButtonsInSetup() {
   startOpenKnit.setVisible(false); 
   setupGUIParametricSweater();
   
+  controlP5.addButton("Refresh", 4, 855, 270, 90, 25).setId(17);
   usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
   machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
@@ -387,7 +390,8 @@ public void fillListUSB(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
-
+  ddl.clear();
+  
   if (Serial.list().length==0) {
     ddl.setCaptionLabel("No devices connected");
   }
@@ -528,6 +532,7 @@ public void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==16) { 
       saveKnittingType((String)my_brother.knittingTypeListName.get((int)theEvent.getValue()));
     }
+    if (theEvent.controller().getId()==17) fillListUSB(usbList);
   }
 
   if (theEvent.isAssignableFrom(Textfield.class)) {

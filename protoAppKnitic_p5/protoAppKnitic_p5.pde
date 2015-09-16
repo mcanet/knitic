@@ -97,7 +97,9 @@ controlP5.Button parametricSweaterButton;
 controlP5.Button saveParametricSweaterButton;
 controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
-controlP5.Button startOpenKnit; 
+controlP5.Button startOpenKnit;
+//controlP5.Button refreshUsb;
+
 boolean nowKnitting_openKnit;
 
 m_brother my_brother;
