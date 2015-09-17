@@ -129,14 +129,7 @@ public:
           }
         }
       }
-      // Set all solenoids OFF when end of line
-      if(myEncoders->encoder1Pos==0 || myEncoders->encoder1Pos==255  ){
-        for(int i=0;i<16;i++){
-          digitalWrite(amegaPinsArray[i], LOW);
-          digitalWrite(ledArray[i], LOW);
-          solenoidstateOn[i] = false; 
-        }
-      }
+      
       /*
       if(myEncoders->encoder1Pos<=1 || myEncoders->encoder1Pos>254  ){
         
@@ -168,6 +161,14 @@ public:
       setArduinoMegaPins();
 #endif
     }
+  }
+  
+  void setAllSolOff(){
+    for(int i=0;i<16;i++){
+          digitalWrite(amegaPinsArray[i], LOW);
+          digitalWrite(ledArray[i], LOW);
+          solenoidstateOn[i] = false; 
+        }
   }
 
 #ifdef arduinoTypeDUE

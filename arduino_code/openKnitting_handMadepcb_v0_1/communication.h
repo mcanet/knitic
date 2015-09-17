@@ -128,35 +128,10 @@ class communication {
         myEncoders->lastencoder1Pos = myEncoders->encoder1Pos;
       }
     }
-#ifdef arduinoTypeDUE
-    void checkSolenoid(int i) {
-      if ( bitRegister16Solenoid[i] == (received & bitRegister16Solenoid[i])) {
-        if (mysolenoids->solenoidstate[i] != true) {
-          mysolenoids->solenoidstate[i] = true;
-          mysolenoids->changed = true;
-        }
-      }
-      else {
-        if (mysolenoids->solenoidstate[i] != false) {
-          mysolenoids->solenoidstate[i] = false;
-          mysolenoids->changed = true;
-        }
-      }
-    }
 
-    void set16Solenoids() {
-      if (lastReceived != received) {
-        lastReceived = received;
-        for (int i = 0; i < 16; i++) {
-          checkSolenoid(i);
-        }
-
-      }
-    }
-#endif
-
+    // recieve from processing
     void receiveAllLine() {
-      if(Serial.available() > 0) {
+      while(Serial.available()) {
         if ( Serial.readBytesUntil(footer, receivedBin, dataSize)) {
           dataReplace = true;
         }
@@ -171,35 +146,10 @@ class communication {
       Serial.println(lf);
       for (int i = 0; i < 200; i++) {
         pixelBin[i] = receivedBin[i];
-        Serial.print(String(pixelBin[i]));
+        Serial.print(pixelBin[i]);
       }
       Serial.println(lf);
     }
-
-    // get data from processing
-    void receiveRealtimeFromComputer() {
-      boolean isReceived = false;
-      char buffer[2];
-      while (Serial.available() > 0) {
-        Serial.readBytesUntil(',', &buffer[0], 4);
-        received = 0;
-        received = buffer[0] << 8;
-        received = received | buffer[1];
-        isReceived = true;
-      }
-      if (isReceived) {
-#ifdef arduinoTypeDUE
-        set16Solenoids();
-#endif
-
-#ifdef arduinoTypeUNO
-        mysolenoids->dataSector1 = buffer[0];
-        mysolenoids->dataSector2 = buffer[1];
-#endif
-      }
-
-    }
-
 };
 
 #endif
