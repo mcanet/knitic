@@ -177,12 +177,15 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
-
+  
+  // to see the mvmt even the connexion is lost
   //if ( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
 
   if (createSweater) {
     drawSweater();
   }
+  //drawDebugVariables();
+  //debugVariables();
 }
 
 //------------------------------------------------------------------------------------

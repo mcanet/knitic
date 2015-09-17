@@ -58,11 +58,10 @@ void fillListUSB(ScrollableList ddl) {
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  
-  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
   ddl.setHeight(400 );
+  ddl.close();
 }
 
 //------------------------------------------------------------------------------------
@@ -71,6 +70,8 @@ void fillListMachines(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
+  ddl.clear();
+  
   machinesListName.add("Brother 930 / 940");
   machinesListName.add("Openknit");
   //usbListName.add("Brother 910");
@@ -91,10 +92,10 @@ void fillListMachines(ScrollableList ddl) {
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
   ddl.setHeight(400 );
+  ddl.close();
 }
 
 //------------------------------------------------------------------------------------
@@ -103,7 +104,8 @@ void fillListKnittingType(ScrollableList ddl) {
   ddl.setBackgroundColor(color(190));
   ddl.setItemHeight(20);
   ddl.setBarHeight(30);
-
+  ddl.clear();
+  
   for (int i=0;i< my_brother.knittingTypeListName.size();i++) {
     ddl.addItem( my_brother.knittingTypeListName.get(i), i);
   }
@@ -120,10 +122,10 @@ void fillListKnittingType(ScrollableList ddl) {
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
   ddl.getCaptionLabel().getStyle().setMarginLeft(3);
   ddl.getCaptionLabel().getStyle().setMarginTop(3);
-  ddl.close();
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
   ddl.setHeight(400 );
+  ddl.close();
 }
 
 //------------------------------------------------------------------------------------
@@ -174,7 +176,7 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==16) { 
       saveKnittingType((String)my_brother.knittingTypeListName.get((int)theEvent.getValue()));
     }
-    if (theEvent.controller().getId()==17) fillListUSB(usbList);
+    if (theEvent.controller().getId()==17) fillListUSB(usbList);   //refresh
   }
 
   if (theEvent.isAssignableFrom(Textfield.class)) {
@@ -357,4 +359,3 @@ void howMuchPatternToLeft(String message) {
 
 //------------------------------------------------------------------------------------
 
-//void (){}
