@@ -217,12 +217,13 @@ void receiveMessageTypeA(String myString) {
     //endLineStarted = !args[3].equals("0");
     endLineStarted = true;
     shift = !args[3].equals("0");
-    //statusMachine 
-    /*
-             if(args.length>=6) solenoidsFromArduino = args[5];
-     if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[6]);
-     if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
-     if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
+    /*//statusMachine 
+     if(args.length>=6) solenoidsFromArduino = args[4];
+     if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[5]);
+     println("Solenoids from arduino "+solenoidsFromArduino);
+     println("Current solenoid "+currentSolenoidIDSetup);
+     //if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+     //if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
      */
     lastMessageReceivedFromSerial = millis();
     checkBetweenSendAndReceived();

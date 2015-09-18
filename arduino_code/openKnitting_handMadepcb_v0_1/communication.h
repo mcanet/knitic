@@ -100,12 +100,13 @@ class communication {
             Serial.print("0");
           }
         }
-        */
+        
         /*
         Serial.print(",");
         Serial.print(myEncoders->encoder1Pos);
         Serial.print(",");
         Serial.print(mysolenoids->currentStitchSetup );
+        
         Serial.print(",");
         Serial.print(mysolenoids->currentSolenoidIDSetup);
         Serial.print(",");
