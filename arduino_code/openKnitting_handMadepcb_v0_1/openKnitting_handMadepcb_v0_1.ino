@@ -42,15 +42,23 @@ void setup()
 
 void loop() {
   // Receive solenoids from computer
-  //myCommunicator.receiveRealtimeFromComputer();
-  myCommunicator.receiveAllLine();
+  serialEvent();
   // Get data from sensors and send to computer in case solenoids not move
 #ifndef attachInterrupEncoders
   myEncoders.loopNormal();
   myEndlines.loop();
   mysolenoids.loop();
 #endif
+
+  // Set all solenoids OFF when end of line
+  if(myEncoders.encoder1Pos==0 || myEncoders.encoder1Pos==255  ){
+    mysolenoids.setAllSolOff();
+  }
   myCommunicator.sendSerialToComputer();
+}
+
+void serialEvent(){
+  myCommunicator.receiveAllLine();
 }
 
 #ifdef attachInterrupEncoders
@@ -58,7 +66,6 @@ void encoderChange(){
   myEncoders.loopAttachInterrupt();
   myEndlines.loop();
   mysolenoids.loop();
-  myCommunicator.sendSerialToComputer();
 }
 #endif
 

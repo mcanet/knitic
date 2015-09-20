@@ -74,48 +74,50 @@ void sendtoKnittingMachine() {
         int posXPixel = 199-(i+rightStickOffset);
         int posYPixel = (rows-1)-current_row;
         try {
-          int pixelId = pixelArray[posXPixel][posYPixel];
-          if (pixelId==1) {
-            // pixels black
-            if (my_brother.getIDKnittingTypeSelected()==0) {
-              pixelSend[i] = 0;
-            }
-            if (my_brother.getIDKnittingTypeSelected()==1) {
-              switch(my_brother.getPassDoubleBed()) {
-              case 0:
-                pixelSend[i] = 1;
-                break;
-              case 1:
+           // test existence
+          if (posXPixel<cols && posXPixel>=0){
+            if (pixelArray[posXPixel][posYPixel]==1) {
+              // pixels black
+              if (my_brother.getIDKnittingTypeSelected()==0) {
                 pixelSend[i] = 0;
-                break;
-              case 2:
-                pixelSend[i] = 0;
-                break;
-              case 3:
-                pixelSend[i] = 1;
-                break;
+              }
+              if (my_brother.getIDKnittingTypeSelected()==1) {
+                switch(my_brother.getPassDoubleBed()) {
+                case 0:
+                  pixelSend[i] = 1;
+                  break;
+                case 1:
+                  pixelSend[i] = 0;
+                  break;
+                case 2:
+                  pixelSend[i] = 0;
+                  break;
+                case 3:
+                  pixelSend[i] = 1;
+                  break;
+                }
               }
             }
-          }
-          else {
-            // pixels white
-            if (my_brother.getIDKnittingTypeSelected()==0) {
-              pixelSend[i] = 1;
-            }
-            if (my_brother.getIDKnittingTypeSelected()==1) {
-              switch(my_brother.getPassDoubleBed()) {
-              case 0:
-                pixelSend[i] = 0;
-                break;
-              case 1:
+            else {
+              // pixels white
+              if (my_brother.getIDKnittingTypeSelected()==0) {
                 pixelSend[i] = 1;
-                break;
-              case 2:
-                pixelSend[i] = 1;
-                break;
-              case 3:
-                pixelSend[i] = 0;
-                break;
+              }
+              if (my_brother.getIDKnittingTypeSelected()==1) {
+                switch(my_brother.getPassDoubleBed()) {
+                case 0:
+                  pixelSend[i] = 0;
+                  break;
+                case 1:
+                  pixelSend[i] = 1;
+                  break;
+                case 2:
+                  pixelSend[i] = 1;
+                  break;
+                case 3:
+                  pixelSend[i] = 0;
+                  break;
+                }
               }
             }
           }
@@ -125,7 +127,6 @@ void sendtoKnittingMachine() {
           pixelSend[i] = 1;
         }
       }
-
       println("send to machine:"+Integer.toString((rows-1)-current_row));
       String pixToSend ="";
       for (int i=0; i<200; i++) {
@@ -211,16 +212,18 @@ void receiveMessageTypeA(String myString) {
   String[] args = myString.split(",");
   if (args.length>=2) {
     stitch = Integer.valueOf(args[1]);
+    //println(stitch);
     headDirection = Integer.valueOf(args[2]);
     //endLineStarted = !args[3].equals("0");
     endLineStarted = true;
     shift = !args[3].equals("0");
-    //statusMachine 
-    /*
-             if(args.length>=6) solenoidsFromArduino = args[5];
-     if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[6]);
-     if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
-     if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
+    /*//statusMachine 
+     if(args.length>=6) solenoidsFromArduino = args[4];
+     if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[5]);
+     println("Solenoids from arduino "+solenoidsFromArduino);
+     println("Current solenoid "+currentSolenoidIDSetup);
+     //if(args.length>=8) stitchSetupArduino = Integer.valueOf(args[7]);
+     //if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
      */
     lastMessageReceivedFromSerial = millis();
     checkBetweenSendAndReceived();

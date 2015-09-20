@@ -55,9 +55,9 @@ public:
       22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23                                                                                                               };
     for(int i=0; i<16; i++){
       amegaPinsArray[i] = amegaPinsArrayTemp[i];
-      ledArray[i] = ledArrayTemp[i];
+      //ledArray[i] = ledArrayTemp[i];
       pinMode(amegaPinsArrayTemp[i], OUTPUT);
-      pinMode(ledArrayTemp[i], OUTPUT);
+      //pinMode(ledArrayTemp[i], OUTPUT);
     }
 #endif
   }
@@ -100,7 +100,7 @@ public:
             currentPixState = pixelBin[currentStitchSetup];
             if(solenoidstateOn[i] != (currentPixState==1) ){
               digitalWrite(amegaPinsArray[i], currentPixState);
-              digitalWrite(ledArray[i], currentPixState);  
+              //digitalWrite(ledArray[i], currentPixState);  
               solenoidstateOn[i] = (currentPixState==1);
             }
           }
@@ -123,91 +123,22 @@ public:
             currentPixState = pixelBin[currentStitchSetup];
             if( solenoidstateOn[i] !=(currentPixState==1) ){
               digitalWrite(amegaPinsArray[i], currentPixState);
-              digitalWrite(ledArray[i], currentPixState);   
+              //digitalWrite(ledArray[i], currentPixState);   
               solenoidstateOn[i] = (currentPixState==1);
             }
           }
         }
       }
-      // Set all solenoids OFF when end of line
-      if(myEncoders->encoder1Pos==0 || myEncoders->encoder1Pos==255  ){
-        for(int i=0;i<16;i++){
+    }
+  }
+  
+  void setAllSolOff(){
+    for(int i=0;i<16;i++){
           digitalWrite(amegaPinsArray[i], LOW);
-          digitalWrite(ledArray[i], LOW);
+          //digitalWrite(ledArray[i], LOW);
           solenoidstateOn[i] = false; 
         }
-      }
-      /*
-      if(myEncoders->encoder1Pos<=1 || myEncoders->encoder1Pos>254  ){
-        
-        if(myEncoders->last_8segmentEncoder != myEncoders->_8segmentEncoder){
-          sectionPosition = 0; 
-        }else{
-          sectionPosition = 1;
-        }
-      }
-      */
-    }
-    /*
-#ifdef arduinoTypeDUE
-     if( myEncoders->lastStitch!=myEncoders->stitch){
-     myEncoders->lastStitch=myEncoders->stitch;
-     setArduinoMegaPins();
-     if(changed){ 
-     changed = false;
-     }
-     }
-     #endif
-     */
   }
-
-  void ifChanged(){
-    if(changed){
-      changed = false;
-#ifdef arduinoTypeDUE
-      setArduinoMegaPins();
-#endif
-    }
-  }
-
-#ifdef arduinoTypeDUE
-  boolean isCurrentSolenoid(int i,int r){
-    int stitch = myEncoders->stitch;
-    int headDirection = -myEncoders->headDirection;
-    return (  (stitch<=176 && stitch>=-24 && headDirection==-1) && ((stitch-2+(i*headDirection))%16)==r );//|| ( (stitch>=24 && stitch<=224 &&  headDirection==1)  && ((stitch+8-(i*headDirection))%16)==r );
-  }
-
-  void setArduinoMegaPins(){
-    for(int i=0;i<16;i++){ 
-      if( solenoidstate[i]==true )/*isCurrentSolenoid(i,7) myEncoders->headDirection==1 && myEncoders->stitch==25 && i==0  && */ 
-      {
-        if(solenoidstateOn[i]==false){
-
-          digitalWrite(amegaPinsArray[i], HIGH);
-          digitalWrite(ledArray[i], HIGH);
-          solenoidstateOn[i] = true;
-          /*
-          Serial.print(myEncoders->stitch);
-           Serial.print("::");
-           Serial.print(i);
-           Serial.println("::set ON solenoid");
-           */
-        }
-      }
-      else if(solenoidstateOn[i]==true) {
-        digitalWrite(amegaPinsArray[i], LOW);
-        digitalWrite(ledArray[i], LOW);
-        solenoidstateOn[i] = false;
-        /*
-        Serial.print(myEncoders->stitch);
-         Serial.print("::");
-         Serial.print(i);
-         Serial.println("::set OFF solenoid");
-         */
-      }
-    }
-  }
-#endif
 
 };
 #endif

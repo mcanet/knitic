@@ -69,7 +69,7 @@ boolean waitingMessageFromKnitting=false;
 
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
-//SDrop drop;
+SDrop drop;
 String myString;
 boolean pixSendAreReceived = true;
 int pixStateArduino;
@@ -97,7 +97,8 @@ controlP5.Button parametricSweaterButton;
 controlP5.Button saveParametricSweaterButton;
 controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
-controlP5.Button startOpenKnit; 
+controlP5.Button startOpenKnit;
+
 boolean nowKnitting_openKnit;
 
 m_brother my_brother;
@@ -147,7 +148,7 @@ void setup() {
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
-  //drop = new SDrop(this);
+  drop = new SDrop(this);
   pixelSend = new int[200];
   pixelReceived = new int[200];
   for (int i=0; i<200; i++) {
@@ -176,12 +177,15 @@ void draw() {
   updateEditPixels();
   // For debug
   drawReceivedPixelsVsSend();
-
-  if ( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
+  
+  // to see the mvmt even the connexion is lost
+  //if ( machineList.getCaptionLabel().getText().equals("Openknit") && nowKnitting_openKnit) drawOpenKnit();
 
   if (createSweater) {
     drawSweater();
   }
+  //drawDebugVariables();
+  //debugVariables();
 }
 
 //------------------------------------------------------------------------------------
@@ -299,7 +303,7 @@ boolean isPatternOnKnitting() {
 }
 
 //------------------------------------------------------------
-
+// drag and drop an image plugin
 void dropEvent(DropEvent theDropEvent) {
   if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
     try {

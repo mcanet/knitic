@@ -1,7 +1,7 @@
 
 int lastTimeMove_openKnit;
 int direction_openKnit=1;
-
+// continue to move the bed when no connexion
 void drawOpenKnit(){
   if(millis()-lastTimeMove_openKnit>100){
     stitch += direction_openKnit;
