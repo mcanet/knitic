@@ -32,10 +32,10 @@ public:
     maxRight= 0;
     endLineLeftAPin = 1;
     endLineRightAPin = 0;
-    filterValueLeftMin = 100;
-    filterValueRightMin = 100;
-    filterValueLeftMax = 460;
-    filterValueRightMax = 460;
+    filterValueLeftMin = FILTER_VALUE_LEFT_MIN;
+    filterValueRightMin = FILTER_VALUE_RIGHT_MIN;
+    filterValueLeftMax = FILTER_VALUE_LEFT_MAX;
+    filterValueRightMax = FILTER_VALUE_RIGHT_MAX;
   }
 
   void setPosition(encoders* _myEncoders, soundAlerts* _mySoundAlerts){
