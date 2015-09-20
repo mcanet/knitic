@@ -10,12 +10,6 @@
 #define arduinoTypeDUE "due"
 //#define arduinoTypeUNO "uno"
 #define totalArrayFromSelenoids 16
-
-#include "defined_knitic.h"
-#include "knitic.h"
-
-#define attachInterrupEncoders interrupEncoders
-
 // Important! This four values need to be calibrate in each machine
 // Use code at: "arduino code/test_incase_error/test_endLine_calibrate" 
 // When you execute you will find values in the arduino terminal and change the right values for your machine
@@ -23,6 +17,11 @@
 #define FILTER_VALUE_RIGHT_MIN 100
 #define FILTER_VALUE_LEFT_MAX 460
 #define FILTER_VALUE_RIGHT_MAX 460
+#define attachInterrupEncoders interrupEncoders
+
+#include "defined_knitic.h"
+#include "knitic.h"
+
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
 // Class declaration
