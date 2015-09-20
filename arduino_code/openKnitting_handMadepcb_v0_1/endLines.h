@@ -61,10 +61,10 @@ public:
       valueEndLineRight = analogRead(endLineRightAPin);
       if( valueEndLineRight <filterValueRightMin || analogRead(endLineRightAPin) >filterValueRightMax){
         if(myEncoders->_8segmentEncoder){
-          phase = 1;
+          phase = 0;
         }
         else{
-          phase = 0;
+          phase = 1;
         }
       }
     }
