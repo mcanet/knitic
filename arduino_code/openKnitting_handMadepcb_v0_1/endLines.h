@@ -24,8 +24,7 @@ public:
   }
 
   void setup(){
-    pinMode(endLineLeftAPin,INPUT);
-    pinMode(endLineRightAPin,INPUT);
+  
   }
 
   void setPosition(encoders* _myEncoders){
