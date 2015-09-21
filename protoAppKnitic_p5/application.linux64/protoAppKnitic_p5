@@ -1,4 +1,0 @@
-#!/bin/sh
-
-APPDIR=$(dirname "$0")
-java  -Djava.library.path="$APPDIR:$APPDIR/lib" -cp "$APPDIR/lib/protoAppKnitic_p5.jar:$APPDIR/lib/core.jar:$APPDIR/lib/jogl-all.jar:$APPDIR/lib/gluegen-rt.jar:$APPDIR/lib/jogl-all-natives-linux-amd64.jar:$APPDIR/lib/gluegen-rt-natives-linux-amd64.jar:$APPDIR/lib/controlP5.jar:$APPDIR/lib/RXTXcomm.jar:$APPDIR/lib/serial.jar:$APPDIR/lib/sDrop.jar:$APPDIR/lib/jl1.0.jar:$APPDIR/lib/jsminim.jar:$APPDIR/lib/minim.jar:$APPDIR/lib/mp3spi1.9.4.jar:$APPDIR/lib/tritonus_aos.jar:$APPDIR/lib/tritonus_share.jar" protoAppKnitic_p5 "$@"

@@ -20,23 +20,22 @@ table encoder position an values id
 #include "defined_knitic.h"
 
 class encoders{
-public:
-    short directionEncoders;
+private:
+  short directionEncoders;
   short lastDirectionEncoders;
-  int encoder1Pos; 
   int encoder4Pos;
-  int lastencoder1Pos;
   int lastencoder4Pos;
+  boolean last_8segmentEncoder;
+public:
+  int encoder1Pos; 
+  int lastencoder1Pos;
   int stitch;
   int lastStitch;
   int headDirection;
-  //boolean lastState8segmentEncoder;
-  //boolean state8segmentEncoder;
   boolean _8segmentEncoder;
-  boolean last_8segmentEncoder;
+  
   encoders(){
   }
-
   ~encoders(){
   }
 
@@ -59,92 +58,49 @@ public:
   void calculateDirection(){
     lastDirectionEncoders = directionEncoders;
     directionEncoders = 0;
-    if(digitalRead(encoder0PinA)== HIGH){ 
-      // directionEncoders is ON for encoder A
-      //Serial.println("A:HIGH ENCODER");
-      directionEncoders += 1; 
-    }
-    else{ 
-      // directionEncoders is OFF for encoder A
-      directionEncoders += 0;  
-      //Serial.println("A:LOW ENCODER");
-    }
-    if(digitalRead(encoder0PinB)== HIGH){ 
-      // directionEncoders is ON for encoder B
-      directionEncoders +=3;
-      //Serial.println("B:HIGH ENCODER");
-    }
-    else{ 
-      directionEncoders +=5;
-      //Serial.println("B:LOW ENCODER");
-    }
+    
+    if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += 1;}
+    else{ directionEncoders += 0;}
+    if(digitalRead(encoder0PinB)== HIGH){ directionEncoders +=3;}
+    else{ directionEncoders +=5;}
+    
     last_8segmentEncoder = _8segmentEncoder;
     _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
-    /*
-    Serial.print(lastDirectionEncoders);
-    Serial.print("-");
-    Serial.println(directionEncoders);
-    Serial.print("-");
-    Serial.println(_8segmentEncoder);
-    */
   }
 
   // Use call from normal loop
   void loopNormal(){
     calculateDirection();
     if(lastDirectionEncoders!=directionEncoders){
-      //Serial.print(lastDirectionEncoders);
-      //Serial.print("-");
-      //Serial.println(directionEncoders);
-      if( 
-      ( lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_OFF)  || 
+      if((lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_OFF)  || 
         (lastDirectionEncoders==OFF_OFF && directionEncoders==ON_OFF) || 
         (lastDirectionEncoders==ON_OFF && directionEncoders==ON_ON)   || 
         (lastDirectionEncoders==ON_ON && directionEncoders==OFF_ON)   || 
-        (lastDirectionEncoders==OFF_ON && directionEncoders==OFF_OFF) 
-
-      ){
+        (lastDirectionEncoders==OFF_ON && directionEncoders==OFF_OFF)){
         headDirection =-1;
         if( encoder1Pos==-2000){ 
           encoder4Pos = 1020;//255 * 4
           encoder1Pos = 255;
-          //Serial.print("start value");
         }
         encoder4Pos-=1;
         if(encoder4Pos<0){
           encoder4Pos=0;
         }
-        /*
-        Serial.print(headDirection);
-        Serial.print("-Left:");
-        Serial.println(encoder4Pos);
-        Serial.println(encoder1Pos);
-        */
       }
-      else if( 
-      (lastDirectionEncoders==OFF_ON && directionEncoders==ON_ON)  || 
+      else if((lastDirectionEncoders==OFF_ON && directionEncoders==ON_ON)  || 
         (lastDirectionEncoders==ON_ON && directionEncoders==ON_ON)   || 
         (lastDirectionEncoders==ON_ON && directionEncoders==ON_OFF)  || 
         (lastDirectionEncoders==ON_OFF && directionEncoders==OFF_OFF)|| 
-        (lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_ON) 
-
-      ){
+        (lastDirectionEncoders==OFF_OFF && directionEncoders==OFF_ON)){
         headDirection =+1;
         if( encoder1Pos==-2000){ 
           encoder4Pos = 0;
           encoder1Pos = 0;
-          //Serial.print("start value");
         }
         encoder4Pos+=1;
         if(encoder4Pos>1020){//255 * 4
           encoder4Pos=1020;
         }
-        /*
-        Serial.print(headDirection);
-        Serial.print("-Right:");
-        Serial.println(encoder4Pos);
-        Serial.println(encoder1Pos);
-        */
       }
     }
     
@@ -162,31 +118,16 @@ public:
   // Use called by attachInterrupt(encoder0PinA, encoderChange, CHANGE);
   void loopAttachInterrupt(){  
     calculateDirection();
-
     if(lastDirectionEncoders!=directionEncoders){
-      if( 
-      lastDirectionEncoders==OFF_ON || directionEncoders==ON_OFF 
-        ){
+      if(lastDirectionEncoders==OFF_ON || directionEncoders==ON_OFF){
         headDirection =-1;
-        //Serial.print(encoder1Pos);
-        //Serial.println("-Left");
-        /*if( encoder1Pos==-2000){ 
-          encoder1Pos = 255;
-        }*/
         encoder1Pos-=1;
         if(encoder1Pos<0){
           encoder1Pos=0;
         }
       }
-      else if(
-      lastDirectionEncoders==ON_ON || directionEncoders==OFF_OFF
-        ){
+      else if(lastDirectionEncoders==ON_ON || directionEncoders==OFF_OFF){
         headDirection =1;
-        //Serial.print(headDirection);
-        //Serial.println("-Right");
-        /*if( encoder1Pos==-2000){ 
-          encoder1Pos = 0;
-        }*/
         encoder1Pos+=1;
         if(encoder1Pos>255){
           encoder1Pos = 255;
@@ -197,17 +138,8 @@ public:
     // encoder position had changed
     if(encoder1Pos!=lastencoder1Pos){
       stitch = (encoder1Pos)-28;
-      /*if( encoder1Pos !=0 ){ 
-        stitch = (encoder1Pos)-28; 
-      }
-      else{
-        stitch = -28;
-      }*/
     }
   }
-
-
-
 };
 #endif
 
