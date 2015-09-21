@@ -3,20 +3,16 @@
 
 #include "arduino.h"
 #include "sound_alerts.h"
+#include "defined_knitic.h"
 
 class endLines{
 private:
   soundAlerts* mySoundAlerts;
-  // analog arduino pin
-  int endLineLeftAPin;
-  int endLineRightAPin;
   encoders* myEncoders;
   int filterValueLeftMin;
   int filterValueRightMin;
   int filterValueLeftMax;
   int filterValueRightMax;
-  int maxLeft;
-  int maxRight;
 
 public:
   int valueEndLineLeft;
@@ -28,10 +24,8 @@ public:
   }
 
   void setup(){
-    maxLeft = 0;
-    maxRight= 0;
-    endLineLeftAPin = 1;
-    endLineRightAPin = 0;
+    pinMode(endLineLeftAPin,INPUT);
+    pinMode(endLineRightAPin,INPUT);
     filterValueLeftMin = FILTER_VALUE_LEFT_MIN;
     filterValueRightMin = FILTER_VALUE_RIGHT_MIN;
     filterValueLeftMax = FILTER_VALUE_LEFT_MAX;

@@ -30,7 +30,6 @@ endLines myEndlines;
 solenoids mysolenoids;
 soundAlerts mySoundAlerts;
 communication myCommunicator;
-int patternLine[200];
 
 void setup()
 { 
@@ -57,11 +56,12 @@ void loop() {
   mysolenoids.loop();
 #endif
 
+  myCommunicator.sendSerialToComputer();
+  
   // Set all solenoids OFF when end of line
   if(myEncoders.encoder1Pos==0 || myEncoders.encoder1Pos==255  ){
     mysolenoids.setAllSolOff();
   }
-  myCommunicator.sendSerialToComputer();
 }
 
 void serialEvent(){
