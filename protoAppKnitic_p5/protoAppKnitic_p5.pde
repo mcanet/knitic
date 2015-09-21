@@ -25,7 +25,6 @@ String selected;
 String direction = "-";
 String status = "o";
 String statusMachine = "o";
-String lastSerialData;
 String lastChangeHead;
 char[] _16SolenoidsAr;
 String _16Solenoids = "9999999999999999";
@@ -38,9 +37,7 @@ int sizePixel = 3;
 int cols = -1;
 int rows = -1;
 int[][] pixelArray; 
-int [] currentPixels;
 int current_row = -1;
-int lastRowCorrect = -1;
 int stitch = -999;
 int _lastStitch;
 int section = -999;
@@ -48,13 +45,12 @@ int lastSection = -999;
 int leftStick = -1;
 int rightStick = -1;
 int headDirection = 0;
-int headDirectionForNewPixels;
 int lastConnection;
 int lastMessageReceivedFromSerial;
 int lastMessageSendFromSerial;
 int lastSerialPixelSend;
 int laststitch = -1;
-int posYOffSetPattern = 0;
+//int posYOffSetPattern = 0;
 int patternMouseX;
 int patternMouseY;
 int buttonWithBar = 230;
@@ -82,7 +78,6 @@ ScrollableList usbList;
 ArrayList<String> machinesListName = new ArrayList<String>();
 ScrollableList machineList;
 ScrollableList knittingTypeList;
-int knittingType = 0;
 JSONObject json;
 parametricSweater ns;
 controlP5.Textfield alt;
@@ -124,7 +119,6 @@ void setup() {
   addButtonsInSetup();
   //setupSerialConnection("0");
   kniticLogo = loadImage("logo_knitic.png");
-  currentPixels = new int[200];
   _16SolenoidsAr = new char[16]; 
   lastMessageReceivedFromSerial = millis();
   lastConnection = millis();
@@ -209,7 +203,6 @@ void brain() {
   if ( endLineStarted ) {
     // END of LINE
     if ( lastChangeHead != "left" && ( stitch<=(-24) || ((100-rightStick-offsetKeedles)>stitch && lastChangeHead != "left") ) ) {
-      headDirectionForNewPixels=+1;
       if (my_brother.getIDKnittingTypeSelected()==0) {
         current_row += 1;
       }
@@ -231,13 +224,9 @@ void brain() {
         done.trigger();
       }
       println("endLine left:"+Integer.toString(stitch));
-      //if (lastRowCorrect!=current_row && loadPattern) {
       sendtoKnittingMachine();
-      //lastRowCorrect = current_row;
-      //}
     }
     if ( lastChangeHead != "right" &&  (stitch>=(224) || ((100+leftStick+offsetKeedles)<stitch && lastChangeHead != "right") ) ) { 
-      headDirectionForNewPixels=-1;
       if (my_brother.getIDKnittingTypeSelected()==0) {
         current_row += 1;
       }
@@ -259,10 +248,7 @@ void brain() {
         done.trigger();
       }
       println("endLine right:"+Integer.toString(stitch));
-      //if (lastRowCorrect!=current_row && loadPattern) {
       sendtoKnittingMachine();
-      //lastRowCorrect = current_row;
-      //}
     }
   }
   lastEndLineStarted = endLineStarted;

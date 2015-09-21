@@ -51,7 +51,6 @@ void keyPressed() {
 //------------------------------------------------------------------------------------
 void startRightSide() {
   current_row = 0;
-  headDirectionForNewPixels=+1;
   endLineStarted = true;
   //lastEndLineStarted = false;
   lastChangeHead = "left";
@@ -59,7 +58,6 @@ void startRightSide() {
 //------------------------------------------------------------------------------------
 void startLeftSide() {
   current_row = 0;
-  headDirectionForNewPixels=-1;
   endLineStarted = true;
   //lastEndLineStarted = false;
   lastChangeHead = "right";
