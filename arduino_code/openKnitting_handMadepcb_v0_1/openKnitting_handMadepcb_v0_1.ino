@@ -3,8 +3,13 @@
  * KNITIC: OPEN KNITTING MACHINE
  * @Description: Code for open source machine
  * @Authors: Mar Canet <mar.canet@gmail.com> & Varvara Guljajeva <varvarag@gmail.com> 
+ * @Contributors: github.com/drachezoil 
  * @Versions:0.1v 
  *
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
  */
 
 #define arduinoTypeDUE "due"
@@ -56,13 +61,11 @@ void loop() {
   mysolenoids.loop();
 #endif
 
-  
   // Set all solenoids OFF when end of line
   if(myEncoders.encoder1Pos==0 || myEncoders.encoder1Pos==255  ){
     mysolenoids.setAllSolOff();
   }
-  myCommunicator.sendSerialToComputer();
-  
+  myCommunicator.sendSerialToComputer(); 
 }
 
 void serialEvent(){
