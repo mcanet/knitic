@@ -74,12 +74,24 @@ public:
       // RIGHT direction 
       if(myEncoders->headDirection==-1){
         if(pos >= 0 && pos <= 200){
+          if(myEndlines->phase==0){
+            i = abs(pos-8)%16; // maybe +8
+          }else{
+            // validated
+            i = abs(pos)%16;
+          }          
           currentStitchSetup = pos+8;
         }
       }
       // LEFT direction
       else if(myEncoders->headDirection==1 ){
         if(pos <= 200 && pos >= 0){
+          if(myEndlines->phase==0){
+            // validated
+            i = abs(pos)%16;// was 0, means no +8
+          }else{
+            i = abs(pos-8)%16;// -8
+          }          
           currentStitchSetup = pos-8; 
         }
       }
