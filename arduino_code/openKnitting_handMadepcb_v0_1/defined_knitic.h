@@ -11,8 +11,8 @@
     #define encoder0PinB 3
     #define encoder0PinC 4
     #define piezoPin     9
-    #define endLineLeftAPin 1
-    #define endLineRightAPin 0
+    #define endLineLeftAPin A1
+    #define endLineRightAPin A0
 #endif
 
 #endif

@@ -26,22 +26,17 @@ public:
   void setup(){
     pinMode(endLineLeftAPin,INPUT);
     pinMode(endLineRightAPin,INPUT);
-    filterValueLeftMin = FILTER_VALUE_LEFT_MIN;
-    filterValueRightMin = FILTER_VALUE_RIGHT_MIN;
-    filterValueLeftMax = FILTER_VALUE_LEFT_MAX;
-    filterValueRightMax = FILTER_VALUE_RIGHT_MAX;
   }
 
-  void setPosition(encoders* _myEncoders, soundAlerts* _mySoundAlerts){
+  void setPosition(encoders* _myEncoders){
     myEncoders = _myEncoders;
-    mySoundAlerts = _mySoundAlerts;
   }
 
   void loop(){
     // Left end of line - looking change phase
     if( myEncoders->headDirection==-1){
       valueEndLineLeft  = analogRead(endLineLeftAPin);
-      if( valueEndLineLeft <filterValueLeftMin || analogRead(endLineLeftAPin) >filterValueLeftMax){ 
+      if( valueEndLineLeft <FILTER_VALUE_LEFT_MIN || analogRead(endLineLeftAPin) >FILTER_VALUE_LEFT_MAX){ 
         if(myEncoders->_8segmentEncoder){
           phase = 1;
         }
@@ -53,7 +48,7 @@ public:
     // Right end of line - looking change phase
     if( myEncoders->headDirection==1){ 
       valueEndLineRight = analogRead(endLineRightAPin);
-      if( valueEndLineRight <filterValueRightMin || analogRead(endLineRightAPin) >filterValueRightMax){
+      if( valueEndLineRight <FILTER_VALUE_RIGHT_MIN || analogRead(endLineRightAPin) >FILTER_VALUE_RIGHT_MAX){
         if(myEncoders->_8segmentEncoder){
           phase = 0;
         }

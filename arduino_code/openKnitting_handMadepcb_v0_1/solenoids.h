@@ -41,26 +41,24 @@ public:
   int currentStitchSetup;
   boolean solenoidstate[16];
   boolean solenoidstateOn[16];
-  
-  solenoids(){
-#ifdef arduinoTypeDUE  
+#ifdef arduinoTypeDUE
     int amegaPinsArrayTemp[totalArrayFromSelenoids] = {
       22,24,26,28,30,32,34,36,37,35,33,31,29,27,25,23};
-    for(int i=0; i<16; i++){
-      amegaPinsArray[i] = amegaPinsArrayTemp[i];
-      pinMode(amegaPinsArrayTemp[i], OUTPUT);
-    }
-#endif   
-}
-  ~solenoids(){}
+#endif
+  
+  solenoids(){
+  }
+
+  ~solenoids(){
+  }
 
   void setup(endLines* _myEndlines,encoders* _myEncoders){
     myEndlines = _myEndlines;
     myEncoders = _myEncoders;
 #ifdef arduinoTypeDUE
     for(int i=0;i<16;i++){
-      //amegaPinsArray[i] = amegaPinsArrayTemp[i];
-      //pinMode(amegaPinsArrayTemp[i], OUTPUT);
+      amegaPinsArray[i] = amegaPinsArrayTemp[i];
+      pinMode(amegaPinsArrayTemp[i], OUTPUT);
       solenoidstate[i] =0;
       solenoidstateOn[i] =0;
     }

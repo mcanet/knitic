@@ -26,7 +26,6 @@ private:
   int encoder4Pos;
   int lastencoder4Pos;
   boolean last_8segmentEncoder;
-  
 public:
   int encoder1Pos; 
   int lastencoder1Pos;
@@ -60,10 +59,10 @@ public:
     lastDirectionEncoders = directionEncoders;
     directionEncoders = 0;
     
-    if(digitalRead(encoder0PinA)== HIGH) directionEncoders += 1; 
-    else directionEncoders += 0; 
-    if(digitalRead(encoder0PinB)== HIGH) directionEncoders +=3;
-    else directionEncoders +=5;
+    if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += 1;}
+    else{ directionEncoders += 0;}
+    if(digitalRead(encoder0PinB)== HIGH){ directionEncoders +=3;}
+    else{ directionEncoders +=5;}
     
     last_8segmentEncoder = _8segmentEncoder;
     _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);

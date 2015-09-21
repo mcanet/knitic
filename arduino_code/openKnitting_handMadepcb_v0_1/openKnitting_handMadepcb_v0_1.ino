@@ -36,8 +36,8 @@ void setup()
   Serial.begin(115200);
   mySoundAlerts.setup();
   myEncoders.setup();
-  myEndlines.setup();
-  myEndlines.setPosition(&myEncoders, &mySoundAlerts);
+  //myEndlines.setup();
+  myEndlines.setPosition(&myEncoders);
   mysolenoids.setup(&myEndlines,&myEncoders);
   myCommunicator.setup(&myEncoders,&myEndlines,&mysolenoids);
   myCommunicator._status = "o";
@@ -56,12 +56,13 @@ void loop() {
   mysolenoids.loop();
 #endif
 
-  myCommunicator.sendSerialToComputer();
   
   // Set all solenoids OFF when end of line
   if(myEncoders.encoder1Pos==0 || myEncoders.encoder1Pos==255  ){
     mysolenoids.setAllSolOff();
   }
+  myCommunicator.sendSerialToComputer();
+  
 }
 
 void serialEvent(){
