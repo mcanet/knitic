@@ -280,12 +280,12 @@ void fillArrayWithImage(PImage imgTemp) {
       laststitch = -1;
       section = -1;
       rows = img.height;
-      if (img.height>750) { 
+      /*if (img.height>750) {  //not in use??
         posYOffSetPattern = (img.height*sizePixel)-750;
       }
       else { 
         posYOffSetPattern = 0;
-      }
+      }*/
       endLineStarted = false;
       lastEndLineStarted = false;
       if (cols>0 && rows>0) loadPattern = true;
