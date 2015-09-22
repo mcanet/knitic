@@ -14,6 +14,10 @@
 
 #define arduinoTypeDUE "due"
 //#define arduinoTypeUNO "uno"
+
+#define machineType970 "970"
+//#define machineType940 "940"
+
 #define totalArrayFromSelenoids 16
 // Important! This four values need to be calibrate in each machine
 // Use code at: "arduino code/test_incase_error/test_endLine_calibrate" 
@@ -22,6 +26,24 @@
 #define FILTER_VALUE_RIGHT_MIN 100
 #define FILTER_VALUE_LEFT_MAX 460
 #define FILTER_VALUE_RIGHT_MAX 460
+
+#define END_LEFT       255
+#define END_RIGHT      0
+// important to setup, different for each type of machine
+#ifdef machineType970
+  #define START_OFFSET_L 42
+  #define START_OFFSET_R 22
+#endif
+#ifdef machineType940
+  #define START_OFFSET_L 40
+  #define START_OFFSET_R 16
+#endif
+
+#define END_OF_LINE_OFFSET_L 32
+#define END_OF_LINE_OFFSET_R 12
+//#define cariageTypeL 'L'
+#define cariageTypeK 'K'
+
 #define attachInterrupEncoders interrupEncoders
 
 #include "defined_knitic.h"
