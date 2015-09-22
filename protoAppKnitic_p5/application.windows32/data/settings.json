@@ -1,6 +1,6 @@
 {
-  "kniticModel": "Openknit",
-  "maxNeedles": "200",
   "knittingType": "Single bed",
-  "usbDevice": "COM2"
+  "usbDevice": "COM2",
+  "maxNeedles": "200",
+  "kniticModel": "Openknit"
 }

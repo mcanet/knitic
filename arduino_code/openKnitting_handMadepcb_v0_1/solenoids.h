@@ -67,39 +67,52 @@ public:
 
   void loop(){
     //if the stitch Changes
-    if( myEncoders->lastStitch!=myEncoders->stitch){
-      myEncoders->lastStitch = myEncoders->stitch;
-      int pos = myEncoders->stitch;
-      int i = abs(pos)%16;// was 0, means no +8
+    if( myEncoders->lastStitch!=myEncoders->encoder1Pos){
+      myEncoders->lastStitch = myEncoders->encoder1Pos;
+      
+      int m_position = myEncoders->encoder1Pos;
+      int m_solenoidToSet = abs(m_position)%16;// was 0, means no +8
+      
       // RIGHT direction 
       if(myEncoders->headDirection==-1){
-        if(pos >= 0 && pos <= 200){
-          if(myEndlines->phase==0){
-            i = abs(pos-8)%16; // maybe +8
-          }else{
-            // validated
-            i = abs(pos)%16;
-          }          
-          currentStitchSetup = pos+8;
+        if(m_position <= (END_LEFT - START_OFFSET_L)){
+          currentStitchSetup = m_position - START_OFFSET_R;
+          #ifdef machineType940
+            if(myEndlines->phase==0){
+              m_solenoidToSet = abs(m_position-8)%16; // maybe +8
+            }else{
+              // validated
+              m_solenoidToSet = abs(m_position)%16;
+            }      
+          #endif    
+          #ifdef cariageTypeL
+            currentStitchSetup = currentStitchSetup+8;
+          #endif
         }
       }
       // LEFT direction
       else if(myEncoders->headDirection==1 ){
-        if(pos <= 200 && pos >= 0){
-          if(myEndlines->phase==0){
-            // validated
-            i = abs(pos)%16;// was 0, means no +8
-          }else{
-            i = abs(pos-8)%16;// -8
-          }          
-          currentStitchSetup = pos-8; 
+        if(m_position >= START_OFFSET_R){
+          currentStitchSetup = m_position - START_OFFSET_L;
+          #ifdef machineType940         
+            if(myEndlines->phase==0){
+              // validated
+              m_solenoidToSet = abs(m_position)%16;// was 0, means no +8
+            }else{
+              m_solenoidToSet = abs(m_position+8)%16;// -8
+            }    
+          #endif      
+          #ifdef cariageTypeL
+            currentStitchSetup = currentStitchSetup-16;
+          #endif
         }
       }
-      if(currentStitchSetup>=0 && currentStitchSetup<200){  //IF the head is within the switches....no. 200 is the left switch
+      
+      if(currentStitchSetup>=(0-END_OF_LINE_OFFSET_R) && currentStitchSetup<(200+END_OF_LINE_OFFSET_L)){  //IF the head is within the switches....no. 200 is the left switch
         currentPixState = pixelBin[currentStitchSetup];     //Pixel Bin is an array of 256 values. It pulls values from the Serial Port
-        if(solenoidstateOn[i] != (currentPixState==1) ){    //if the current solenoid is different from the pixelBin value
-          digitalWrite(amegaPinsArray[i], currentPixState); //the that state to the Indexed Solenoid
-          solenoidstateOn[i] = (currentPixState==1);        //update array of current solenoid States
+        if(solenoidstateOn[m_solenoidToSet] != (currentPixState==1) ){    //if the current solenoid is different from the pixelBin value
+          digitalWrite(amegaPinsArray[m_solenoidToSet], currentPixState); //the that state to the Indexed Solenoid
+          solenoidstateOn[m_solenoidToSet] = (currentPixState==1);        //update array of current solenoid States
         }
       }
     }

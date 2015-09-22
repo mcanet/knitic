@@ -16,7 +16,8 @@ void addButtonsInSetup() {
   startOpenKnit.setVisible(false); 
   setupGUIParametricSweater();
   
-  controlP5.addButton("Refresh", 4, 855, 270, 90, 25).setId(17);
+  controlP5.addButton("Refresh", 4, 855, 270, 80, 25).setId(17);
+  controlP5.addButton("Close", 4, 955, 270, 80, 25).setId(18);
   usbList = controlP5.addScrollableList("usbList", 855, 300, 200, 300).setId(8);
   fillListUSB(usbList);
   machineList = controlP5.addScrollableList("machine", 855, 380, 200, 300).setId(9);
@@ -177,6 +178,10 @@ void controlEvent(ControlEvent theEvent) {
       saveKnittingType((String)my_brother.knittingTypeListName.get((int)theEvent.getValue()));
     }
     if (theEvent.controller().getId()==17) fillListUSB(usbList);   //refresh
+    if (theEvent.controller().getId()==18) {
+      myPort.clear();
+      myPort.stop();
+    }
   }
 
   if (theEvent.isAssignableFrom(Textfield.class)) {
