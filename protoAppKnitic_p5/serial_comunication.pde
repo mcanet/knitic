@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 int BAUD_RATE = 115200;
-byte lf = 0x40;
-byte footer = 126;
+byte lf = '@';      // '64'
+byte footer = '&';  // '38'
 
 //------------------------------------------------------------------------------------
 
@@ -127,23 +127,29 @@ void sendtoKnittingMachine() {
           pixelSend[i] = 1;
         }
       }
-      println("send to machine:"+Integer.toString((rows-1)-current_row));
-      String pixToSend ="";
-      for (int i=0; i<200; i++) {
-        pixToSend +=Integer.toString(pixelSend[i]);
-        myPort.write(pixelSend[i]);
-      }
-      pixToSend +=footer;
-      println("send:"+pixToSend);
-      myPort.write(footer);
-      waitingMessageFromKnitting = true;
-      pixSendAreReceived = false;
+      sendPixel();
     }
     catch(Exception e) {
     }
   }
 }
 
+void sendPixel(){
+  
+  println("send to machine:"+Integer.toString((rows-1)-current_row));
+  String pixToSend =""+lf;
+  myPort.write(lf);
+  for (int i=0; i<200; i++) {
+    pixToSend +=Integer.toString(pixelSend[i]);
+    myPort.write(pixelSend[i]);
+  }
+  myPort.write(footer);
+  pixToSend +=footer;
+  println("send:"+pixToSend);
+  waitingMessageFromKnitting = true;
+  pixSendAreReceived = false;
+      
+}
 //------------------------------------------------------------------------------------
 // not used at the moment
 /*
@@ -210,7 +216,7 @@ void receiveSerial(Serial p) {
 // Data sensors from arduino (encoders, endlines)
 void receiveMessageTypeA(String myString) {
   String[] args = myString.split(",");
-  if (args.length>=2) {
+  if (args.length>2) {
     stitch = Integer.valueOf(args[1]);
     //println(stitch);
     headDirection = Integer.valueOf(args[2]);
@@ -226,7 +232,11 @@ void receiveMessageTypeA(String myString) {
      //if(args.length>=9) pixStateArduino = Integer.valueOf(args[8]);
      */
     lastMessageReceivedFromSerial = millis();
-    checkBetweenSendAndReceived();
+    //checkBetweenSendAndReceived();
+  }
+  else if (myString.substring(2,3).equals("C")){ //(myString.charAt(2)=="C"){
+    sendPixel();                        //send back pixel
+    println("Corrupt");    //print corrupt
   }
 }
 //------------------------------------------------------------------------------------
@@ -247,7 +257,7 @@ void receiveMessageTypeB(String myString) {
       pixelReceived[i] = 1;
     }
   }
-  //checkBetweenSendAndReceived();
+  checkBetweenSendAndReceived();
   waitingMessageFromKnitting = false;
 }
 //------------------------------------------------------------------------------------

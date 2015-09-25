@@ -13,11 +13,15 @@ class communication {
     endLines* myEndlines;
     solenoids* mysolenoids;
     unsigned long lastSendTimeStamp;
-    char receivedBin[201];
+    unsigned long lastRecieveTimeStamp;
+    char receivedBin[202];
     int dataSize;
     boolean dataReplace;
     byte footer;
     char lf;
+    boolean solenoidsAreOff;
+    boolean corruptMessage;
+    
   public:
     String _status;
     communication() {
@@ -30,9 +34,12 @@ class communication {
       myEndlines = _myEndlines;
       mysolenoids = _mysolenoids;
       lastSendTimeStamp = millis();
-      dataSize = 201;
-      footer = 126;
+      lastRecieveTimeStamp = millis();
+      dataSize = 202;
+      footer = '&';
       dataReplace = false;
+      solenoidsAreOff = false;
+      corruptMessage = false;
       lf = '@';    // AT in ASCII
       Serial.setTimeout(10);
     }
@@ -97,25 +104,43 @@ class communication {
         Serial.println(lf);
         myEncoders->lastencoder1Pos = myEncoders->encoder1Pos;
       }
+      if (corruptMessage){
+        Serial.print("C"); // for corrupt
+        Serial.println(lf);
+        corruptMessage=false;
+      }
     }
 
     // recieve from processing
     void receiveAllLine() {
       while(Serial.available()) {
         if ( Serial.readBytesUntil(footer, receivedBin, dataSize)) {
-          dataReplace = true;
+          if (receivedBin[0]==lf){ // begin and end are here so ok
+            dataReplace = true;
+          }
+          else{
+            corruptMessage=true;
+            sendSerialToComputer();
+          }
         }
       }
       if (dataReplace) {
+        lastRecieveTimeStamp = millis();
         sendCurrentPixelArray();
         dataReplace = false;
+        solenoidsAreOff=false;
       }
+      else if (((millis() - lastRecieveTimeStamp) > 50000) && (solenoidsAreOff==false)){ // release solenoid if nothing recieve after 50s
+        mysolenoids->setAllSolOff();
+        solenoidsAreOff=true;
+      }
+      
     }
     
     // send to processing
     void sendCurrentPixelArray() {
       Serial.println(lf);
-      for (int i = 0; i < 200; i++) {
+      for (int i = 1; i < 201; i++) {
         pixelBin[i] = receivedBin[i];
         Serial.print(pixelBin[i]);
       }
