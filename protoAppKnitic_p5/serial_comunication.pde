@@ -129,6 +129,7 @@ void sendtoKnittingMachine() {
       }
       println("send to machine:"+Integer.toString((rows-1)-current_row));
       String pixToSend ="";
+      myPort.clear();
       for (int i=0; i<200; i++) {
         pixToSend +=Integer.toString(pixelSend[i]);
         myPort.write(pixelSend[i]);
