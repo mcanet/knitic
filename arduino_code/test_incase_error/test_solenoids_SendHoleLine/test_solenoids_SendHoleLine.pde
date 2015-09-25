@@ -183,6 +183,7 @@ void keyPressed(){
 }
 // send to arduino
 void sendtoKnittingMachine() {
+  myPort.clear();
   println("send to machine");
   for (int i=0; i<200; i++) {
     myPort.write(pixelSend[i]);
