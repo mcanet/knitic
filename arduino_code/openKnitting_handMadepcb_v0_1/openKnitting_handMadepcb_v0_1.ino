@@ -15,8 +15,8 @@
 #define arduinoTypeDUE "due"
 //#define arduinoTypeUNO "uno"
 
-#define machineType970 "970"
-//#define machineType940 "940"
+//#define machineType970 "970"
+#define machineType940 "940"
 
 #define totalArrayFromSelenoids 16
 // Important! This four values need to be calibrate in each machine
@@ -24,8 +24,8 @@
 // When you execute you will find values in the arduino terminal and change the right values for your machine
 #define FILTER_VALUE_LEFT_MIN 100
 #define FILTER_VALUE_RIGHT_MIN 100
-#define FILTER_VALUE_LEFT_MAX 460
-#define FILTER_VALUE_RIGHT_MAX 460
+#define FILTER_VALUE_LEFT_MAX 475
+#define FILTER_VALUE_RIGHT_MAX 475
 
 #define END_LEFT       255
 #define END_RIGHT      0
@@ -97,8 +97,8 @@ void serialEvent(){
 #ifdef attachInterrupEncoders
 void encoderChange(){
   myEncoders.loopAttachInterrupt();
-  myEndlines.loop();
   mysolenoids.loop();
+  myEndlines.loop();
 }
 #endif
 

@@ -42,8 +42,8 @@ void loop() {
   }
   */
   
-  leftEndLine = (analogRead(LEnd) > 500) ? 1 : 0;
-  rightEndLine = (analogRead(REnd) > 500) ? 1 : 0;
+  leftEndLine = (analogRead(LEnd) > 475) ? 1 : 0;
+  rightEndLine = (analogRead(REnd) > 475) ? 1 : 0;
   
   //Serial.println(lastEndLine);
   if(leftEndLine && lastEndLine!=0 && carDirection == 2 ){
