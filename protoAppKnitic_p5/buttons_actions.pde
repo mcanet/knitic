@@ -3,6 +3,21 @@
 void addButtonsInSetup() {
   controlP5 = new ControlP5(this);
   controlP5.setFont(createFont("Quantico-Regular",12));
+  // debug things
+  controlP5.enableShortcuts();
+  myTextarea = controlP5.addTextarea("txt")
+                  .setPosition(230, 400)
+                  .setSize(600, 290)
+                  .setFont(createFont("", 10))
+                  .setLineHeight(14)
+                  .setColor(color(200))
+                  .setColorBackground(color(50, 55, 100))
+                  .setColorForeground(color(255));
+  ;
+  myTextarea.setVisible(false);
+  console = controlP5.addConsole(myTextarea);//
+  debugButton = controlP5.addButton("Debug", 4, 40, 600, 100, 30).setId(19);
+  
   controlP5.addButton("Open", 4, 855, 45, 70, 30).setId(3);
   controlP5.addToggle("Repeating pattern mode", true, 855, 210, 20, 20).setId(4);
 
@@ -25,6 +40,7 @@ void addButtonsInSetup() {
   machineList.update();
   knittingTypeList = controlP5.addScrollableList("knittingType", 855, 550, 200, 300).setId(16);
   fillListKnittingType(knittingTypeList);
+  // last id : 19
 } 
 
 //------------------------------------------------------------------------------------
@@ -181,6 +197,9 @@ void controlEvent(ControlEvent theEvent) {
     if (theEvent.controller().getId()==18) {
       myPort.clear();
       myPort.stop();
+    }
+    if (theEvent.controller().getId()==19) {
+      showHideFeaturesDebug();
     }
   }
 
@@ -364,3 +383,17 @@ void howMuchPatternToLeft(String message) {
 
 //------------------------------------------------------------------------------------
 
+void showHideFeaturesDebug() {
+  if (debugMode == false) {
+    myTextarea.setVisible(true);
+    debugButton.setLabel("Close Debug");
+    debugMode = true;
+  }
+  else {
+    myTextarea.setVisible(false);
+    debugButton.setLabel("Debug");
+    debugMode = false;
+  }
+}
+
+//------------------------------------------------------------------------------------

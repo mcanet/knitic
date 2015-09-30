@@ -62,6 +62,8 @@ boolean editPixels = false;
 boolean endLineStarted = false;
 boolean lastEndLineStarted = false;
 boolean waitingMessageFromKnitting=false;
+//debug mode
+boolean debugMode=false;
 
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
@@ -87,8 +89,12 @@ controlP5.Textfield llargM;
 controlP5.Textfield collAmple;
 PFont font;
 Boolean createSweater;
+// debug things
+Textarea myTextarea;
+Println console;
 
 controlP5.Button parametricSweaterButton;
+controlP5.Button debugButton;
 controlP5.Button saveParametricSweaterButton;
 controlP5.Button applyParametricSweaterButton;
 controlP5.Button loadParametricSweaterButton; 
@@ -111,7 +117,7 @@ void setup() {
   // load fonts
   laurentFont = loadFont("Quantico-Regular-20.vlw");
   laurentFont14 = loadFont("Quantico-Regular-14.vlw");
-
+    
   my_brother = new m_brother();
   setupSweater();
   // List all the available serial ports:
