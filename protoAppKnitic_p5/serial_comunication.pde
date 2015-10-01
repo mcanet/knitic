@@ -138,6 +138,7 @@ void sendPixel(){
   
   println("send to machine:"+Integer.toString((rows-1)-current_row));
   String pixToSend =""+lf;
+  myPort.clear();
   myPort.write(lf);
   for (int i=0; i<200; i++) {
     pixToSend +=Integer.toString(pixelSend[i]);
@@ -222,7 +223,8 @@ void receiveMessageTypeA(String myString) {
     headDirection = Integer.valueOf(args[2]);
     //endLineStarted = !args[3].equals("0");
     endLineStarted = true;
-    shift = !args[3].equals("0");
+    println(args[3]);
+    shift = args[3].indexOf("0")==-1;
     /*//statusMachine 
      if(args.length>=6) solenoidsFromArduino = args[4];
      if(args.length>=7) currentSolenoidIDSetup = Integer.valueOf(args[5]);

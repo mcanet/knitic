@@ -90,9 +90,16 @@ void display() {
   rect(buttonWithBar-9, 26*3+1, 9, 2);
   rect((width-buttonWithBar), 26*3+1, 9, 2);
   stroke(255);
+  
+  if (shift==false) { // equal 1
+    text("shift-R", 20, 680);
+  }
+  else {// equal 0
+    text("shift-S", 20, 680);
+  }
   /*
   debugVariables();
-   */
+  */
 }
 
 //------------------------------------------------------------------------------------
@@ -102,12 +109,7 @@ void debugVariables() {
   text("stitch: "+stitchSetupArduino, 20, 600);
   text("solenoid: "+currentSolenoidIDSetup, 20, 650);
 
-  if (shift==false) { // equal 1
-    text("shift-B", 20, 680);
-  }
-  else {// equal 0
-    text("shift-A", 20, 680);
-  }
+  
 }
 
 //------------------------------------------------------------------------------------
@@ -250,8 +252,8 @@ void drawAndSetSelectedGrid() {
   for (int i=0;i<16;i++) {
     _16SolenoidsAr[i]='9';
   }
+  
   // Draw 
-
   if (totalCub>0) {
     pushMatrix();
     translate(buttonWithBar+sizePixel*199, 0);
