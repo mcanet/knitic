@@ -25,7 +25,7 @@ private:
   short lastDirectionEncoders;
   int encoder4Pos;
   int lastencoder4Pos;
-  boolean last_8segmentEncoder;
+  //boolean last_8segmentEncoder;
 public:
   int encoder1Pos; 
   int lastencoder1Pos;
@@ -52,22 +52,10 @@ public:
     lastStitch=0;
     stitch=-1;
     _8segmentEncoder = 0;
-    last_8segmentEncoder = 0;
+    //last_8segmentEncoder = 0;
   }
 
-  void calculateDirection(){
-    lastDirectionEncoders = directionEncoders;
-    directionEncoders = 0;
-    
-    if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += 1;}
-    else{ directionEncoders += 0;}
-    if(digitalRead(encoder0PinB)== HIGH){ directionEncoders +=3;}
-    else{ directionEncoders +=5;}
-    
-    last_8segmentEncoder = _8segmentEncoder;
-    _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
-  }
-
+  
   // Use call from normal loop
   void loopNormal(){
     calculateDirection();
@@ -113,7 +101,29 @@ public:
       stitch = -28;
     }
   }
+  
+  //-------------------------------------------------------------------------
+  boolean get8segmentEncoder(){
+     _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
+     return _8segmentEncoder;
+  }
 
+  //-------------------------------------------------------------------------
+  
+  void calculateDirection(){
+    lastDirectionEncoders = directionEncoders;
+    directionEncoders = 0;
+    
+    if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += 1;}
+    else{ directionEncoders += 0;}
+    if(digitalRead(encoder0PinB)== HIGH){ directionEncoders +=3;}
+    else{ directionEncoders +=5;}
+    
+    //last_8segmentEncoder = _8segmentEncoder;
+    //_8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
+  }
+
+  
   //-------------------------------------------------------------------------
   // Use called by attachInterrupt(encoder0PinA, encoderChange, CHANGE);
   void loopAttachInterrupt(){  

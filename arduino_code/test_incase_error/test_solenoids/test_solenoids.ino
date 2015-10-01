@@ -6,7 +6,7 @@ byte solenoidPinsArray[totalArrayFromSolenoid] =
   
 byte statusSolenoidArray[totalArrayFromSolenoid] = 
 {
-  1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1};
 
 int inByte = 0;
 
@@ -14,22 +14,16 @@ void setup(){
   for(int i=0; i<16; i++){
     pinMode(solenoidPinsArray[i], OUTPUT);
   }
-    Serial.begin(115200);
-      for(int i=0; i<16; i++){
-    digitalWrite(solenoidPinsArray[i],  1);
+  Serial.begin(115200);
+  for(int i=0; i<16; i++){
+    digitalWrite(solenoidPinsArray[i],  statusSolenoidArray[i]);
   }
   while (! Serial);
   Serial.println("Solenoid 1 to 16");
 }
 
+
 void loop(){
-  if(Serial.available()) {
-    // get incoming byte:
-    inByte = Serial.parseInt();
-    if (inByte>0)  Serial.println(inByte); 
-    else inByte = 18;
-  }
-  digitalWrite(solenoidPinsArray[inByte-1],  0);
-  delay(500);
-  digitalWrite(solenoidPinsArray[inByte-1],  1);
+
+
 }

@@ -24,8 +24,8 @@
 // When you execute you will find values in the arduino terminal and change the right values for your machine
 #define FILTER_VALUE_LEFT_MIN 100
 #define FILTER_VALUE_RIGHT_MIN 100
-#define FILTER_VALUE_LEFT_MAX 475
-#define FILTER_VALUE_RIGHT_MAX 475
+#define FILTER_VALUE_LEFT_MAX 515
+#define FILTER_VALUE_RIGHT_MAX 515
 
 #define END_LEFT       255
 #define END_RIGHT      0
@@ -70,6 +70,7 @@ void setup()
   myCommunicator._status = "o";
 #ifdef attachInterrupEncoders
   attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoderChange, CHANGE);
+  //attachInterrupt(digitalPinToInterrupt(encoder0PinA), encoderChange, RISING);
 #endif
 } 
 
@@ -97,8 +98,8 @@ void serialEvent(){
 #ifdef attachInterrupEncoders
 void encoderChange(){
   myEncoders.loopAttachInterrupt();
-  mysolenoids.loop();
   myEndlines.loop();
+  mysolenoids.loop();
 }
 #endif
 

@@ -35,9 +35,10 @@ public:
     valueEndLineLeft  = analogRead(endLineLeftAPin);
     valueEndLineRight = analogRead(endLineRightAPin);
     // Left end of line - looking change phase
+    
     if( myEncoders->headDirection==1){
       if( valueEndLineLeft <FILTER_VALUE_LEFT_MIN || analogRead(endLineLeftAPin) >FILTER_VALUE_LEFT_MAX){ 
-        if(myEncoders->_8segmentEncoder){
+        if(myEncoders->get8segmentEncoder() ){
           phase = 1;
         }
         else{
@@ -45,6 +46,7 @@ public:
         }
       }
     }
+    /*
     // Right end of line - looking change phase
     if( myEncoders->headDirection==-1){ 
       if( valueEndLineRight <FILTER_VALUE_RIGHT_MIN || analogRead(endLineRightAPin) >FILTER_VALUE_RIGHT_MAX){
@@ -56,6 +58,7 @@ public:
         }
       }
     }
+    */
     /*if( valueEndLineLeft <FILTER_VALUE_LEFT_MIN){
       myEncoders->encoder1Pos=END_LEFT + 28;
       myEncoders->stitch=END_LEFT;
