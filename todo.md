@@ -4,9 +4,10 @@ todo
 - fix corrupt data that stop the arduino -> OK
 - check solenoid glitch -> close to be OK, much better with the fork of kinasmith
 - check beltshift
-- begin message to less error
+- begin message to less error -> ok
 - release solenoid when no connection -> ok
-- maybe send two line
+- fast read write on arduino
+- go to processing 3.0 (maybe delete the sdrop)
 
 ayab
 - initialisation

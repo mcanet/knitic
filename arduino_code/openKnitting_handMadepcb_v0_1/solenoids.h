@@ -110,7 +110,7 @@ public:
       
       if(currentStitchSetup>=0 && currentStitchSetup<200){  //IF the head is within the switches....no. 200 is the left switch
         currentPixState = pixelBin[currentStitchSetup];     //Pixel Bin is an array of 256 values. It pulls values from the Serial Port
-        digitalWrite(amegaPinsArray[m_solenoidToSet], currentPixState); //the that state to the Indexed Solenoid
+        digitalWriteDirect(amegaPinsArray[m_solenoidToSet], currentPixState); //the that state to the Indexed Solenoid
         solenoidstateOn[m_solenoidToSet] = currentPixState;        //update array of current solenoid States
       }
     }
@@ -118,7 +118,7 @@ public:
   
   void setAllSolOff(){
     for(int i=0;i<16;i++){
-          digitalWrite(amegaPinsArray[i], LOW);
+          digitalWriteDirect(amegaPinsArray[i], LOW);
           solenoidstateOn[i] = false; 
     }
   }
