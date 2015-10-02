@@ -84,10 +84,6 @@ void loop() {
   mysolenoids.loop();
 #endif
 
-  // Set all solenoids OFF when end of line
-  if(myEncoders.encoder1Pos==0 || myEncoders.encoder1Pos==255  ){
-    mysolenoids.setAllSolOff();
-  }
   myCommunicator.sendSerialToComputer(); 
 }
 

@@ -1,4 +1,3 @@
-
 /*
 Prototipe Knitic
  */
@@ -10,7 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import controlP5.*;
 import processing.serial.*;
-import sojamo.drop.*;
+//import sojamo.drop.*;
 //------------------------------------------------------------------------------------
 // Global variables
 //------------------------------------------------------------------------------------
@@ -67,7 +66,7 @@ boolean debugMode=false;
 
 int dataToSolenoidHex;
 int bitRegister16SolenoidTemp[];
-SDrop drop;
+//SDrop drop;
 String myString;
 boolean pixSendAreReceived = true;
 int pixStateArduino;
@@ -109,8 +108,8 @@ void setup() {
   size(1060, 700, P2D);
   noSmooth();
   if (frame != null) {
-    frame.setTitle("Knitic pattern manager v.01");
-    frame.setResizable(false);
+    surface.setTitle("Knitic pattern manager v.01");
+    surface.setResizable(false);
     ImageIcon titlebaricon = new ImageIcon(loadBytes("knitic_icon.gif"));
     frame.setIconImage(titlebaricon.getImage());
   }
@@ -148,7 +147,7 @@ void setup() {
   bitRegister16SolenoidTemp[14] =  2;      // 0000000000000010
   bitRegister16SolenoidTemp[15] =  1;      // 0000000000000001
 
-  drop = new SDrop(this);
+  //drop = new SDrop(this);
   pixelSend = new int[200];
   pixelReceived = new int[200];
   for (int i=0; i<200; i++) {
@@ -163,7 +162,7 @@ void setup() {
 //------------------------------------------------------------------------------------
 
 void draw() {
-  frame.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
+  surface.setTitle("Knitic pattern manager v.01 F:"+Integer.toString(round(frameRate)));
   background(200, 200, 200);
   display();
   drawPatternGrid();
@@ -296,7 +295,7 @@ boolean isPatternOnKnitting() {
 
 //------------------------------------------------------------
 // drag and drop an image plugin
-void dropEvent(DropEvent theDropEvent) {
+/*void dropEvent(DropEvent theDropEvent) {
   if ( theDropEvent.isImage() && theDropEvent.isFile() ) {
     try {
       fillArrayWithImagePath(theDropEvent.toString());
@@ -304,6 +303,6 @@ void dropEvent(DropEvent theDropEvent) {
     catch(Exception e) {
     }
   }
-}
+}*/
 
 //------------------------------------------------------------

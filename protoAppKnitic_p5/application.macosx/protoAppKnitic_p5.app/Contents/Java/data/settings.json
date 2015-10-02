@@ -1,6 +1,0 @@
-{
-  "kniticModel": "Openknit",
-  "maxNeedles": "200",
-  "knittingType": "Single bed",
-  "usbDevice": "/dev/tty.usbmodem1421"
-}

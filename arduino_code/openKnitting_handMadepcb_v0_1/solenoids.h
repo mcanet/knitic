@@ -108,19 +108,17 @@ public:
         }
       }
       
-      if(currentStitchSetup>=(0-END_OF_LINE_OFFSET_R) && currentStitchSetup<(200+END_OF_LINE_OFFSET_L)){  //IF the head is within the switches....no. 200 is the left switch
+      if(currentStitchSetup>=0 && currentStitchSetup<200){  //IF the head is within the switches....no. 200 is the left switch
         currentPixState = pixelBin[currentStitchSetup];     //Pixel Bin is an array of 256 values. It pulls values from the Serial Port
-        if(solenoidstateOn[m_solenoidToSet] != (currentPixState==1) ){    //if the current solenoid is different from the pixelBin value
-          digitalWrite(amegaPinsArray[m_solenoidToSet], currentPixState); //the that state to the Indexed Solenoid
-          solenoidstateOn[m_solenoidToSet] = (currentPixState==1);        //update array of current solenoid States
-        }
+        digitalWriteDirect(amegaPinsArray[m_solenoidToSet], currentPixState); //the that state to the Indexed Solenoid
+        solenoidstateOn[m_solenoidToSet] = currentPixState;        //update array of current solenoid States
       }
     }
   }
   
   void setAllSolOff(){
     for(int i=0;i<16;i++){
-          digitalWrite(amegaPinsArray[i], LOW);
+          digitalWriteDirect(amegaPinsArray[i], LOW);
           solenoidstateOn[i] = false; 
     }
   }

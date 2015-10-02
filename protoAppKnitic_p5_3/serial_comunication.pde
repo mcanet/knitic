@@ -185,7 +185,6 @@ void sendSerial16() {
 // B: pixels
 void receiveSerial(Serial p) {
   try {
-    int timeStart = millis();
     myString = p.readString();
     // PIXELS stored now in Arduino
     try {

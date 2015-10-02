@@ -104,7 +104,7 @@ public:
   
   //-------------------------------------------------------------------------
   boolean get8segmentEncoder(){
-     _8segmentEncoder = (digitalRead(encoder0PinC)==HIGH);
+     _8segmentEncoder = (digitalReadDirect(encoder0PinC)==HIGH);
      return _8segmentEncoder;
   }
 
@@ -114,9 +114,9 @@ public:
     lastDirectionEncoders = directionEncoders;
     directionEncoders = 0;
     
-    if(digitalRead(encoder0PinA)== HIGH){ directionEncoders += 1;}
+    if(digitalReadDirect(encoder0PinA)== HIGH){ directionEncoders += 1;}
     else{ directionEncoders += 0;}
-    if(digitalRead(encoder0PinB)== HIGH){ directionEncoders +=3;}
+    if(digitalReadDirect(encoder0PinB)== HIGH){ directionEncoders +=3;}
     else{ directionEncoders +=5;}
     
     //last_8segmentEncoder = _8segmentEncoder;
