@@ -1,7 +1,8 @@
 Knitic
 ======
 
-This software part of a project the first an open hardware knitting machine at the moment based in old electronic Brother knitting machines. 
+This software part of a project the first an open hardware knitting machine at the moment based on old electronic Brother knitting machines. 
+
 Here we are testing with KH930, KH940, but we will work with any Digital Brother Knitting machine. 
 
 We have developed in an artist residency at Marginalia+Lab in Belo Horizonte (Brazil) and Constant(Belgium). 
