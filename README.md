@@ -10,6 +10,8 @@ There is more information on the project website: http://knitic.com
 
 Authors: Varvara Guljajeva(http://varvarag.info) and Mar Canet (http://mcanet.info). We are a couple of new media artist that we like to build our own tools.
 
+We have publish some articles about this topic:
+- Knitic - The Revolution of Soft Digital Fabrication. DH 2013: 497-499 [http://dh2013.unl.edu/abstracts/ab-173.html]
 
 The project copyright with GNU-GPL: http://es.wikipedia.org/wiki/GNU_General_Public_License
 
